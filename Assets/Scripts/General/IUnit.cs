@@ -5,6 +5,7 @@
     UnitClass Class { get; }
     int ExpCurrent { get; }
     int ExpToNext { get; }
+    void GainExp(int exp);
 
     // Base Stats
     int HP { get; }
