@@ -4,16 +4,33 @@ using UnityEngine;
 public class MBTileTest : MonoBehaviour {
     private static CustomLogger LOGGER = new CustomLogger(typeof(MBTileTest).ToString());
 
-    private Touch currentTouch;
-    private bool lockColor = false;
+    private MeshRenderer _renderer;
+    
+    private MBStageTest stage;
+
+    public MapCoordinate Coordinates { get; private set; }
+
+    private void Awake() {
+        _renderer = GetComponent<MeshRenderer>();
+    }
+
+    public void setStage(MBStageTest stage) {
+        this.stage = stage;
+    }
+
+    public void setColor(Color color) {
+        _renderer.material.color = color;
+    }
+
+    public void setCoordinates(MapCoordinate mapCoordinate) {
+        Coordinates = mapCoordinate;
+    }
 
     void OnTouchDown(Touch currentTouch) {
-        lockColor = !lockColor;
+        stage.ClickTile(this);
     }
 
     void OnTouchOver() {
-        if(!lockColor && (currentTouch == null || currentTouch.Phase == TouchPhase.Moved)) {
-            GetComponent<MeshRenderer>().material.color = new Color(Random.Range(0.0f, 1.0f), Random.Range(0.0f, 1.0f), Random.Range(0.0f, 1.0f));
-        }
+
     }
 }
