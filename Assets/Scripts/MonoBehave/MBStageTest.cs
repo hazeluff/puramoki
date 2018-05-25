@@ -7,22 +7,42 @@ public class MBStageTest : MonoBehaviour {
 
     private InputManager input;
 
-    private Dictionary<MapCoordinate, MBTileTest> tiles = new Dictionary<MapCoordinate, MBTileTest>();
+    private Dictionary<MapCoordinate, MBTile> tiles = new Dictionary<MapCoordinate, MBTile>();
+    private Dictionary<MBUnit, MapCoordinate> units = new Dictionary<MBUnit, MapCoordinate>();
+    private Dictionary<MapCoordinate, MBUnit> unitsByCoord = new Dictionary<MapCoordinate, MBUnit>();
 
     [SerializeField]
     private Transform cursor;
+
     MapCoordinate cursorPos = new MapCoordinate(0, 0);
 
+    ControlState controlState = ControlState.DESELECTED;
+    MapCoordinate selected = null;
+
+    public enum ControlState {
+        DESELECTED, UNIT_MOVE
+    }
+
 	void Awake () {
-        MBTileTest[] tileList = FindObjectsOfType<MBTileTest>();
-        foreach (MBTileTest tile in tileList) {
+        // Register Tiles
+        MBTile[] tileList = FindObjectsOfType<MBTile>();
+        foreach (MBTile tile in tileList) {
             Vector3 tilePos = tile.transform.localPosition;
             MapCoordinate mapCoordinate = new MapCoordinate(Mathf.RoundToInt(tilePos.x), Mathf.RoundToInt(tilePos.z));
             tile.setCoordinates(mapCoordinate);
             tiles.Add(mapCoordinate, tile);
             tile.setStage(this);
         }
-	}
+
+        // Register Units
+        MBUnit[] unitList = FindObjectsOfType<MBUnit>();
+        foreach(MBUnit mbUnit in unitList) {
+            Vector3 tilePos = mbUnit.transform.localPosition;
+            MapCoordinate mapCoordinate = new MapCoordinate(Mathf.RoundToInt(tilePos.x), Mathf.RoundToInt(tilePos.z));
+            units.Add(mbUnit, mapCoordinate);
+            unitsByCoord.Add(mapCoordinate, mbUnit);
+        }
+    }
 
     private void Start() {
         input = InputManager.get();
@@ -44,6 +64,31 @@ public class MBStageTest : MonoBehaviour {
         } else if (input.DPAD.RIGHT || input.LEFT_STICK.RIGHT) {
             MoveCursor(ControllerDirection.RIGHT);
         }
+
+        if(input.A) {
+            if (controlState == ControlState.DESELECTED && selected == null && unitsByCoord.ContainsKey(cursorPos)) {
+                LOGGER.info("Selected");
+                controlState = ControlState.UNIT_MOVE;
+                selected = cursorPos;
+            } else if (controlState == ControlState.UNIT_MOVE && !unitsByCoord.ContainsKey(cursorPos)) {
+                LOGGER.info("Moved");
+                MoveUnit(unitsByCoord[selected], new List<MapCoordinate>() { selected, cursorPos });
+                controlState = ControlState.DESELECTED;
+                selected = null;
+            }
+        } else if(input.B) {
+            LOGGER.info("Cancelled");
+            controlState = ControlState.DESELECTED;
+            selected = null;
+        }
+    }
+
+    private void MoveUnit(MBUnit unit, List<MapCoordinate> path) {
+        unitsByCoord.Remove(path[0]);
+        units.Remove(unit);
+        unitsByCoord.Add(path[path.Count - 1], unit);
+        units.Add(unit, path[path.Count - 1]);
+        unit.Move(path);
     }
 
     private enum ControllerDirection {
@@ -77,11 +122,11 @@ public class MBStageTest : MonoBehaviour {
         this.cursorPos = coordinate;
         cursor.localPosition = cursorPos.Vector3;
 
-        MBTileTest tile = tiles[coordinate];
+        MBTile tile = tiles[coordinate];
         if(tile != null) {
             tile.setColor(Color.red);
-            foreach (KeyValuePair<MapCoordinate, MBTileTest> tileEntry in tiles) {
-                MBTileTest mapTile = tileEntry.Value;
+            foreach (KeyValuePair<MapCoordinate, MBTile> tileEntry in tiles) {
+                MBTile mapTile = tileEntry.Value;
                 if (mapTile != tile) {
                     mapTile.setColor(Color.white);
                 }
@@ -89,7 +134,7 @@ public class MBStageTest : MonoBehaviour {
         }
     }
 
-    public void ClickTile(MBTileTest tile) {
+    public void ClickTile(MBTile tile) {
         MoveCursorTo(tile.Coordinates);
     }
 }

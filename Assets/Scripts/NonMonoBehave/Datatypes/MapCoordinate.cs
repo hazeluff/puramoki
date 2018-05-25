@@ -26,15 +26,13 @@ public class MapCoordinate {
         var coordinate = obj as MapCoordinate;
         return coordinate != null &&
                X == coordinate.X &&
-               Y == coordinate.Y &&
-               Vector3.Equals(coordinate.Vector3);
+               Y == coordinate.Y;
     }
 
     public override int GetHashCode() {
-        var hashCode = -1835336306;
+        var hashCode = 1861411795;
         hashCode = hashCode * -1521134295 + X.GetHashCode();
         hashCode = hashCode * -1521134295 + Y.GetHashCode();
-        hashCode = hashCode * -1521134295 + EqualityComparer<Vector3>.Default.GetHashCode(Vector3);
         return hashCode;
     }
 }

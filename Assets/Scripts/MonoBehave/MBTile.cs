@@ -1,8 +1,8 @@
 ﻿
 using UnityEngine;
 
-public class MBTileTest : MonoBehaviour {
-    private static CustomLogger LOGGER = new CustomLogger(typeof(MBTileTest).ToString());
+public class MBTile : MonoBehaviour {
+    private static CustomLogger LOGGER = new CustomLogger(typeof(MBTile).ToString());
 
     private MeshRenderer _renderer;
     
