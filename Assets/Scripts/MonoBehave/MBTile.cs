@@ -8,8 +8,6 @@ public class MBTile : MonoBehaviour {
     
     private MBStageTest stage;
 
-    public MapCoordinate Coordinates { get; private set; }
-
     private void Awake() {
         _renderer = GetComponent<MeshRenderer>();
     }
@@ -20,10 +18,6 @@ public class MBTile : MonoBehaviour {
 
     public void setColor(Color color) {
         _renderer.material.color = color;
-    }
-
-    public void setCoordinates(MapCoordinate mapCoordinate) {
-        Coordinates = mapCoordinate;
     }
 
     void OnTouchDown(Touch currentTouch) {
