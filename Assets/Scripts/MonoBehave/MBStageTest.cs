@@ -12,6 +12,7 @@ public class MBStageTest : MonoBehaviour {
 
     [SerializeField]
     private Transform cursor;
+    public MBStageCamera mbCamera;
 
     MapCoordinate cursorPos = new MapCoordinate(0, 0);
 
@@ -57,26 +58,46 @@ public class MBStageTest : MonoBehaviour {
 
     private void UpdateCursor() {
         input = InputManager.get();
-        if(input.DPAD.UP || input.LEFT_STICK.UP) {
-            MoveCursor(ControllerDirection.UP);
-        } else if (input.DPAD.DOWN || input.LEFT_STICK.DOWN) {
-            MoveCursor(ControllerDirection.DOWN);
-        } else if (input.DPAD.LEFT || input.LEFT_STICK.LEFT) {
-            MoveCursor(ControllerDirection.LEFT);
-        } else if (input.DPAD.RIGHT || input.LEFT_STICK.RIGHT) {
-            MoveCursor(ControllerDirection.RIGHT);
+
+        if (input.RB) {
+            mbCamera.Rotate(true);
+            return;
+        } else if (input.LB) {
+            mbCamera.Rotate(false);
+            return;
         }
+
+        if (mbCamera.Rotating) {
+            return;
+        }
+
+        if(input.DPAD.UP || input.LEFT_STICK.UP) {
+            MoveCursor(0);
+            return;
+        } else if (input.DPAD.RIGHT || input.LEFT_STICK.RIGHT) {
+            MoveCursor(1);
+            return;
+        } else if (input.DPAD.DOWN || input.LEFT_STICK.DOWN) {
+            MoveCursor(2);
+            return;
+        } else if (input.DPAD.LEFT || input.LEFT_STICK.LEFT) {
+            MoveCursor(3);
+            return;
+        } 
 
         if(input.A) {
             if (controlState == ControlState.DESELECTED && selected == null && units.ContainsKey(cursorPos)) {
                 controlState = ControlState.UNIT_MOVE;
                 selected = cursorPos;
+                return;
             } else if (controlState == ControlState.UNIT_MOVE && !units.ContainsKey(cursorPos)) {
                 MoveUnit(units.Get(selected), new List<MapCoordinate>() { selected, cursorPos });
+                return;
             }
         } else if(input.B) {
             controlState = ControlState.DESELECTED;
             selected = null;
+            return;
         }
     }
 
@@ -89,28 +110,15 @@ public class MBStageTest : MonoBehaviour {
         selected = null;
     }
 
-    private enum ControllerDirection {
-        UP, DOWN, LEFT, RIGHT
-    }
+    private static readonly MapCoordinate[][] MAP_MOVEMENT_MAP = new MapCoordinate[][] {
+        new MapCoordinate[] { MapCoordinate.UP , MapCoordinate.RIGHT, MapCoordinate.DOWN, MapCoordinate.LEFT },
+        new MapCoordinate[] { MapCoordinate.LEFT, MapCoordinate.UP , MapCoordinate.RIGHT, MapCoordinate.DOWN },
+        new MapCoordinate[] { MapCoordinate.DOWN, MapCoordinate.LEFT, MapCoordinate.UP , MapCoordinate.RIGHT },
+        new MapCoordinate[] { MapCoordinate.RIGHT, MapCoordinate.DOWN , MapCoordinate.LEFT, MapCoordinate.UP }
+    };
 
-    private void MoveCursor(ControllerDirection direction/*, CamDirection camDirection*/) {
-        MapCoordinate newCursorPos;
-        switch (direction) {
-            case ControllerDirection.UP:
-                newCursorPos = cursorPos + MapCoordinate.UP;
-                break;
-            case ControllerDirection.DOWN:
-                newCursorPos = cursorPos + MapCoordinate.DOWN;
-                break;
-            case ControllerDirection.LEFT:
-                newCursorPos = cursorPos + MapCoordinate.LEFT;
-                break;
-            case ControllerDirection.RIGHT:
-                newCursorPos = cursorPos + MapCoordinate.RIGHT;
-                break;
-            default:
-                throw new SystemException("Invalid direction: " + direction);
-        }
+    private void MoveCursor(int direction) {
+        MapCoordinate newCursorPos = cursorPos + MAP_MOVEMENT_MAP[mbCamera.Rotation][direction];        
         if(tiles.ContainsKey(newCursorPos)) {
             MoveCursorTo(newCursorPos);
         }
