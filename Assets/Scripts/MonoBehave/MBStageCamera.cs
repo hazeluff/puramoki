@@ -16,22 +16,34 @@ public class MBStageCamera : MonoBehaviour {
     private bool rotatingAnimation = false;
     private Queue<IEnumerator> rotationsQueue = new Queue<IEnumerator>();
 
+    private Vector3 newPosition;
+
     private void Awake() {
-        anchorRotationTransform = gameObject.transform.parent.transform;
+        anchorRotationTransform = transform.parent;
         Rotation = 0;
+        newPosition = transform.parent.localPosition;
     }
 
-#if UNITY_EDITOR
     void Update () {
+#if UNITY_EDITOR
         if (!Application.isPlaying) { // Does not update in play mode
             if (Mathf.Abs(this.transform.localRotation.eulerAngles.x - this.angle) > 0.1f) {
                 SetAngle(angle);
             }
         }
+#endif
 
         RotateCamera();
+        MoveCamera();
 	}
-#endif
+
+    private void MoveCamera() {
+        transform.parent.localPosition = Vector3.Lerp(transform.parent.localPosition, newPosition, 0.5f);
+    }
+
+    public void MoveTo(Vector3 newPosition) {
+        this.newPosition = newPosition;
+    }
 
     public void SetAngle(float angle) {
         this.angle = angle;

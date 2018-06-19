@@ -2,17 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MBStageTest : MonoBehaviour {
-    private static CustomLogger LOGGER = new CustomLogger(typeof(MBStageTest).ToString());
-
-    private InputManager input;
-
-    private ReversableDictionary<MapCoordinate, MBTile> tiles = new ReversableDictionary<MapCoordinate, MBTile>();
-    private ReversableDictionary<MBUnit, MapCoordinate> units = new ReversableDictionary<MBUnit, MapCoordinate>();
+public class MBStage : MonoBehaviour {
+    private static CustomLogger LOGGER = new CustomLogger(typeof(MBStage).ToString());
 
     [SerializeField]
     private Transform cursor;
     public MBStageCamera mbCamera;
+    public MBUnitMenu unitMenu;
+
+    private InputManager input;
+
+
+    private ReversableDictionary<MapCoordinate, MBTile> tiles = new ReversableDictionary<MapCoordinate, MBTile>();
+    private ReversableDictionary<MBUnit, MapCoordinate> units = new ReversableDictionary<MBUnit, MapCoordinate>();
 
     MapCoordinate cursorPos = new MapCoordinate(0, 0);
 
@@ -24,7 +26,7 @@ public class MBStageTest : MonoBehaviour {
     }
 
     public enum ControlState {
-        DESELECTED, UNIT_MOVE
+        DESELECTED, UNIT_MENU, UNIT_MOVE
     }
 
 	void Awake () {
@@ -45,6 +47,8 @@ public class MBStageTest : MonoBehaviour {
             units.Add(mbUnit, mapCoordinate);
             mbUnit.setStage(this);
         }
+
+        unitMenu.setStage(this);
     }
 
     private void Start() {
@@ -71,7 +75,61 @@ public class MBStageTest : MonoBehaviour {
             return;
         }
 
-        if(input.DPAD.UP || input.LEFT_STICK.UP) {
+        switch (controlState) {
+            case ControlState.DESELECTED:
+                MoveCursor();
+
+                if (input.A) {
+                    if (selected == null && units.ContainsKey(cursorPos)) {
+                        OpenUnitMenu();
+                        return;
+                    }
+                }
+                break;
+            case ControlState.UNIT_MENU:
+                if (input.DPAD.UP || input.LEFT_STICK.UP) {
+                    unitMenu.Up();
+                } else if (input.DPAD.DOWN || input.LEFT_STICK.DOWN) {
+                    unitMenu.Down();
+                }
+
+                if (input.A) {
+                    switch (unitMenu.getSelection()) {
+                        case 0:
+                            StartMoveSelection();
+                            break;
+                        case 1:
+                            CancelUnitMenu();
+                            break;
+                        default:
+                            break;                        
+                    }
+                } else if (input.B) {
+                    CancelUnitMenu();
+                    return;
+                }
+                break;
+            case ControlState.UNIT_MOVE:
+                MoveCursor();
+
+                if (input.A) {
+                    if (!units.ContainsKey(cursorPos)) {
+                        MoveUnit(units.Get(selected), new List<MapCoordinate>() { selected, cursorPos });
+                        return;
+                    }
+                } else if (input.B) {
+                    controlState = ControlState.UNIT_MENU;
+                    OpenUnitMenu();
+                    return;
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    public void MoveCursor() {
+        if (input.DPAD.UP || input.LEFT_STICK.UP) {
             MoveCursor(0);
             return;
         } else if (input.DPAD.RIGHT || input.LEFT_STICK.RIGHT) {
@@ -83,26 +141,27 @@ public class MBStageTest : MonoBehaviour {
         } else if (input.DPAD.LEFT || input.LEFT_STICK.LEFT) {
             MoveCursor(3);
             return;
-        } 
-
-        if(input.A) {
-            if (controlState == ControlState.DESELECTED && selected == null && units.ContainsKey(cursorPos)) {
-                controlState = ControlState.UNIT_MOVE;
-                selected = cursorPos;
-                return;
-            } else if (controlState == ControlState.UNIT_MOVE && !units.ContainsKey(cursorPos)) {
-                MoveUnit(units.Get(selected), new List<MapCoordinate>() { selected, cursorPos });
-                return;
-            }
-        } else if(input.B) {
-            controlState = ControlState.DESELECTED;
-            selected = null;
-            return;
         }
     }
 
+    public void StartMoveSelection() {
+        controlState = ControlState.UNIT_MOVE;
+        unitMenu.Disable();
+    }
+
+    public void OpenUnitMenu() {
+        controlState = ControlState.UNIT_MENU;
+        unitMenu.Enable();
+        selected = cursorPos;
+    }
+
+    public void CancelUnitMenu() {
+        controlState = ControlState.DESELECTED;
+        unitMenu.Disable();
+        selected = null;
+    }
+
     private void MoveUnit(MBUnit unit, List<MapCoordinate> path) {
-        LOGGER.info("Moved Unit");
         units.Remove(unit);
         units.Add(unit, path[path.Count - 1]);
         unit.Move(path);
@@ -122,6 +181,7 @@ public class MBStageTest : MonoBehaviour {
         if(tiles.ContainsKey(newCursorPos)) {
             MoveCursorTo(newCursorPos);
         }
+        mbCamera.MoveTo(newCursorPos.Vector3);
     }
 
     private void MoveCursorTo(MapCoordinate coordinate) {

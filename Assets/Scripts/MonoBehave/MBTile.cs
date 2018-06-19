@@ -6,13 +6,13 @@ public class MBTile : MonoBehaviour {
 
     private MeshRenderer _renderer;
     
-    private MBStageTest stage;
+    private MBStage stage;
 
     private void Awake() {
         _renderer = GetComponent<MeshRenderer>();
     }
 
-    public void setStage(MBStageTest stage) {
+    public void setStage(MBStage stage) {
         this.stage = stage;
     }
 
