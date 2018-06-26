@@ -1,5 +1,6 @@
 ﻿
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class MBTile : MonoBehaviour {
     private static CustomLogger LOGGER = new CustomLogger(typeof(MBTile).ToString());
@@ -20,11 +21,9 @@ public class MBTile : MonoBehaviour {
         _renderer.material.color = color;
     }
 
-    void OnTouchDown(Touch currentTouch) {
-        stage.ClickTile(this);
-    }
-
-    void OnTouchOver() {
-
+    void OnMouseUpAsButton() {
+        if (stage.State != MBStage.ControlState.UNIT_MENU) {
+            stage.ClickTile(this);
+        }
     }
 }

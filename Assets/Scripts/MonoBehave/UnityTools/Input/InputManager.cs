@@ -16,7 +16,7 @@ public class InputManager : MonoBehaviour {
     public bool RIGHT_CLICK { get { return Input.GetMouseButtonDown(1); } }
 
     public bool AnyButton { get { return A || B || X || Y || RB || LB || BACK || START; } }
-    public bool AnyInput { get { return A || B || X || Y || RB || LB || BACK || START || DPAD.anyInput || LEFT_STICK.anyInput || RIGHT_STICK.anyInput || RT > 0.0f || LT > 0.0f; } }
+    public bool AnyInput { get { return A || B || X || Y || RB || LB || BACK || START || DPAD.AnyInput || LEFT_STICK.AnyInput || RIGHT_STICK.AnyInput || RT > 0.0f || LT > 0.0f; } }
 
     public readonly Stick KEYBOARD_STICK = new KeyboardStick();
     public readonly AnalogueStick LEFT_STICK = new AnalogueStick("Horizontal", "Vertical");
@@ -51,15 +51,7 @@ public class InputManager : MonoBehaviour {
     
     public bool BACK { get { return Input.GetKeyDown("joystick 1 button 10"); } }
     public bool START { get { return Input.GetKeyDown("joystick 1 button 9"); } }
-#endif
-
-    // Touch related
-    private const string TOUCH_DOWN_METHOD_NAME = "OnTouchDown";
-    private const string TOUCH_OVER_METHOD_NAME = "OnTouchOver";
-
-    private Vector3 lastMousePosition = new Vector3(0.0f, 0.0f, 0.0f);
-    private const float moveThreshold = 0.01f;
-    Touch currentTouch;
+#endif    
 
     void Awake() {
         if (input == null) {
@@ -68,8 +60,6 @@ public class InputManager : MonoBehaviour {
         } else if(input != this) {
             Destroy(gameObject);
         }
-        currentTouch = new Touch(Touch.MOUSE_INPUT);
-        currentTouch.Phase = TouchPhase.Ended;
     }
 
     public static InputManager get() {
@@ -81,77 +71,13 @@ public class InputManager : MonoBehaviour {
     }
 
     private void Update() {
-        // PC (mouse) controls
-        // Emulate mouse movement/clicks as Touches
 
-        // Set phase of touch
-        if (Input.GetMouseButtonDown(0)) {
-            currentTouch = new Touch(Touch.MOUSE_INPUT);
-            currentTouch.Phase = TouchPhase.Began;
-        } else if (Input.GetMouseButtonUp(0)) {
-            currentTouch.Phase = TouchPhase.Ended;
-        } else if (Input.GetMouseButton(0)) {
-            if ((Input.mousePosition - lastMousePosition).magnitude < moveThreshold) {
-                currentTouch.Phase = TouchPhase.Stationary;
-            } else {
-                currentTouch.Phase = TouchPhase.Moved;
-            }
-        }
-
-        // Set position of touch
-        currentTouch.Position = Input.mousePosition;
-
-        // If the touch is inside the collider of a object, then tell that object that there is a new touch command.
-        foreach (Camera camera in Camera.allCameras) {
-            Ray ray = camera.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-            if (Physics.Raycast(ray, out hit, ~touchLayers.value)) {
-                GameObject recipient = hit.transform.gameObject;
-                if (currentTouch.Phase == TouchPhase.Began) {
-                    recipient.SendMessage(TOUCH_DOWN_METHOD_NAME, currentTouch, SendMessageOptions.DontRequireReceiver);
-                } else {
-                    Touch touch = new Touch(Touch.MOUSE_INPUT);
-                    touch.Position = Input.mousePosition;
-                    touch.Phase = (Input.mousePosition - lastMousePosition).magnitude < moveThreshold ? TouchPhase.Stationary : TouchPhase.Moved;
-                    recipient.SendMessage(TOUCH_OVER_METHOD_NAME, SendMessageOptions.DontRequireReceiver);
-                }
-            }
-        }
-        lastMousePosition = Input.mousePosition;
-
-        /*
-        // Tablet  controls
-        if (Input.touchCount > 0) {
-            UnityEngine.Touch? uTouch = Input.touches.FirstOrDefault(touch => touch.fingerId == currentTouch.Id);
-            if(!uTouch.HasValue) {
-                uTouch = Input.touches[0];
-                currentTouch.Phase = TouchPhase.Ended; // End the old touch
-                currentTouch = new Touch(uTouch.GetValueOrDefault().fingerId); // Set a new touch
-            }
-            currentTouch.Position = uTouch.GetValueOrDefault().position;
-            currentTouch.Phase = uTouch.GetValueOrDefault().phase;
-
-            foreach (Camera camera in Camera.allCameras) {
-                Ray ray = camera.ScreenPointToRay(currentTouch.Position);
-                RaycastHit hit;
-                if (Physics.Raycast(ray, out hit, ~touchLayers.value)) {
-                    GameObject recipient = hit.transform.gameObject;
-                    if (currentTouch.Phase == TouchPhase.Began) {
-                        LOGGER.trace("Touched: " + recipient.name);
-                        recipient.SendMessage("OnTouchDown", currentTouch, SendMessageOptions.DontRequireReceiver);
-                    } else {
-                        recipient.SendMessage(TOUCH_OVER_METHOD_NAME, currentTouch, SendMessageOptions.DontRequireReceiver);
-                    }
-                }
-            }
-        }
-        */
     }
 
     void LateUpdate() {
-        LEFT_STICK.update();
-        RIGHT_STICK.update();
-        DPAD.update();
+        LEFT_STICK.UpdateState();
+        RIGHT_STICK.UpdateState();
+        DPAD.UpdateState();
     }
 
 

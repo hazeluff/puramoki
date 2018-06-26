@@ -29,7 +29,7 @@ public class MBUnit : MonoBehaviour, IMBUnit {
         gameObject.transform.localPosition = new Vector3(lastCoord.X, 0.25f, lastCoord.Y);
     }
 
-    void OnTouchDown(Touch currentTouch) {
+    void OnMouseUp () {
         stage.ClickUnit(this);
     }
 }
