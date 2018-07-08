@@ -43,7 +43,6 @@ public class MBStage : MonoBehaviour {
             Vector3 tilePos = tile.transform.position;
             MapCoordinate mapCoordinate = new MapCoordinate(Mathf.RoundToInt(tilePos.x), Mathf.RoundToInt(tilePos.z));
             tiles.Add(mapCoordinate, tile);
-            Debug.Log(mapCoordinate + " - " + Mathf.RoundToInt(tilePos.y - tile.transform.localPosition.y));
             Heights.Add(mapCoordinate, Mathf.RoundToInt(tilePos.y - tile.transform.localPosition.y));
             tile.setStage(this);
         }
