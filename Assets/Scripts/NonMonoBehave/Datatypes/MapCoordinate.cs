@@ -22,6 +22,11 @@ public class MapCoordinate {
         return new MapCoordinate(c1.X + c2.X, c1.Y + c2.Y);
     }
 
+    
+    public override string ToString() {
+        return "x=" + X + ",y=" + Y;
+    }
+
     public override bool Equals(object obj) {
         var coordinate = obj as MapCoordinate;
         return coordinate != null &&

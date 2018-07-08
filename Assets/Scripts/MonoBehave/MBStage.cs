@@ -15,6 +15,8 @@ public class MBStage : MonoBehaviour {
     private InputManager input;
 
     private ReversableDictionary<MapCoordinate, MBTile> tiles = new ReversableDictionary<MapCoordinate, MBTile>();
+    public Dictionary<MapCoordinate, int> Heights { get; private set; }
+
     private ReversableDictionary<MBUnit, MapCoordinate> units = new ReversableDictionary<MBUnit, MapCoordinate>();
 
     MapCoordinate cursorPos = new MapCoordinate(0, 0);
@@ -33,21 +35,24 @@ public class MBStage : MonoBehaviour {
 	void Awake () {
         unitMenu.SetActive(false);
         State = ControlState.DESELECTED;
+        Heights = new Dictionary<MapCoordinate, int>();
 
         // Register Tiles
         MBTile[] tileList = FindObjectsOfType<MBTile>();
         foreach (MBTile tile in tileList) {
-            Vector3 tilePos = tile.transform.localPosition;
+            Vector3 tilePos = tile.transform.position;
             MapCoordinate mapCoordinate = new MapCoordinate(Mathf.RoundToInt(tilePos.x), Mathf.RoundToInt(tilePos.z));
             tiles.Add(mapCoordinate, tile);
+            Debug.Log(mapCoordinate + " - " + Mathf.RoundToInt(tilePos.y - tile.transform.localPosition.y));
+            Heights.Add(mapCoordinate, Mathf.RoundToInt(tilePos.y - tile.transform.localPosition.y));
             tile.setStage(this);
         }
 
         // Register Units
         MBUnit[] unitList = FindObjectsOfType<MBUnit>();
         foreach(MBUnit mbUnit in unitList) {
-            Vector3 tilePos = mbUnit.transform.localPosition;
-            MapCoordinate mapCoordinate = new MapCoordinate(Mathf.RoundToInt(tilePos.x), Mathf.RoundToInt(tilePos.z));
+            Vector3 unitPos = mbUnit.transform.position;
+            MapCoordinate mapCoordinate = new MapCoordinate(Mathf.RoundToInt(unitPos.x), Mathf.RoundToInt(unitPos.z));
             units.Add(mbUnit, mapCoordinate);
             mbUnit.setStage(this);
         }
@@ -166,7 +171,7 @@ public class MBStage : MonoBehaviour {
 
     private void MoveCursorTo(MapCoordinate coordinate) {
         this.cursorPos = coordinate;
-        cursor.localPosition = cursorPos.Vector3;
+        cursor.localPosition = cursorPos.Vector3 + (Vector3.up * Heights[cursorPos]);
 
         MBTile tile = tiles.Get(coordinate);
         if(tile != null) {
