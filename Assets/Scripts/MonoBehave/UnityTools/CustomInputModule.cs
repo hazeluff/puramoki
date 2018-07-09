@@ -77,7 +77,9 @@ namespace UnityEngine.EventSystems {
 
             var toSelect = eventSystem.currentSelectedGameObject;
             if (toSelect == null)
+#pragma warning disable CS0618 // Type or member is obsolete
                 toSelect = eventSystem.lastSelectedGameObject;
+#pragma warning restore CS0618 // Type or member is obsolete
             if (toSelect == null)
                 toSelect = eventSystem.firstSelectedGameObject;
 

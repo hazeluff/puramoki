@@ -5,11 +5,10 @@ using System.Collections.Generic;
 [ExecuteInEditMode]
 public class MBStageCamera : MonoBehaviour {
 
+    private float yOffset;
+
     private const float ROTATION_DURATION = 0.5f;
-
     public float angle = 30;
-
-
     private Transform anchorRotationTransform;
     public int Rotation { get; private set; }
     public bool Rotating { get { return rotationsQueue.Count > 0 || rotatingAnimation; } }
@@ -22,6 +21,10 @@ public class MBStageCamera : MonoBehaviour {
         anchorRotationTransform = transform.parent;
         Rotation = 0;
         newPosition = transform.parent.localPosition;
+    }
+
+    private void Start() {
+        SetAngle(angle);
     }
 
     void Update () {

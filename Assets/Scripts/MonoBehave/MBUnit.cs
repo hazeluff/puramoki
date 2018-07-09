@@ -8,6 +8,10 @@ public class MBUnit : MonoBehaviour, IMBUnit {
 
     private MBStage stage;
 
+    [SerializeField]
+    private Unit unit;
+    public Unit Unit { get { return unit; } }
+
     private void Awake() {
         _renderer = GetComponent<MeshRenderer>();
     }

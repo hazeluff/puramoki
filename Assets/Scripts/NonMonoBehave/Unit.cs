@@ -1,23 +1,39 @@
-﻿public class Unit : IUnit
+﻿using UnityEngine;
+
+[CreateAssetMenu(fileName = "Unit", menuName = "Stage/Unit", order = 1)]
+public class Unit : ScriptableObject, IUnit
 {
     // Underlying serializable fields
+    [SerializeField]
     string _name;
+    [SerializeField]
     private int _level;
+    [SerializeField]
     private UnitClass _class;
+    [SerializeField]
     private int _expCurrent;
+    [SerializeField]
     private int _hp;
+    [SerializeField]
     private int _mp;
+    [SerializeField]
     private int _atk;
+    [SerializeField]
     private int _def;
+    [SerializeField]
     private int _int;
+    [SerializeField]
     private int _res;
+    [SerializeField]
     private int _hit;
+    [SerializeField]
     private int _spd;
+    [SerializeField]
     private int _mv;
+    [SerializeField]
     private IWeapon _weapon;
+    [SerializeField]
     private IEquipment[] _equipments;
-
-
 
     public string Name { get { return _name; } set { _name = value; } }
     public int Level { get { return _level; } set { _level = value; } }
@@ -28,14 +44,23 @@
     }
 
     public int HP { get { return _hp; } set { _hp = value; } }
+    public int CurrentHP { get { return _hp; } set { _hp = value; } }
     public int MP { get { return _mp; } set { _mp = value; } }
+    public int CurrentMP { get { return _mp; } set { _mp = value; } }
     public int Atk { get { return _atk; } set { _atk = value; } }
+    public int CurrentAtk { get { return _atk; } set { _atk = value; } }
     public int Def { get { return _def; } set { _def = value; } }
+    public int CurrentDef { get { return _def; } set { _def = value; } }
     public int Int { get { return _int; } set { _int = value; } }
+    public int CurrentInt { get { return _int; } set { _int = value; } }
     public int Res { get { return _res; } set { _res = value; } }
+    public int CurrentRes { get { return _res; } set { _res = value; } }
     public int Hit { get { return _hit; } set { _hit = value; } }
+    public int CurrentHit { get { return _hit; } set { _hit = value; } }
     public int Spd { get { return _spd; } set { _spd = value; } }
+    public int CurrentSpd { get { return _spd; } set { _spd = value; } }
     public int Mv { get { return _mv; } set { _mv = value; } }
+    public int CurrentMv { get { return _mv; } set { _mv = value; } }
 
     public IWeapon Weapon { get { return _weapon; } set { _weapon = value; } }
 
@@ -43,6 +68,10 @@
 
     public float ElemRes(Element element)
     {
+        throw new System.NotImplementedException();
+    }
+
+    public float CurrentElemRes(Element element) {
         throw new System.NotImplementedException();
     }
 

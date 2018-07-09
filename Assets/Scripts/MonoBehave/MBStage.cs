@@ -10,19 +10,38 @@ public class MBStage : MonoBehaviour {
     [SerializeField]
     private MBStageCamera mbCamera;
     [SerializeField]
-    public GameObject unitMenu;
+    private GameObject unitMenu;
 
     private InputManager input;
+
+    public ControlState State { get; private set; }
 
     private ReversableDictionary<MapCoordinate, MBTile> tiles = new ReversableDictionary<MapCoordinate, MBTile>();
     public Dictionary<MapCoordinate, int> Heights { get; private set; }
 
     private ReversableDictionary<MBUnit, MapCoordinate> units = new ReversableDictionary<MBUnit, MapCoordinate>();
 
-    MapCoordinate cursorPos = new MapCoordinate(0, 0);
-    
-    public ControlState State { get; private set; }
-    MapCoordinate selected = null;
+    public bool IsOccupied (MapCoordinate coordinate) {
+        return units.ContainsKey(coordinate);
+    }
+
+    private MapCoordinate cursorPos = new MapCoordinate(0, 0);
+
+    private MapCoordinate selected = null;
+
+    private HashSet<MapCoordinate> range;
+    private void ResetRange() {
+        foreach (MapCoordinate coord in range) {
+            tiles.Get(coord).setDefaultColor();
+        }
+        range = null;
+    }
+    private bool InRange(MapCoordinate coordinate) {
+        if (range == null) {
+            return true;
+        }
+        return range.Contains(coordinate);
+    }
 
     public bool IsSelected(MBUnit unit) {        
         return selected != null && units.Get(selected) == unit;
@@ -86,7 +105,7 @@ public class MBStage : MonoBehaviour {
                 MoveCursor();
 
                 if (input.A) {
-                    if (selected == null && units.ContainsKey(cursorPos)) {
+                    if (selected == null && IsOccupied(cursorPos)) {
                         OpenUnitMenu();
                         return;
                     }
@@ -98,11 +117,12 @@ public class MBStage : MonoBehaviour {
                 MoveCursor();
 
                 if (input.A) {
-                    if (!units.ContainsKey(cursorPos)) {
+                    if (!IsOccupied(cursorPos) && InRange(cursorPos)) {
                         MoveUnit(units.Get(selected), new List<MapCoordinate>() { selected, cursorPos });
                         return;
                     }
                 } else if (input.B) {
+                    CancelMoveSelection();
                     OpenUnitMenu();
                     return;
                 }
@@ -131,6 +151,55 @@ public class MBStage : MonoBehaviour {
     public void StartMoveSelection() {
         ChangeState(ControlState.UNIT_MOVE);
         unitMenu.SetActive(false);
+        range = FindRange(units.Get(selected).Unit, selected);
+        foreach (MapCoordinate coord in range) {
+            tiles.Get(coord).setMoveRangeColor();
+        }
+    }
+
+    public void CancelMoveSelection() {
+        cursorPos = selected;
+        MoveCursorTo(cursorPos);
+        ResetRange();
+        OpenUnitMenu();
+    }
+
+    private HashSet<MapCoordinate> FindRange(IUnit unit, MapCoordinate origin) {
+        int unitMove = unit.CurrentMv;
+        HashSet<MapCoordinate> range = new HashSet<MapCoordinate>();
+        FindRange(unit, range, unitMove, origin);
+        return range;
+    }
+
+    private void FindRange(IUnit unit, HashSet<MapCoordinate> listToAddTo, int mvLeft, MapCoordinate currentNode) {
+        if (!tiles.ContainsKey(currentNode)) {
+            return;
+        }
+
+        if (listToAddTo.Contains(currentNode)) {
+            return;
+        }
+
+        ITile currentTile = tiles.Get(currentNode).Tile;
+        if (!currentTile.Traversable) {
+            return;
+        }
+
+        listToAddTo.Add(currentNode);
+
+        if (listToAddTo.Count > 0) {
+            mvLeft -= currentTile.MoveCost(unit);
+        }
+
+        if (mvLeft < 0) {
+            return;
+        }
+
+        listToAddTo.Add(currentNode);
+        foreach (MapCoordinate direction in new MapCoordinate[] { MapCoordinate.UP, MapCoordinate.DOWN, MapCoordinate.LEFT, MapCoordinate.RIGHT }) {
+            MapCoordinate adjacentNode = currentNode + direction;
+            FindRange(unit, listToAddTo, mvLeft, adjacentNode);
+        }
     }
 
     public void OpenUnitMenu() {
@@ -146,6 +215,8 @@ public class MBStage : MonoBehaviour {
     }
 
     private void MoveUnit(MBUnit unit, List<MapCoordinate> path) {
+        ResetRange();        
+
         units.Remove(unit);
         units.Add(unit, path[path.Count - 1]);
         unit.Move(path);
@@ -161,24 +232,24 @@ public class MBStage : MonoBehaviour {
     };
 
     private void MoveCursor(int direction) {
-        MapCoordinate newCursorPos = cursorPos + MAP_MOVEMENT_MAP[mbCamera.Rotation][direction];        
-        if(tiles.ContainsKey(newCursorPos)) {
-            MoveCursorTo(newCursorPos);
-        }
-        mbCamera.MoveTo(newCursorPos.Vector3);
+        MapCoordinate newCursorPos = cursorPos + MAP_MOVEMENT_MAP[mbCamera.Rotation][direction];
+        MoveCursorTo(newCursorPos);
     }
 
     private void MoveCursorTo(MapCoordinate coordinate) {
-        this.cursorPos = coordinate;
-        cursor.localPosition = cursorPos.Vector3 + (Vector3.up * Heights[cursorPos]);
+        if (InRange(coordinate)) {
+            MapCoordinate oldPos = cursorPos;
+            this.cursorPos = coordinate;
+            cursor.localPosition = cursorPos.Vector3 + (Vector3.up * Heights[cursorPos]);
+            mbCamera.MoveTo(coordinate.Vector3);
 
-        MBTile tile = tiles.Get(coordinate);
-        if(tile != null) {
-            tile.setColor(Color.red);
-            foreach (KeyValuePair<MapCoordinate, MBTile> tileEntry in tiles) {
-                MBTile mapTile = tileEntry.Value;
-                if (mapTile != tile) {
-                    mapTile.setColor(Color.white);
+            MBTile tile = tiles.Get(coordinate);
+            if (tile != null) {
+                tile.setSelectedColor();
+                if (InRange(oldPos) && State == ControlState.UNIT_MOVE) {
+                    tiles.Get(oldPos).setMoveRangeColor();
+                } else {
+                    tiles.Get(oldPos).setDefaultColor();
                 }
             }
         }
@@ -191,16 +262,21 @@ public class MBStage : MonoBehaviour {
                 MoveCursorTo(coordinate);
                 break;
             case ControlState.UNIT_MOVE:
-                MoveCursorTo(coordinate);
-                if (!units.ContainsKey(coordinate)) {
+                if (InRange(coordinate)) {
                     MoveUnit(units.Get(selected), new List<MapCoordinate>() { selected, coordinate });
+                } else {
+                    CancelMoveSelection();
+                    CancelUnitMenu();
                 }
+                MoveCursorTo(coordinate);
                 break;
             case ControlState.UNIT_MENU:
-                if (units.ContainsKey(coordinate)) {
-                    MoveCursorTo(coordinate);
+                if (InRange(coordinate)) {
                     OpenUnitMenu();
+                } else {
+                    CancelUnitMenu();
                 }
+                MoveCursorTo(coordinate);
                 break;
 
             default:
