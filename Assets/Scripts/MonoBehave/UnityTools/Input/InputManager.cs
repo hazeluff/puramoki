@@ -16,14 +16,14 @@ public class InputManager : MonoBehaviour {
     public bool RIGHT_CLICK { get { return Input.GetMouseButtonDown(1); } }
 
     public bool AnyButton { get { return A || B || X || Y || RB || LB || BACK || START; } }
-    public bool AnyInput { get { return A || B || X || Y || RB || LB || BACK || START || DPAD.AnyInput || LEFT_STICK.AnyInput || RIGHT_STICK.AnyInput || RT > 0.0f || LT > 0.0f; } }
+    public bool AnyInput { get { return A || B || X || Y || RB || LB || BACK || START || DPAD.AnyInput || LEFT_STICK.AnyInput || RIGHT_STICK.AnyInput || RT.Pressed || LT.Pressed; } }
 
     public readonly Stick KEYBOARD_STICK = new KeyboardStick();
     public readonly AnalogueStick LEFT_STICK = new AnalogueStick("Horizontal", "Vertical");
     public readonly AnalogueStick RIGHT_STICK = new AnalogueStick("R_Horizontal", "R_Vertical");
     public readonly Stick DPAD = new XBoxDPad("D_Horizontal", "D_Vertical");
-    public float LT { get { return Input.GetAxis("LT"); } }
-    public float RT { get { return Input.GetAxis("RT"); } }
+    public readonly Trigger LT = new Trigger("LT");
+    public readonly Trigger RT = new Trigger("RT");
     public bool SCROLL_UP { get { return Input.GetAxis("MouseScroll") > 0.0f; } }
     public bool SCROLL_DOWN { get { return Input.GetAxis("MouseScroll") < 0.0f; } }
 
@@ -78,6 +78,8 @@ public class InputManager : MonoBehaviour {
         LEFT_STICK.UpdateState();
         RIGHT_STICK.UpdateState();
         DPAD.UpdateState();
+        LT.UpdateState();
+        RT.UpdateState();
     }
 
 

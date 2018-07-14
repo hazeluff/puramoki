@@ -1,42 +1,39 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
 [ExecuteInEditMode]
 public class MBStageCamera : MonoBehaviour {
-
-    private float yOffset;
+    private Transform anchorTransform;
 
     private const float ROTATION_DURATION = 0.5f;
-    public float angle = 30;
-    private Transform anchorRotationTransform;
     public int Rotation { get; private set; }
-    public bool Rotating { get { return rotationsQueue.Count > 0 || rotatingAnimation; } }
-    private bool rotatingAnimation = false;
-    private Queue<IEnumerator> rotationsQueue = new Queue<IEnumerator>();
+    private float[] rotationMap = new float[] { 0f, 90f, 180f, 270f };
+    private float RotationAngle { get { return rotationMap[Rotation]; } }
+    public bool Rotating { get { return rotationCoroutine != null; } }
+    private Coroutine rotationCoroutine;
+    
+    private const float TILT_DURATION = 0.5f;
+    private int tilt = 1;
+    private float[] angleMap = new float[] { 20f, 30f, 45f, 60f };
+    private float TiltAngle { get { return angleMap[tilt]; } }
+    public bool Tilting { get { return tiltCoroutine != null; } }
+    private Coroutine tiltCoroutine;
 
     private Vector3 newPosition;
 
     private void Awake() {
-        anchorRotationTransform = transform.parent;
+        anchorTransform = transform.parent;
         Rotation = 0;
         newPosition = transform.parent.localPosition;
     }
 
     private void Start() {
-        SetAngle(angle);
+        SetAngle(TiltAngle);
     }
 
-    void Update () {
-#if UNITY_EDITOR
-        if (!Application.isPlaying) { // Does not update in play mode
-            if (Mathf.Abs(this.transform.localRotation.eulerAngles.x - this.angle) > 0.1f) {
-                SetAngle(angle);
-            }
-        }
-#endif
-
-        RotateCamera();
+    void Update () {        
         MoveCamera();
 	}
 
@@ -48,53 +45,83 @@ public class MBStageCamera : MonoBehaviour {
         this.newPosition = newPosition;
     }
 
-    public void SetAngle(float angle) {
-        this.angle = angle;
+    private void SetAngle(float angle) {
         this.transform.localPosition = StageCameraHelper.CalculateNewPosition(this.transform.localPosition, angle);
         Vector3 newRotation = this.transform.localEulerAngles;
         newRotation.x = angle;
         this.transform.localEulerAngles = newRotation;
     }
 
-    private void RotateCamera() {
-        if(!rotatingAnimation && rotationsQueue.Count > 0) {
-            StartCoroutine(rotationsQueue.Dequeue());
-        }
-        
-    }
-
     IEnumerator RotateCamera(bool clockwise) {
-        rotatingAnimation = true;
-        Vector3 startRotation = anchorRotationTransform.localEulerAngles;
-        float targetAngle = startRotation.y + (clockwise ? -90.0f : 90.0f);
+        Vector3 startRotation = anchorTransform.localEulerAngles;
+        float targetAngle = RotationAngle;
+        if (clockwise) {
+            if (targetAngle < startRotation.y) {
+                targetAngle += 360f;
+            }
+        } else {
+            if (targetAngle > startRotation.y) {
+                targetAngle -= 360f;
+            }
+        }
         Vector3 targetRotation = new Vector3(startRotation.x, targetAngle, startRotation.z);
         float time = 0.0f;
         while(time < ROTATION_DURATION) {
             yield return null;
             time += Time.deltaTime;
             float ratio = time / (ROTATION_DURATION);
-            if (ratio > 1.0f) {
-                ratio = 1.0f;
-            }
             ratio = Mathf.Sin(ratio * Mathf.PI / 2.0f);
-            anchorRotationTransform.localEulerAngles = Vector3.Lerp(startRotation, targetRotation, ratio);
+            anchorTransform.localEulerAngles = Vector3.Lerp(startRotation, targetRotation, ratio);
         }
-        rotatingAnimation = false;
+        anchorTransform.localEulerAngles = targetRotation;
+        rotationCoroutine = null;
     }
 
     public void Rotate(bool clockwise) {
-        if(rotationsQueue.Count < 16) {
-            rotationsQueue.Enqueue(RotateCamera(clockwise));
-            if (clockwise) {
-                if (++Rotation > 3) {
-                    Rotation = 0;
-                }
-            } else {
-                if (--Rotation < 0) {
-                    Rotation = 3;
-                }
+        if (clockwise) {
+            if (++Rotation >= rotationMap.Length) {
+                Rotation = 0;
+            }
+        } else {
+            if (--Rotation < 0) {
+                Rotation = rotationMap.Length - 1;
             }
         }
+        if (rotationCoroutine != null) {
+            StopCoroutine(rotationCoroutine);
+        }
+        rotationCoroutine = StartCoroutine(RotateCamera(clockwise));
+    }
+
+    public void Tilt(bool up) {
+        if (up) {
+            if (++tilt >= angleMap.Length) {
+                tilt = 0;
+            }
+        } else {
+            if (--tilt < 0) {
+                tilt = angleMap.Length - 1;
+            }
+        }
+        if (tiltCoroutine != null) {
+            StopCoroutine(tiltCoroutine);
+        }
+        tiltCoroutine = StartCoroutine(TiltCamera());
+    }
+
+    IEnumerator TiltCamera() {
+        float startAngle = transform.localEulerAngles.x;
+        float targetAngle = TiltAngle;
+        float time = 0.0f;
+        while (time < TILT_DURATION) {
+            yield return null;
+            time += Time.deltaTime;
+            float ratio = time / (ROTATION_DURATION);
+            ratio = Mathf.Sin(ratio * Mathf.PI / 2.0f);
+            SetAngle(Mathf.Lerp(startAngle, targetAngle, ratio));
+        }
+        SetAngle(targetAngle);
+        tiltCoroutine = null;
     }
 }
 
