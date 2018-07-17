@@ -6,6 +6,7 @@ using System;
 [ExecuteInEditMode]
 public class MBStageCamera : MonoBehaviour {
     private Transform anchorTransform;
+    private Camera camera;
 
     private const float ROTATION_DURATION = 0.5f;
     public int Rotation { get; private set; }
@@ -13,18 +14,27 @@ public class MBStageCamera : MonoBehaviour {
     private float RotationAngle { get { return rotationMap[Rotation]; } }
     public bool Rotating { get { return rotationCoroutine != null; } }
     private Coroutine rotationCoroutine;
-    
+
     private const float TILT_DURATION = 0.5f;
     private int tilt = 1;
     private float[] angleMap = new float[] { 20f, 30f, 45f, 60f };
     private float TiltAngle { get { return angleMap[tilt]; } }
+    private float CurrentAngle { get { return transform.localEulerAngles.x; } }
     public bool Tilting { get { return tiltCoroutine != null; } }
     private Coroutine tiltCoroutine;
+
+    private const float ZOOM_DURATION = 0.5f;
+    private int zoom = 1;
+    private float[] zoomMap = new float[] { 2f, 3f, 4.5f, 6f };
+    private float ZoomDistance { get { return zoomMap[zoom]; } }
+    public bool Zooming { get { return zoomCoroutine != null; } }
+    private Coroutine zoomCoroutine;
 
     private Vector3 newPosition;
 
     private void Awake() {
         anchorTransform = transform.parent;
+        camera = GetComponent<Camera>();
         Rotation = 0;
         newPosition = transform.parent.localPosition;
     }
@@ -46,10 +56,10 @@ public class MBStageCamera : MonoBehaviour {
     }
 
     private void SetAngle(float angle) {
-        this.transform.localPosition = StageCameraHelper.CalculateNewPosition(this.transform.localPosition, angle);
-        Vector3 newRotation = this.transform.localEulerAngles;
+        transform.localPosition = StageCameraHelper.CalculateNewPosition(transform.localPosition, angle);
+        Vector3 newRotation = transform.localEulerAngles;
         newRotation.x = angle;
-        this.transform.localEulerAngles = newRotation;
+        transform.localEulerAngles = newRotation;
     }
 
     IEnumerator RotateCamera(bool clockwise) {
@@ -67,11 +77,11 @@ public class MBStageCamera : MonoBehaviour {
         Vector3 targetRotation = new Vector3(startRotation.x, targetAngle, startRotation.z);
         float time = 0.0f;
         while(time < ROTATION_DURATION) {
-            yield return null;
             time += Time.deltaTime;
-            float ratio = time / (ROTATION_DURATION);
+            float ratio = time / ROTATION_DURATION;
             ratio = Mathf.Sin(ratio * Mathf.PI / 2.0f);
             anchorTransform.localEulerAngles = Vector3.Lerp(startRotation, targetRotation, ratio);
+            yield return null;
         }
         anchorTransform.localEulerAngles = targetRotation;
         rotationCoroutine = null;
@@ -114,14 +124,45 @@ public class MBStageCamera : MonoBehaviour {
         float targetAngle = TiltAngle;
         float time = 0.0f;
         while (time < TILT_DURATION) {
-            yield return null;
             time += Time.deltaTime;
-            float ratio = time / (ROTATION_DURATION);
+            float ratio = time / TILT_DURATION;
             ratio = Mathf.Sin(ratio * Mathf.PI / 2.0f);
             SetAngle(Mathf.Lerp(startAngle, targetAngle, ratio));
+            yield return null;
         }
         SetAngle(targetAngle);
         tiltCoroutine = null;
+    }
+
+    public void Zoom(bool inward) {
+        if (inward) {
+            if (++zoom >= zoomMap.Length) {
+                zoom = 0;
+            }
+        } else {
+            if (--zoom < 0) {
+                zoom = zoomMap.Length - 1;
+            }
+        }
+        if (zoomCoroutine != null) {
+            StopCoroutine(zoomCoroutine);
+        }
+        zoomCoroutine = StartCoroutine(ZoomCamera());
+    }
+
+    IEnumerator ZoomCamera() {
+        float startZoom = camera.orthographicSize;
+        float endZoom = ZoomDistance;
+        float time = 0.0f;
+        while (time < ZOOM_DURATION) {
+            time += Time.deltaTime;
+            float ratio = time / ZOOM_DURATION;
+            ratio = Mathf.Sin(ratio * Mathf.PI / 2.0f);
+            camera.orthographicSize = Mathf.Lerp(startZoom, endZoom, ratio);
+            yield return null;
+        }
+        camera.orthographicSize = endZoom;
+        zoomCoroutine = null;
     }
 }
 

@@ -90,15 +90,23 @@ public class MBStage : MonoBehaviour {
 
         if (input.RB) {
             mbCamera.Rotate(true);
+            return;
         } else if (input.LB) {
             mbCamera.Rotate(false);
+            return;
+        }
+
+        if (input.LT.Pressed) {
+            mbCamera.Zoom(true);
+            return;
         }
 
         if (input.RT.Pressed) {
             mbCamera.Tilt(true);
+            return;
         }
 
-        if (mbCamera.Rotating || mbCamera.Tilting) {
+        if (mbCamera.Rotating || mbCamera.Tilting || mbCamera.Zooming) {
             return;
         }
 
