@@ -206,6 +206,6 @@ static class StageCameraHelper {
             currentPosition.x,
             y,
             currentPosition.z);
-        return result;
+        return result.normalized * 5.0f;
     }
 }
