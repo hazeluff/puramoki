@@ -88,22 +88,28 @@ public class MBStage : MonoBehaviour {
     private void UpdateCursor() {
         input = InputManager.get();
 
-        if (input.RB) {
-            mbCamera.Rotate(true);
-            return;
-        } else if (input.LB) {
-            mbCamera.Rotate(false);
-            return;
+        if (!mbCamera.Rotating) {
+            if (input.RB) {
+                mbCamera.Rotate(true);
+                return;
+            } else if (input.LB) {
+                mbCamera.Rotate(false);
+                return;
+            }
         }
 
-        if (input.LT.Pressed) {
-            mbCamera.Zoom(true);
-            return;
+        if (!mbCamera.Tilting) {
+            if (input.LT.Pressed) {
+                mbCamera.Zoom(true);
+                return;
+            }
         }
 
-        if (input.RT.Pressed) {
-            mbCamera.Tilt(true);
-            return;
+        if (!mbCamera.Zooming) {
+            if (input.RT.Pressed) {
+                mbCamera.Tilt(true);
+                return;
+            }
         }
 
         if (mbCamera.Rotating || mbCamera.Tilting || mbCamera.Zooming) {
@@ -242,7 +248,7 @@ public class MBStage : MonoBehaviour {
     };
 
     private void MoveCursor(int direction) {
-        MapCoordinate newCursorPos = cursorPos + MAP_MOVEMENT_MAP[mbCamera.Rotation][direction];
+        MapCoordinate newCursorPos = cursorPos + MAP_MOVEMENT_MAP[mbCamera.Orientation][direction];
         MoveCursorTo(newCursorPos);
     }
 

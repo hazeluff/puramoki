@@ -6,16 +6,19 @@ using System;
 [ExecuteInEditMode]
 public class MBStageCamera : MonoBehaviour {
     private Transform anchorTransform;
-    private Camera camera;
+    private new Camera camera;
 
     private const float ROTATION_DURATION = 0.5f;
-    public int Rotation { get; private set; }
-    private float[] rotationMap = new float[] { 0f, 90f, 180f, 270f };
-    private float RotationAngle { get { return rotationMap[Rotation]; } }
+    [SerializeField][Range(0, 3)]
+    private int orientation = 0;
+    public int Orientation { get { return orientation; } set { orientation = value; } }
+    private float[] orientationMap = new float[] { 0f, 90f, 180f, 270f };
+    private float RotationAngle { get { return orientationMap[Orientation]; } }
     public bool Rotating { get { return rotationCoroutine != null; } }
     private Coroutine rotationCoroutine;
 
     private const float TILT_DURATION = 0.5f;
+    [SerializeField][Range(0, 3)]
     private int tilt = 1;
     private float[] angleMap = new float[] { 20f, 30f, 45f, 60f };
     private float TiltAngle { get { return angleMap[tilt]; } }
@@ -24,6 +27,7 @@ public class MBStageCamera : MonoBehaviour {
     private Coroutine tiltCoroutine;
 
     private const float ZOOM_DURATION = 0.5f;
+    [SerializeField][Range(0,3)]
     private int zoom = 1;
     private float[] zoomMap = new float[] { 2f, 3f, 4.5f, 6f };
     private float ZoomDistance { get { return zoomMap[zoom]; } }
@@ -32,18 +36,26 @@ public class MBStageCamera : MonoBehaviour {
 
     private Vector3 newPosition;
 
+    void OnValidate() {
+    }
+
     private void Awake() {
         anchorTransform = transform.parent;
         camera = GetComponent<Camera>();
-        Rotation = 0;
+        Orientation = 0;
         newPosition = transform.parent.localPosition;
     }
 
     private void Start() {
-        SetAngle(TiltAngle);
+        SetTilt(TiltAngle);
     }
 
-    void Update () {        
+    void Update () {
+#if UNITY_EDITOR
+        SetTilt(TiltAngle);
+        SetZoom(ZoomDistance);
+        SetRotation(RotationAngle);
+#endif
         MoveCamera();
 	}
 
@@ -55,55 +67,58 @@ public class MBStageCamera : MonoBehaviour {
         this.newPosition = newPosition;
     }
 
-    private void SetAngle(float angle) {
-        transform.localPosition = StageCameraHelper.CalculateNewPosition(transform.localPosition, angle);
-        Vector3 newRotation = transform.localEulerAngles;
-        newRotation.x = angle;
-        transform.localEulerAngles = newRotation;
+    public void Rotate(bool clockwise) {
+        if (rotationCoroutine != null) {
+            return;
+        }
+
+        if (clockwise) {
+            if (++Orientation >= orientationMap.Length) {
+                Orientation = 0;
+            }
+        } else {
+            if (--Orientation < 0) {
+                Orientation = orientationMap.Length - 1;
+            }
+        }
+        rotationCoroutine = StartCoroutine(RotateCamera(clockwise));
     }
 
     IEnumerator RotateCamera(bool clockwise) {
-        Vector3 startRotation = anchorTransform.localEulerAngles;
+        float startRotation = anchorTransform.localEulerAngles.y;
         float targetAngle = RotationAngle;
         if (clockwise) {
-            if (targetAngle < startRotation.y) {
+            if (targetAngle < startRotation) {
                 targetAngle += 360f;
             }
         } else {
-            if (targetAngle > startRotation.y) {
+            if (targetAngle > startRotation) {
                 targetAngle -= 360f;
             }
         }
-        Vector3 targetRotation = new Vector3(startRotation.x, targetAngle, startRotation.z);
+        float targetRotation = targetAngle;
         float time = 0.0f;
         while(time < ROTATION_DURATION) {
             time += Time.deltaTime;
             float ratio = time / ROTATION_DURATION;
             ratio = Mathf.Sin(ratio * Mathf.PI / 2.0f);
-            anchorTransform.localEulerAngles = Vector3.Lerp(startRotation, targetRotation, ratio);
+            SetRotation(Mathf.Lerp(startRotation, targetRotation, ratio));
             yield return null;
         }
-        anchorTransform.localEulerAngles = targetRotation;
+        SetRotation(targetRotation);
         rotationCoroutine = null;
     }
 
-    public void Rotate(bool clockwise) {
-        if (clockwise) {
-            if (++Rotation >= rotationMap.Length) {
-                Rotation = 0;
-            }
-        } else {
-            if (--Rotation < 0) {
-                Rotation = rotationMap.Length - 1;
-            }
-        }
-        if (rotationCoroutine != null) {
-            StopCoroutine(rotationCoroutine);
-        }
-        rotationCoroutine = StartCoroutine(RotateCamera(clockwise));
+    private void SetRotation(float angle) {
+        Vector3 originalRotation = anchorTransform.localEulerAngles;
+        anchorTransform.localEulerAngles = new Vector3(originalRotation.x, angle, originalRotation.z);
     }
 
     public void Tilt(bool up) {
+        if (tiltCoroutine != null) {
+            return;
+        }
+
         if (up) {
             if (++tilt >= angleMap.Length) {
                 tilt = 0;
@@ -113,9 +128,7 @@ public class MBStageCamera : MonoBehaviour {
                 tilt = angleMap.Length - 1;
             }
         }
-        if (tiltCoroutine != null) {
-            StopCoroutine(tiltCoroutine);
-        }
+
         tiltCoroutine = StartCoroutine(TiltCamera());
     }
 
@@ -127,14 +140,25 @@ public class MBStageCamera : MonoBehaviour {
             time += Time.deltaTime;
             float ratio = time / TILT_DURATION;
             ratio = Mathf.Sin(ratio * Mathf.PI / 2.0f);
-            SetAngle(Mathf.Lerp(startAngle, targetAngle, ratio));
+            SetTilt(Mathf.Lerp(startAngle, targetAngle, ratio));
             yield return null;
         }
-        SetAngle(targetAngle);
+        SetTilt(targetAngle);
         tiltCoroutine = null;
     }
 
+    private void SetTilt(float tiltAngle) {
+        transform.localPosition = StageCameraHelper.CalculateNewPosition(transform.localPosition, tiltAngle);
+        Vector3 newRotation = transform.localEulerAngles;
+        newRotation.x = tiltAngle;
+        transform.localEulerAngles = newRotation;
+    }
+
     public void Zoom(bool inward) {
+        if (zoomCoroutine != null) {
+            return;
+        }
+
         if (inward) {
             if (++zoom >= zoomMap.Length) {
                 zoom = 0;
@@ -143,9 +167,6 @@ public class MBStageCamera : MonoBehaviour {
             if (--zoom < 0) {
                 zoom = zoomMap.Length - 1;
             }
-        }
-        if (zoomCoroutine != null) {
-            StopCoroutine(zoomCoroutine);
         }
         zoomCoroutine = StartCoroutine(ZoomCamera());
     }
@@ -158,11 +179,15 @@ public class MBStageCamera : MonoBehaviour {
             time += Time.deltaTime;
             float ratio = time / ZOOM_DURATION;
             ratio = Mathf.Sin(ratio * Mathf.PI / 2.0f);
-            camera.orthographicSize = Mathf.Lerp(startZoom, endZoom, ratio);
+            SetZoom(Mathf.Lerp(startZoom, endZoom, ratio));
             yield return null;
         }
-        camera.orthographicSize = endZoom;
+        SetZoom(endZoom);
         zoomCoroutine = null;
+    }
+
+    private void SetZoom(float zoom) {
+        camera.orthographicSize = zoom;
     }
 }
 
