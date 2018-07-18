@@ -30,12 +30,18 @@ public class MBStage : MonoBehaviour {
     private MapCoordinate selected = null;
 
     private HashSet<MapCoordinate> range;
+
+    private bool InBounds(MapCoordinate coordinate) {
+        return tiles.ContainsKey(coordinate);
+    }
+
     private void ResetRange() {
         foreach (MapCoordinate coord in range) {
             tiles.Get(coord).setDefaultColor();
         }
         range = null;
     }
+
     private bool InRange(MapCoordinate coordinate) {
         if (range == null) {
             return true;
@@ -253,7 +259,7 @@ public class MBStage : MonoBehaviour {
     }
 
     private void MoveCursorTo(MapCoordinate coordinate) {
-        if (InRange(coordinate)) {
+        if (InBounds(coordinate) && InRange(coordinate)) {
             MapCoordinate oldPos = cursorPos;
             this.cursorPos = coordinate;
             cursor.localPosition = cursorPos.Vector3 + (Vector3.up * Heights[cursorPos]);
