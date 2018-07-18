@@ -34,11 +34,8 @@ public class MBStageCamera : MonoBehaviour {
     public bool Zooming { get { return zoomCoroutine != null; } }
     private Coroutine zoomCoroutine;
 
-    private Vector3 newPosition;
-
-    void OnValidate() {
-    }
-
+    private Vector3 newPosition = Vector3.zero;
+    
     private void Awake() {
         anchorTransform = transform.parent;
         camera = GetComponent<Camera>();
@@ -57,7 +54,7 @@ public class MBStageCamera : MonoBehaviour {
         SetRotation(RotationAngle);
 #endif
         MoveCamera();
-	}
+    }
 
     private void MoveCamera() {
         transform.parent.localPosition = Vector3.Lerp(transform.parent.localPosition, newPosition, 0.5f);
