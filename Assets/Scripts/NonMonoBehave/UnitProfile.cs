@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
-[CreateAssetMenu(fileName = "Unit", menuName = "Stage/Unit", order = 1)]
-public class Unit : ScriptableObject, IUnit
+[CreateAssetMenu(fileName = "UnitProfile", menuName = "Unit", order = 1)]
+public class UnitProfile : ScriptableObject, IUnitProfile
 {
     // Underlying serializable fields
     [SerializeField]
@@ -14,6 +14,8 @@ public class Unit : ScriptableObject, IUnit
     private int _expCurrent;
     [SerializeField]
     private int _hp;
+    [SerializeField]
+    private int _currentHp;
     [SerializeField]
     private int _mp;
     [SerializeField]
@@ -43,40 +45,25 @@ public class Unit : ScriptableObject, IUnit
         get { throw new System.NotImplementedException(); } // Derive from level curve of class
     }
 
+    public void GainExp(int exp) {
+        throw new System.NotImplementedException();
+    }
+
     public int HP { get { return _hp; } set { _hp = value; } }
-    public int CurrentHP { get { return _hp; } set { _hp = value; } }
     public int MP { get { return _mp; } set { _mp = value; } }
-    public int CurrentMP { get { return _mp; } set { _mp = value; } }
     public int Atk { get { return _atk; } set { _atk = value; } }
-    public int CurrentAtk { get { return _atk; } set { _atk = value; } }
     public int Def { get { return _def; } set { _def = value; } }
-    public int CurrentDef { get { return _def; } set { _def = value; } }
     public int Int { get { return _int; } set { _int = value; } }
-    public int CurrentInt { get { return _int; } set { _int = value; } }
     public int Res { get { return _res; } set { _res = value; } }
-    public int CurrentRes { get { return _res; } set { _res = value; } }
     public int Hit { get { return _hit; } set { _hit = value; } }
-    public int CurrentHit { get { return _hit; } set { _hit = value; } }
     public int Spd { get { return _spd; } set { _spd = value; } }
-    public int CurrentSpd { get { return _spd; } set { _spd = value; } }
     public int Mv { get { return _mv; } set { _mv = value; } }
-    public int CurrentMv { get { return _mv; } set { _mv = value; } }
 
     public IWeapon Weapon { get { return _weapon; } set { _weapon = value; } }
 
     public IEquipment[] Equipments { get { return _equipments; } set { _equipments = value; } }
 
-    public float ElemRes(Element element)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public float CurrentElemRes(Element element) {
-        throw new System.NotImplementedException();
-    }
-
-    public void GainExp(int exp)
-    {
+    public float ElemRes(Element element) {
         throw new System.NotImplementedException();
     }
 }

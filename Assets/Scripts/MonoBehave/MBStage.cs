@@ -173,7 +173,7 @@ public class MBStage : MonoBehaviour {
     public void StartMoveSelection() {
         ChangeState(ControlState.UNIT_MOVE);
         unitMenu.SetActive(false);
-        range = FindRange(units.Get(selected).Unit, selected);
+        range = FindRange(units.Get(selected), selected);
         foreach (MapCoordinate coord in range) {
             tiles.Get(coord).setMoveRangeColor();
         }
@@ -186,14 +186,14 @@ public class MBStage : MonoBehaviour {
         OpenUnitMenu();
     }
 
-    private HashSet<MapCoordinate> FindRange(IUnit unit, MapCoordinate origin) {
-        int unitMove = unit.CurrentMv;
+    private HashSet<MapCoordinate> FindRange(IMBUnit mbUnit, MapCoordinate origin) {
+        int unitMove = mbUnit.Unit.Mv_Current;
         HashSet<MapCoordinate> range = new HashSet<MapCoordinate>();
-        FindRange(unit, range, unitMove, origin);
+        FindRange(mbUnit, range, unitMove, origin);
         return range;
     }
 
-    private void FindRange(IUnit unit, HashSet<MapCoordinate> listToAddTo, int mvLeft, MapCoordinate currentNode) {
+    private void FindRange(IMBUnit mbUnit, HashSet<MapCoordinate> listToAddTo, int mvLeft, MapCoordinate currentNode) {
         if (!tiles.ContainsKey(currentNode)) {
             return;
         }
@@ -210,7 +210,7 @@ public class MBStage : MonoBehaviour {
         listToAddTo.Add(currentNode);
 
         if (listToAddTo.Count > 0) {
-            mvLeft -= currentTile.MoveCost(unit);
+            mvLeft -= currentTile.MoveCost(mbUnit.Unit);
         }
 
         if (mvLeft < 0) {
@@ -220,7 +220,7 @@ public class MBStage : MonoBehaviour {
         listToAddTo.Add(currentNode);
         foreach (MapCoordinate direction in new MapCoordinate[] { MapCoordinate.UP, MapCoordinate.DOWN, MapCoordinate.LEFT, MapCoordinate.RIGHT }) {
             MapCoordinate adjacentNode = currentNode + direction;
-            FindRange(unit, listToAddTo, mvLeft, adjacentNode);
+            FindRange(mbUnit, listToAddTo, mvLeft, adjacentNode);
         }
     }
 

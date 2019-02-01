@@ -8,7 +8,7 @@ public class Tile : ScriptableObject, ITile {
     public bool Traversable { get { return traversable; } }
     [SerializeField]
     private int moveCost;
-    public int MoveCost(IUnit unit) {
+    public int MoveCost(IStageUnit unit) {
         return moveCost;
     }
     public List<ITileEffect> Effects { get { return new List<ITileEffect>(); } }

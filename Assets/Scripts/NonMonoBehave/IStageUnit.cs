@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
 
-public interface IStageUnit : IUnit {
-    MapCoordinate Position { get; }
+public interface IStageUnit {
 
-    List<IDamageInstance> DamageInstance { get; }
-    List<IUserStatusEffect> Status { get; }
+    IUnitProfile UnitProfile { get; }
+
+    MapCoordinate Position { get; }
+    
+    List<IUserStatusEffect> StatusEffects { get; }
 
     int HP_Current { get; }
     int MP_Current { get; }
@@ -16,4 +18,8 @@ public interface IStageUnit : IUnit {
     int Spd_Current { get; }
     int Mv_Current { get; }
     float ElemRes_Current(Element element);
+
+    // Actions
+    void Attack(IStageUnit target);
+    void ReceiveAttack(IAttackInstance damage);
 }

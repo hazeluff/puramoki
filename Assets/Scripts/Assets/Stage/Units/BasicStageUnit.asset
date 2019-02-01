@@ -9,18 +9,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f0f8e092b6184a247b962fc6e87873fb, type: 3}
-  m_Name: BasicUnit
+  m_Name: StageUnit
   m_EditorClassIdentifier: 
-  _name: Unit1
-  _level: 1
-  _class: 0
-  _expCurrent: 0
-  _hp: 10
-  _mp: 10
-  _atk: 10
-  _def: 10
-  _int: 10
-  _res: 10
-  _hit: 10
-  _spd: 10
-  _mv: 2
+  _unitProfile: {fileID: 0}
+  _currentHP: 0
