@@ -31,6 +31,15 @@ public class MBStage : MonoBehaviour {
 
     private HashSet<MapCoordinate> range;
 
+    public bool AnySelected() {
+        return selected != null;
+    }
+
+    public IStageUnit GetSelected() {
+        return units.Get(selected).Unit;
+    }
+
+
     private bool InBounds(MapCoordinate coordinate) {
         return tiles.ContainsKey(coordinate);
     }

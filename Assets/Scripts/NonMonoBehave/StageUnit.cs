@@ -47,6 +47,8 @@ public class StageUnit : ScriptableObject, IStageUnit {
         }
     }
 
+
+
     void Awake() {
         if (_currentHP == UNINITIALIZED_START_HP) {
             _currentHP = UnitProfile.HP;
