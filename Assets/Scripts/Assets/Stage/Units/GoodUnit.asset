@@ -4,12 +4,14 @@
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f0f8e092b6184a247b962fc6e87873fb, type: 3}
-  m_Name: BasicStageUnit
+  m_Name: GoodUnit
   m_EditorClassIdentifier: 
   _unitProfile: {fileID: 11400000, guid: a27a66be977b46e4c9c043d32d0c20f6, type: 2}
-  _currentHP: -1
+  _factionOverride: {fileID: 11400000, guid: c41d0cf2aa82d294bb509ff678dbbd1f, type: 2}
+  _currentHP: 10

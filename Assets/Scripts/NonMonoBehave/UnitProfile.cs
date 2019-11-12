@@ -11,11 +11,11 @@ public class UnitProfile : ScriptableObject, IUnitProfile
     [SerializeField]
     private UnitClass _class;
     [SerializeField]
+    private Faction _faction;
+    [SerializeField]
     private int _expCurrent;
     [SerializeField]
     private int _hp;
-    [SerializeField]
-    private int _currentHp;
     [SerializeField]
     private int _mp;
     [SerializeField]
@@ -40,6 +40,7 @@ public class UnitProfile : ScriptableObject, IUnitProfile
     public string Name { get { return _name; } set { _name = value; } }
     public int Level { get { return _level; } set { _level = value; } }
     public UnitClass Class { get { return _class; } set { _class = value; } }
+    public Faction Faction { get { return _faction; } set { _faction = value; } }
     public int ExpCurrent { get { return _expCurrent; } set { _expCurrent = value; } }
     public int ExpToNext {
         get { throw new System.NotImplementedException(); } // Derive from level curve of class

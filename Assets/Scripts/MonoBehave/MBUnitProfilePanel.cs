@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class MBUnitProfilePanel : MonoBehaviour {
@@ -9,6 +10,10 @@ public class MBUnitProfilePanel : MonoBehaviour {
     private GameObject panel;
     [SerializeField]
     private Text unitName;
+    [SerializeField]
+    private Text unitHP;
+    [SerializeField]
+    private Text unitFaction;
 
     private int selectedUnitHash;
 
@@ -22,6 +27,8 @@ public class MBUnitProfilePanel : MonoBehaviour {
         if (selectedUnitHash != newSelectedUnitHash) {
             selectedUnitHash = newSelectedUnitHash;
             unitName.text = selectedUnit.UnitProfile.Name;
+            unitHP.text = String.Format("{0} / {1}", selectedUnit.c_HP, selectedUnit.UnitProfile.HP);
+            unitFaction.text = selectedUnit.Faction.Name;
         }
     }
 }

@@ -21,6 +21,9 @@ public class MBUnit : MonoBehaviour, IMBUnit {
     }
 
     void Update() {
+        if (stage == null) {
+            return;
+        }
         setColor(stage.IsSelected(this) ? Color.magenta : Color.white);
     }
 

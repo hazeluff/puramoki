@@ -8,6 +8,8 @@ public class StageUnit : ScriptableObject, IStageUnit {
     // Underlying serializable fields
     [SerializeField]
     private UnitProfile _unitProfile;
+    [SerializeField]
+    private Faction _factionOverride;
 
     [SerializeField]
     private MapCoordinate _position;
@@ -18,21 +20,22 @@ public class StageUnit : ScriptableObject, IStageUnit {
     private int _currentHP = UNINITIALIZED_START_HP;
 
     public IUnitProfile UnitProfile { get { return _unitProfile; } }
+    public Faction Faction { get { return _factionOverride != null ? _factionOverride : _unitProfile.Faction; } }
 
     public MapCoordinate Position { get { return _position; } }
 
     public List<IUserStatusEffect> StatusEffects { get { throw new System.NotImplementedException(); } }
-    public int HP_Current { get { return _currentHP; } }
-    public int MP_Current { get { return _unitProfile.MP; } }
-    public int Atk_Current { get { return _unitProfile.Atk; } }
-    public int Def_Current { get { return _unitProfile.Def; } }
-    public int Int_Current { get { return _unitProfile.Int; } }
-    public int Res_Current { get { return _unitProfile.Res; } }
-    public int Hit_Current { get { return _unitProfile.Hit; } }
-    public int Spd_Current { get { return _unitProfile.Spd; } }
-    public int Mv_Current { get { return _unitProfile.Mv; } }
+    public int c_HP { get { return _currentHP; } }
+    public int c_MP { get { return _unitProfile.MP; } }
+    public int c_Atk { get { return _unitProfile.Atk; } }
+    public int c_Def { get { return _unitProfile.Def; } }
+    public int c_Int { get { return _unitProfile.Int; } }
+    public int c_Res { get { return _unitProfile.Res; } }
+    public int c_Hit { get { return _unitProfile.Hit; } }
+    public int c_Spd { get { return _unitProfile.Spd; } }
+    public int c_Mv { get { return _unitProfile.Mv; } }
 
-    public float ElemRes_Current(Element element) {
+    public float c_ElemRes(Element element) {
         throw new System.NotImplementedException();
     }
 
@@ -46,8 +49,6 @@ public class StageUnit : ScriptableObject, IStageUnit {
             _currentHP = 0;
         }
     }
-
-
 
     void Awake() {
         if (_currentHP == UNINITIALIZED_START_HP) {

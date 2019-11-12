@@ -16,10 +16,11 @@ public class MBStage : MonoBehaviour {
 
     public ControlState State { get; private set; }
 
+    FactionDiplomacy FactionDiplomacy;
     private ReversableDictionary<MapCoordinate, MBTile> tiles = new ReversableDictionary<MapCoordinate, MBTile>();
     public Dictionary<MapCoordinate, int> Heights { get; private set; }
-
     private ReversableDictionary<MBUnit, MapCoordinate> units = new ReversableDictionary<MBUnit, MapCoordinate>();
+
 
     public bool IsOccupied (MapCoordinate coordinate) {
         return units.ContainsKey(coordinate);
@@ -81,13 +82,21 @@ public class MBStage : MonoBehaviour {
             tile.setStage(this);
         }
 
+        // Register Factions
+        HashSet<Faction> factions = new HashSet<Faction>();
+        foreach (MBUnit mbUnit in FindObjectsOfType<MBUnit>()) {
+            factions.Add(mbUnit.Unit.Faction);
+        }
+
+        FactionDiplomacy = new FactionDiplomacy(factions);
+
         // Register Units
-        MBUnit[] unitList = FindObjectsOfType<MBUnit>();
-        foreach(MBUnit mbUnit in unitList) {
+        foreach (MBUnit mbUnit in FindObjectsOfType<MBUnit>()) {
             Vector3 unitPos = mbUnit.transform.position;
             MapCoordinate mapCoordinate = new MapCoordinate(Mathf.RoundToInt(unitPos.x), Mathf.RoundToInt(unitPos.z));
             units.Add(mbUnit, mapCoordinate);
             mbUnit.setStage(this);
+            FactionDiplomacy.RegisterUnit(mbUnit);
         }
     }
 
@@ -196,7 +205,7 @@ public class MBStage : MonoBehaviour {
     }
 
     private HashSet<MapCoordinate> FindRange(IMBUnit mbUnit, MapCoordinate origin) {
-        int unitMove = mbUnit.Unit.Mv_Current;
+        int unitMove = mbUnit.Unit.c_Mv;
         HashSet<MapCoordinate> range = new HashSet<MapCoordinate>();
         FindRange(mbUnit, range, unitMove, origin);
         return range;

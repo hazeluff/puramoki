@@ -4,7 +4,8 @@
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
@@ -14,9 +15,9 @@ MonoBehaviour:
   _name: BasicUnit
   _level: 1
   _class: 0
+  _faction: {fileID: 11400000, guid: f939dcd2d8d892746ba2ed9713efdb8c, type: 2}
   _expCurrent: 0
   _hp: 10
-  _currentHp: 10
   _mp: 10
   _atk: 5
   _def: 5

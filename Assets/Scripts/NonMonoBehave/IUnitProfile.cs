@@ -2,6 +2,7 @@
     string Name { get; }
     int Level { get; }
     UnitClass Class { get; }
+    Faction Faction { get; }
     int ExpCurrent { get; }
     int ExpToNext { get; }
     void GainExp(int exp);
