@@ -26,11 +26,15 @@ public class MBTile : MonoBehaviour {
     }
 
     public void setSelectedColor() {
-        setColor(Color.red);
+        setColor(Color.green);
     }
 
     public void setMoveRangeColor() {
         setColor(Color.cyan);
+    }
+
+    public void setAttackRangeColor() {
+        setColor(Color.red);
     }
 
     private void setColor(Color color) {
