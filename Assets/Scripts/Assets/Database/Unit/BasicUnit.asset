@@ -26,3 +26,4 @@ MonoBehaviour:
   _hit: 5
   _spd: 5
   _mv: 3
+  _weapon: {fileID: 11400000, guid: ae1aaed3eba2cf549873f32904d298b8, type: 2}

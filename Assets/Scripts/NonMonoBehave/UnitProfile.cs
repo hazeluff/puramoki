@@ -5,7 +5,7 @@ public class UnitProfile : ScriptableObject, IUnitProfile
 {
     // Underlying serializable fields
     [SerializeField]
-    string _name;
+    private string _name;
     [SerializeField]
     private int _level;
     [SerializeField]
@@ -33,7 +33,7 @@ public class UnitProfile : ScriptableObject, IUnitProfile
     [SerializeField]
     private int _mv;
     [SerializeField]
-    private IWeapon _weapon;
+    private Weapon _weapon;
     [SerializeField]
     private IEquipment[] _equipments;
 
@@ -60,7 +60,7 @@ public class UnitProfile : ScriptableObject, IUnitProfile
     public int Spd { get { return _spd; } set { _spd = value; } }
     public int Mv { get { return _mv; } set { _mv = value; } }
 
-    public IWeapon Weapon { get { return _weapon; } set { _weapon = value; } }
+    public Weapon Weapon { get { return _weapon; } set { _weapon = value; } }
 
     public IEquipment[] Equipments { get { return _equipments; } set { _equipments = value; } }
 

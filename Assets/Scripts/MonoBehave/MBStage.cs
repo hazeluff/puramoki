@@ -257,17 +257,22 @@ public class MBStage : MonoBehaviour {
     }
 
     private HashSet<MapCoordinate> FindAttackRange(IMBUnit mbUnit, MapCoordinate origin) {
-        int absAttackRange = mbUnit.Unit.UnitProfile.Weapon.Range;
+        int maxAttackRange = mbUnit.Unit.UnitProfile.Weapon.RangeMax;
+        int minAttackRange = mbUnit.Unit.UnitProfile.Weapon.RangeMin;
+        Debug.Log("absAttackRange=" + maxAttackRange);
         HashSet<MapCoordinate> range = new HashSet<MapCoordinate>();
-        for (int xOffset = -absAttackRange; xOffset <= absAttackRange; xOffset++) {
-            int yAbsRange = absAttackRange - Math.Abs(xOffset);
-            if (yAbsRange > 0) {
-                for (int yOffset = -yAbsRange; yOffset <= yAbsRange; yOffset++) {
-                    MapCoordinate offset = new MapCoordinate(xOffset, yOffset);
-                    MapCoordinate tile = origin + offset;
-                    if (tiles.ContainsKey(origin)) {
-                        range.Add(tile);
-                    }
+        for (int xOffset = -maxAttackRange; xOffset <= maxAttackRange; xOffset++) {
+            int yAbsRange = maxAttackRange - Math.Abs(xOffset);
+            Debug.Log("xOffset=" + xOffset + "yAbsRange=" + yAbsRange);
+            for (int yOffset = -yAbsRange; yOffset <= yAbsRange; yOffset++) {
+                MapCoordinate offset = new MapCoordinate(xOffset, yOffset);
+                MapCoordinate tile = origin + offset;
+                if (tiles.ContainsKey(tile) &&
+                    offset != new MapCoordinate(0,0) &&
+                    (Math.Abs(xOffset) + Math.Abs(yOffset) >= minAttackRange)) {
+                    Debug.Log("tile=" + tile);
+
+                    range.Add(tile);
                 }
             }
         }

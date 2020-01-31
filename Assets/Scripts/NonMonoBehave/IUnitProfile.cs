@@ -24,6 +24,6 @@
     float ElemRes(Element element);
 
     // Gear
-    IWeapon Weapon { get; }
+    Weapon Weapon { get; }
     IEquipment[] Equipments { get; }
 }
