@@ -39,8 +39,12 @@ public class StageUnit : ScriptableObject, IStageUnit {
         throw new System.NotImplementedException();
     }
 
-    public void setHP(int hp) {
-        _currentHP = hp;
+    public void Init() {
+        if (overrideHP == StageUnit.UNINITIALIZED_START_HP) {
+            _currentHP = UnitProfile.HP;
+        } else {      
+            _currentHP = overrideHP;
+        }
     }
 
     // Actions

@@ -15,14 +15,7 @@ public class MBUnit : MonoBehaviour, IMBUnit {
     private void Awake() {
         _renderer = GetComponent<MeshRenderer>();
 
-        switch (_unit.overrideHP) {
-            case StageUnit.UNINITIALIZED_START_HP:
-                _unit.setHP(_unit.UnitProfile.HP);
-                break;
-            default:
-                _unit.setHP(_unit.overrideHP);
-                break;
-        }
+        _unit.Init();
     }
 
     public void setStage(MBStage stage) {
