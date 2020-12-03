@@ -22,5 +22,5 @@ public interface IStageUnit {
 
     // Actions
     void Attack(IStageUnit target);
-    void ReceiveAttack(IAttackInstance damage);
+    void ReceiveAttack(IDamageSource damage);
 }

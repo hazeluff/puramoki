@@ -17,6 +17,10 @@ public class MBStage : MonoBehaviour {
 
     public ControlState State { get; private set; }
 
+    public enum ControlState {
+        DESELECTED, UNIT_MENU, UNIT_MOVE, UNIT_ATTACK, WAIT
+    }
+
     FactionDiplomacy FactionDiplomacy;
     private ReversableDictionary<MapCoordinate, MBTile> tiles = new ReversableDictionary<MapCoordinate, MBTile>();
     public Dictionary<MapCoordinate, int> Heights { get; private set; }
@@ -62,10 +66,6 @@ public class MBStage : MonoBehaviour {
 
     public bool IsSelected(MBUnit unit) {        
         return selected != null && units.Get(selected) == unit;
-    }
-
-    public enum ControlState {
-        DESELECTED, UNIT_MENU, UNIT_MOVE, UNIT_ATTACK, WAIT
     }
 
 	void Awake () {
@@ -169,7 +169,16 @@ public class MBStage : MonoBehaviour {
                 }
                 break;
             case ControlState.UNIT_ATTACK:
-                // TODO
+                if (input.A) {
+                    if (!IsOccupied(cursorPos) && InRange(cursorPos)) {
+                        ClickUnit(units.Get(cursorPos));
+                        return;
+                    }
+                } else if (input.B) {
+                    CancelRangeSelection();
+                    OpenUnitMenu();
+                    return;
+                }
                 break;
             default:
                 break;
@@ -259,19 +268,15 @@ public class MBStage : MonoBehaviour {
     private HashSet<MapCoordinate> FindAttackRange(IMBUnit mbUnit, MapCoordinate origin) {
         int maxAttackRange = mbUnit.Unit.UnitProfile.Weapon.RangeMax;
         int minAttackRange = mbUnit.Unit.UnitProfile.Weapon.RangeMin;
-        Debug.Log("absAttackRange=" + maxAttackRange);
         HashSet<MapCoordinate> range = new HashSet<MapCoordinate>();
         for (int xOffset = -maxAttackRange; xOffset <= maxAttackRange; xOffset++) {
             int yAbsRange = maxAttackRange - Math.Abs(xOffset);
-            Debug.Log("xOffset=" + xOffset + "yAbsRange=" + yAbsRange);
             for (int yOffset = -yAbsRange; yOffset <= yAbsRange; yOffset++) {
                 MapCoordinate offset = new MapCoordinate(xOffset, yOffset);
                 MapCoordinate tile = origin + offset;
                 if (tiles.ContainsKey(tile) &&
                     offset != new MapCoordinate(0,0) &&
                     (Math.Abs(xOffset) + Math.Abs(yOffset) >= minAttackRange)) {
-                    Debug.Log("tile=" + tile);
-
                     range.Add(tile);
                 }
             }
@@ -341,31 +346,39 @@ public class MBStage : MonoBehaviour {
             case ControlState.UNIT_MOVE:
                 if (InRange(coordinate)) {
                     MoveUnit(units.Get(selected), new List<MapCoordinate>() { selected, coordinate });
-                } else {
-                    CancelRangeSelection();
-                    CancelUnitMenu();
                 }
                 MoveCursorTo(coordinate);
                 break;
-            case ControlState.UNIT_MENU:
-                if (InRange(coordinate)) {
-                    OpenUnitMenu();
-                } else {
-                    CancelUnitMenu();
+            case ControlState.UNIT_ATTACK:
+                if (!IsOccupied(cursorPos) && InRange(cursorPos)) {
+                    ClickUnit(units.Get(cursorPos));                
                 }
                 MoveCursorTo(coordinate);
                 break;
-
             default:
                 break;
         }
-        MoveCursorTo(coordinate);
     }
 
     public void ClickUnit(MBUnit unit) {
-        MoveCursorTo(units.Get(unit));
-        if(State == ControlState.DESELECTED || State == ControlState.UNIT_MENU) {
-            OpenUnitMenu();
+        MapCoordinate pos = units.Get(unit);
+        MoveCursorTo(pos);
+
+        if (!InRange(pos)) {
+            return;
+        }
+
+        switch (State) {
+            case ControlState.DESELECTED:
+                OpenUnitMenu();
+                break;
+            case ControlState.UNIT_ATTACK:
+                GetSelected().Attack(unit.Unit);
+                CancelRangeSelection();
+                CancelUnitMenu();
+                break;
+            default:
+                break;
         }
     }
 

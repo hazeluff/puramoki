@@ -16,8 +16,8 @@ public class StageUnit : ScriptableObject, IStageUnit {
 
     [SerializeField]
     private List<IUserStatusEffect> _statusEffects;
-    [SerializeField]
-    private int _currentHP = UNINITIALIZED_START_HP;
+    public int overrideHP = UNINITIALIZED_START_HP;
+    private int _currentHP;
 
     public IUnitProfile UnitProfile { get { return _unitProfile; } }
     public Faction Faction { get { return _factionOverride != null ? _factionOverride : _unitProfile.Faction; } }
@@ -39,20 +39,18 @@ public class StageUnit : ScriptableObject, IStageUnit {
         throw new System.NotImplementedException();
     }
 
+    public void setHP(int hp) {
+        _currentHP = hp;
+    }
+
     // Actions
     public void Attack(IStageUnit target) {
-        target.ReceiveAttack(new BasicAttackInstance(this, UnitProfile.Atk));
+        target.ReceiveAttack(new BasicAttackInstance(c_Atk, DamageType.PHYSICAL));
     }
 
-    public void ReceiveAttack(IAttackInstance attack) {
-        if ((this._currentHP = this._currentHP - attack.Damage) < 0) {
+    public void ReceiveAttack(IDamageSource source) {
+        if ((this._currentHP = this._currentHP - source.Damage) < 0) {
             _currentHP = 0;
-        }
-    }
-
-    void Awake() {
-        if (_currentHP == UNINITIALIZED_START_HP) {
-            _currentHP = UnitProfile.HP;
         }
     }
 }

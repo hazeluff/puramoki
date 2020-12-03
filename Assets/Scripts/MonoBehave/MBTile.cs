@@ -42,8 +42,6 @@ public class MBTile : MonoBehaviour {
     }
 
     void OnMouseUpAsButton() {
-        if (stage.State != MBStage.ControlState.UNIT_MENU) {
-            stage.ClickTile(this);
-        }
+        stage.ClickTile(this);
     }
 }

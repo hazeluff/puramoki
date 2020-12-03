@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _unitProfile: {fileID: 11400000, guid: a27a66be977b46e4c9c043d32d0c20f6, type: 2}
   _factionOverride: {fileID: 11400000, guid: 6cf4d69ea01b50146948ab2d14558e02, type: 2}
-  _currentHP: 8
+  overrideHP: -1
