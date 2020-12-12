@@ -2,7 +2,7 @@
 
 public interface IStageUnit {
 
-    IUnitProfile UnitProfile { get; }
+    IUnitProfile Profile { get; }
     Faction Faction { get; }
 
     MapCoordinate Position { get; }

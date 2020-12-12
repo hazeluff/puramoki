@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class InputManager : MonoBehaviour {
     private static CustomLogger LOGGER = new CustomLogger(typeof(InputManager).ToString());
@@ -18,7 +19,7 @@ public class InputManager : MonoBehaviour {
     public bool AnyButton { get { return A || B || X || Y || RB || LB || BACK || START; } }
     public bool AnyInput { get { return A || B || X || Y || RB || LB || BACK || START || DPAD.AnyInput || LEFT_STICK.AnyInput || RIGHT_STICK.AnyInput || RT.Pressed || LT.Pressed; } }
 
-    public readonly Stick KEYBOARD_STICK = new KeyboardStick();
+    public readonly Stick D_PAD = new KeyboardStick();
     public readonly AnalogueStick LEFT_STICK = new AnalogueStick("Horizontal", "Vertical");
     public readonly AnalogueStick RIGHT_STICK = new AnalogueStick("R_Horizontal", "R_Vertical");
     public readonly Stick DPAD = new XBoxDPad("D_Horizontal", "D_Vertical");
@@ -51,7 +52,7 @@ public class InputManager : MonoBehaviour {
     
     public bool BACK { get { return Input.GetKeyDown("joystick 1 button 10"); } }
     public bool START { get { return Input.GetKeyDown("joystick 1 button 9"); } }
-#endif    
+#endif
 
     void Awake() {
         if (input == null) {

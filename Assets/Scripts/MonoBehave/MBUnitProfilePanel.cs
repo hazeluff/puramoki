@@ -26,8 +26,8 @@ public class MBUnitProfilePanel : MonoBehaviour {
         int newSelectedUnitHash = selectedUnit.GetHashCode();
         if (selectedUnitHash != newSelectedUnitHash) {
             selectedUnitHash = newSelectedUnitHash;
-            unitName.text = selectedUnit.UnitProfile.Name;
-            unitHP.text = String.Format("{0} / {1}", selectedUnit.c_HP, selectedUnit.UnitProfile.HP);
+            unitName.text = selectedUnit.Profile.Name;
+            unitHP.text = String.Format("{0} / {1}", selectedUnit.c_HP, selectedUnit.Profile.HP);
             unitFaction.text = selectedUnit.Faction.Name;
         }
     }

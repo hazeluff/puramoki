@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0f8e092b6184a247b962fc6e87873fb, type: 3}
   m_Name: BadUnit
   m_EditorClassIdentifier: 
-  _unitProfile: {fileID: 11400000, guid: a27a66be977b46e4c9c043d32d0c20f6, type: 2}
-  _factionOverride: {fileID: 11400000, guid: 6cf4d69ea01b50146948ab2d14558e02, type: 2}
+  _profile: {fileID: 11400000, guid: 40d3a48bd31723f409a186cc1210607d, type: 2}
+  _faction: {fileID: 11400000, guid: 6cf4d69ea01b50146948ab2d14558e02, type: 2}
   overrideHP: -1

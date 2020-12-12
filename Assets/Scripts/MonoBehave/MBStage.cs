@@ -64,7 +64,7 @@ public class MBStage : MonoBehaviour {
         return range.Contains(coordinate);
     }
 
-    public bool IsSelected(MBUnit unit) {        
+    public bool IsSelected(MBUnit unit) {
         return selected != null && units.Get(selected) == unit;
     }
 
@@ -160,6 +160,8 @@ public class MBStage : MonoBehaviour {
                 if (input.A) {
                     if (!IsOccupied(cursorPos) && InRange(cursorPos)) {
                         MoveUnit(units.Get(selected), new List<MapCoordinate>() { selected, cursorPos });
+                        CancelRangeSelection();
+                        OpenUnitMenu();
                         return;
                     }
                 } else if (input.B) {
@@ -266,8 +268,8 @@ public class MBStage : MonoBehaviour {
     }
 
     private HashSet<MapCoordinate> FindAttackRange(IMBUnit mbUnit, MapCoordinate origin) {
-        int maxAttackRange = mbUnit.Unit.UnitProfile.Weapon.RangeMax;
-        int minAttackRange = mbUnit.Unit.UnitProfile.Weapon.RangeMin;
+        int maxAttackRange = mbUnit.Unit.Profile.Weapon.RangeMax;
+        int minAttackRange = mbUnit.Unit.Profile.Weapon.RangeMin;
         HashSet<MapCoordinate> range = new HashSet<MapCoordinate>();
         for (int xOffset = -maxAttackRange; xOffset <= maxAttackRange; xOffset++) {
             int yAbsRange = maxAttackRange - Math.Abs(xOffset);
@@ -344,13 +346,14 @@ public class MBStage : MonoBehaviour {
                 MoveCursorTo(coordinate);
                 break;
             case ControlState.UNIT_MOVE:
-                if (InRange(coordinate)) {
-                    MoveUnit(units.Get(selected), new List<MapCoordinate>() { selected, coordinate });
-                }
                 MoveCursorTo(coordinate);
+                if (InRange(coordinate) && !IsOccupied(cursorPos)) {
+                    MoveUnit(units.Get(selected), new List<MapCoordinate>() { selected, coordinate });
+
+                }
                 break;
             case ControlState.UNIT_ATTACK:
-                if (!IsOccupied(cursorPos) && InRange(cursorPos)) {
+                if (InRange(cursorPos) && IsOccupied(cursorPos)) {
                     ClickUnit(units.Get(cursorPos));                
                 }
                 MoveCursorTo(coordinate);
@@ -362,17 +365,16 @@ public class MBStage : MonoBehaviour {
 
     public void ClickUnit(MBUnit unit) {
         MapCoordinate pos = units.Get(unit);
-        MoveCursorTo(pos);
-
-        if (!InRange(pos)) {
-            return;
-        }
-
         switch (State) {
             case ControlState.DESELECTED:
+                MoveCursorTo(pos);
                 OpenUnitMenu();
                 break;
             case ControlState.UNIT_ATTACK:
+                MoveCursorTo(pos);
+                if (!InRange(pos)) {
+                    return;
+                }
                 GetSelected().Attack(unit.Unit);
                 CancelRangeSelection();
                 CancelUnitMenu();

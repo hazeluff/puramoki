@@ -10,19 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1832bf64f0b1e3d4fb18ecec48c896b5, type: 3}
-  m_Name: BasicUnit
+  m_Name: Rocketer
   m_EditorClassIdentifier: 
-  _name: BasicUnit
+  _name: Rocketer
   _level: 1
-  _class: 0
+  _class: 1
   _expCurrent: 0
-  _hp: 10
-  _mp: 10
-  _atk: 5
-  _def: 5
+  _hp: 15
+  _mp: 7
+  _atk: 6
+  _def: 4
   _int: 5
   _res: 5
-  _hit: 5
-  _spd: 5
-  _mv: 3
-  _weapon: {fileID: 11400000, guid: dbe37426650eb7c449704987cfd8338b, type: 2}
+  _hit: 3
+  _spd: 3
+  _mv: 2
+  _weapon: {fileID: 11400000, guid: ae1aaed3eba2cf549873f32904d298b8, type: 2}

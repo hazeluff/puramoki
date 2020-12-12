@@ -10,19 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1832bf64f0b1e3d4fb18ecec48c896b5, type: 3}
-  m_Name: BasicUnit
+  m_Name: Fighter
   m_EditorClassIdentifier: 
-  _name: BasicUnit
+  _name: Fighter
   _level: 1
   _class: 0
   _expCurrent: 0
-  _hp: 10
-  _mp: 10
-  _atk: 5
-  _def: 5
-  _int: 5
-  _res: 5
-  _hit: 5
-  _spd: 5
+  _hp: 20
+  _mp: 5
+  _atk: 7
+  _def: 6
+  _int: 4
+  _res: 4
+  _hit: 4
+  _spd: 4
   _mv: 3
   _weapon: {fileID: 11400000, guid: dbe37426650eb7c449704987cfd8338b, type: 2}
