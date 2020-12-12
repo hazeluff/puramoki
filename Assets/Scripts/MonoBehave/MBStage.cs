@@ -204,11 +204,13 @@ public class MBStage : MonoBehaviour {
     }
 
     public void StartMoveSelection() {
-        ChangeState(ControlState.UNIT_MOVE);
-        unitMenu.SetActive(false);
-        range = FindMoveRange(units.Get(selected), selected);
-        foreach (MapCoordinate coord in range) {
-            tiles.Get(coord).setMoveRangeColor();
+        if (!units.Get(selected).Moved) {
+            ChangeState(ControlState.UNIT_MOVE);
+            unitMenu.SetActive(false);
+            range = FindMoveRange(units.Get(selected), selected);
+            foreach (MapCoordinate coord in range) {
+                tiles.Get(coord).setMoveRangeColor();
+            }
         }
     }
 
@@ -216,7 +218,6 @@ public class MBStage : MonoBehaviour {
         cursorPos = selected;
         MoveCursorTo(cursorPos);
         ResetRange();
-        OpenUnitMenu();
     }
 
     private HashSet<MapCoordinate> FindMoveRange(IMBUnit mbUnit, MapCoordinate origin) {
@@ -299,8 +300,6 @@ public class MBStage : MonoBehaviour {
     }
 
     private void MoveUnit(MBUnit unit, List<MapCoordinate> path) {
-        ResetRange();        
-
         units.Remove(unit);
         units.Add(unit, path[path.Count - 1]);
         unit.Move(path);
@@ -367,14 +366,12 @@ public class MBStage : MonoBehaviour {
         MapCoordinate pos = units.Get(unit);
         switch (State) {
             case ControlState.DESELECTED:
+            case ControlState.UNIT_MENU:
                 MoveCursorTo(pos);
                 OpenUnitMenu();
                 break;
             case ControlState.UNIT_ATTACK:
                 MoveCursorTo(pos);
-                if (!InRange(pos)) {
-                    return;
-                }
                 GetSelected().Attack(unit.Unit);
                 CancelRangeSelection();
                 CancelUnitMenu();

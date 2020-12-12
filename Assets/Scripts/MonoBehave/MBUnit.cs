@@ -11,6 +11,8 @@ public class MBUnit : MonoBehaviour, IMBUnit {
     [SerializeField]
     private StageUnit _unit;
     public IStageUnit Unit { get { return _unit; } }
+    private bool _moved = false;
+    public bool Moved { get { return _moved; } }
 
     private void Awake() {
         _renderer = GetComponent<MeshRenderer>();
@@ -36,6 +38,7 @@ public class MBUnit : MonoBehaviour, IMBUnit {
     public void Move(List<MapCoordinate> path) {
         MapCoordinate lastCoord = path[path.Count-1];
         gameObject.transform.localPosition = new Vector3(lastCoord.X, 0.25f + stage.Heights[lastCoord], lastCoord.Y);
+        _moved = true;
     }
 
     void OnMouseUp () {
