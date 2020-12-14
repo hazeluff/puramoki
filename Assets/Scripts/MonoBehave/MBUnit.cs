@@ -44,4 +44,8 @@ public class MBUnit : MonoBehaviour, IMBUnit {
     void OnMouseUp () {
         stage.ClickUnit(this);
     }
+
+    public void ResetForTurn() {
+        _moved = false;
+    }
 }

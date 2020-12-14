@@ -11,14 +11,17 @@ public class MBStage : MonoBehaviour {
     [SerializeField]
     private MBStageCamera mbCamera;
     [SerializeField]
-    private GameObject unitMenu;
+    private GameObject unitMenuUI;
+    [SerializeField]
+    private GameObject menuUI;
 
     private InputManager input;
 
     public ControlState State { get; private set; }
+    private bool isPlayerTurn = true;
 
     public enum ControlState {
-        DESELECTED, UNIT_MENU, UNIT_MOVE, UNIT_ATTACK, WAIT
+        DESELECTED, UNIT_MENU, UNIT_MOVE, UNIT_ATTACK, MENU, WAIT
     }
 
     FactionDiplomacy FactionDiplomacy;
@@ -69,7 +72,8 @@ public class MBStage : MonoBehaviour {
     }
 
 	void Awake () {
-        unitMenu.SetActive(false);
+        menuUI.SetActive(false);
+        unitMenuUI.SetActive(false);
         State = ControlState.DESELECTED;
         Heights = new Dictionary<MapCoordinate, int>();
 
@@ -107,7 +111,9 @@ public class MBStage : MonoBehaviour {
     }
 
     void Update () {
-        UpdateCursor();
+        if (isPlayerTurn) {
+            UpdateCursor();
+        }
 	}
 
     private void UpdateCursor() {
@@ -151,6 +157,10 @@ public class MBStage : MonoBehaviour {
                         return;
                     }
                 }
+
+                if (input.BACK) {
+                    OpenMenu();
+                }
                 break;
             case ControlState.UNIT_MENU:
                 break;
@@ -160,12 +170,14 @@ public class MBStage : MonoBehaviour {
                 if (input.A) {
                     if (!IsOccupied(cursorPos) && InRange(cursorPos)) {
                         MoveUnit(units.Get(selected), new List<MapCoordinate>() { selected, cursorPos });
-                        CancelRangeSelection();
+                        CloseRangeSelection();
                         OpenUnitMenu();
                         return;
                     }
-                } else if (input.B) {
-                    CancelRangeSelection();
+                }
+
+                if (input.B) {
+                    CloseRangeSelection();
                     OpenUnitMenu();
                     return;
                 }
@@ -176,10 +188,17 @@ public class MBStage : MonoBehaviour {
                         ClickUnit(units.Get(cursorPos));
                         return;
                     }
-                } else if (input.B) {
-                    CancelRangeSelection();
+                }
+
+                if (input.B) {
+                    CloseRangeSelection();
                     OpenUnitMenu();
                     return;
+                }
+                break;
+            case ControlState.MENU:
+                if (input.B || input.BACK) {
+                    CloseMenu();
                 }
                 break;
             default:
@@ -206,7 +225,7 @@ public class MBStage : MonoBehaviour {
     public void StartMoveSelection() {
         if (!units.Get(selected).Moved) {
             ChangeState(ControlState.UNIT_MOVE);
-            unitMenu.SetActive(false);
+            unitMenuUI.SetActive(false);
             range = FindMoveRange(units.Get(selected), selected);
             foreach (MapCoordinate coord in range) {
                 tiles.Get(coord).setMoveRangeColor();
@@ -214,7 +233,7 @@ public class MBStage : MonoBehaviour {
         }
     }
 
-    public void CancelRangeSelection() {
+    public void CloseRangeSelection() {
         cursorPos = selected;
         MoveCursorTo(cursorPos);
         ResetRange();
@@ -222,18 +241,18 @@ public class MBStage : MonoBehaviour {
 
     private HashSet<MapCoordinate> FindMoveRange(IMBUnit mbUnit, MapCoordinate origin) {
         int unitMove = mbUnit.Unit.c_Mv;
-        HashSet<MapCoordinate> range = new HashSet<MapCoordinate>();
+        Dictionary<MapCoordinate, int> range = new Dictionary<MapCoordinate, int>();
         FindMoveRange(mbUnit, range, unitMove, origin);
-        return range;
+        return new HashSet<MapCoordinate>(range.Keys);
     }
 
-    private void FindMoveRange(IMBUnit mbUnit, HashSet<MapCoordinate> listToAddTo, int mvLeft, MapCoordinate currentNode) {
+    private void FindMoveRange(IMBUnit mbUnit, Dictionary<MapCoordinate, int> rangeOutput, int mvLeft, MapCoordinate currentNode) {
         if (!tiles.ContainsKey(currentNode)) {
             return;
         }
-
-        //TODO: This needs to not return if mvLeft is less than previous path
-        if (listToAddTo.Contains(currentNode)) {
+        
+        // If the node has been added/checked already and had more mvLeft
+        if (rangeOutput.ContainsKey(currentNode) && mvLeft <= rangeOutput[currentNode]) {
             return;
         }
 
@@ -242,26 +261,26 @@ public class MBStage : MonoBehaviour {
             return;
         }
 
-        listToAddTo.Add(currentNode);
-
-        if (listToAddTo.Count > 0) {
+        // Remove mvLeft when it is not the unit's current tile
+        if (rangeOutput.Count > 0) {
             mvLeft -= currentTile.MoveCost(mbUnit.Unit);
         }
 
         if (mvLeft < 0) {
             return;
         }
+        
+        rangeOutput[currentNode] = mvLeft;
 
-        listToAddTo.Add(currentNode);
         foreach (MapCoordinate direction in new MapCoordinate[] { MapCoordinate.UP, MapCoordinate.DOWN, MapCoordinate.LEFT, MapCoordinate.RIGHT }) {
             MapCoordinate adjacentNode = currentNode + direction;
-            FindMoveRange(mbUnit, listToAddTo, mvLeft, adjacentNode);
+            FindMoveRange(mbUnit, rangeOutput, mvLeft, adjacentNode);
         }
     }
 
     public void StartAttackSelection() {
         ChangeState(ControlState.UNIT_ATTACK);
-        unitMenu.SetActive(false);
+        unitMenuUI.SetActive(false);
         range = FindAttackRange(units.Get(selected), selected);
         foreach (MapCoordinate coord in range) {
             tiles.Get(coord).setAttackRangeColor();
@@ -289,22 +308,19 @@ public class MBStage : MonoBehaviour {
 
     public void OpenUnitMenu() {
         ChangeState(ControlState.UNIT_MENU);
-        unitMenu.SetActive(true);
+        unitMenuUI.SetActive(true);
         selected = cursorPos;
     }
 
-    public void CancelUnitMenu() {
-        ChangeState(ControlState.DESELECTED);
-        unitMenu.SetActive(false);
-        selected = null;
+    public void CloseUnitMenu() {
+        unitMenuUI.SetActive(false);
+        Deselect();
     }
 
     private void MoveUnit(MBUnit unit, List<MapCoordinate> path) {
         units.Remove(unit);
         units.Add(unit, path[path.Count - 1]);
         unit.Move(path);
-        ChangeState(ControlState.DESELECTED);
-        selected = null;
     }
 
     private static readonly MapCoordinate[][] MAP_MOVEMENT_MAP = new MapCoordinate[][] {
@@ -348,7 +364,8 @@ public class MBStage : MonoBehaviour {
                 MoveCursorTo(coordinate);
                 if (InRange(coordinate) && !IsOccupied(cursorPos)) {
                     MoveUnit(units.Get(selected), new List<MapCoordinate>() { selected, coordinate });
-
+                    CloseRangeSelection();
+                    Deselect();
                 }
                 break;
             case ControlState.UNIT_ATTACK:
@@ -373,12 +390,52 @@ public class MBStage : MonoBehaviour {
             case ControlState.UNIT_ATTACK:
                 MoveCursorTo(pos);
                 GetSelected().Attack(unit.Unit);
-                CancelRangeSelection();
-                CancelUnitMenu();
+                CloseRangeSelection();
+                CloseUnitMenu();
                 break;
             default:
                 break;
         }
+    }
+
+    public void EndTurn() {
+        isPlayerTurn = false;
+        State = ControlState.WAIT;
+        menuUI.SetActive(false);
+        StartCoroutine("StartEnemyTurn");
+    }
+
+    IEnumerator StartEnemyTurn() {
+        yield return null;
+        // Process Enemy Turn
+
+        // End Enemy Turn
+        InitializeTurns();
+        StartPlayerTurn();
+    }
+
+    public void StartPlayerTurn() {
+        isPlayerTurn = true;
+        Deselect();
+    }
+
+    public void InitializeTurns() {
+        foreach (KeyValuePair<MBUnit, MapCoordinate> unit in units) {
+            unit.Key.ResetForTurn();
+        }
+    }
+
+    public void OpenMenu() {
+        menuUI.SetActive(true);
+    }
+
+    private void CloseMenu() {
+        menuUI.SetActive(false);
+    }
+
+    private void Deselect() {
+        ChangeState(ControlState.DESELECTED);
+        selected = null;
     }
 
     private void ChangeState(ControlState newState) {
