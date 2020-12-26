@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class MBTile : MonoBehaviour {
+public class MBTile : MBClickable {
     private static CustomLogger LOGGER = new CustomLogger(typeof(MBTile).ToString());
 
     [SerializeField]
@@ -41,7 +41,7 @@ public class MBTile : MonoBehaviour {
         _renderer.material.color = color;
     }
 
-    void OnMouseUpAsButton() {
+    public override void Click() {
         stage.ClickTile(this);
     }
 }

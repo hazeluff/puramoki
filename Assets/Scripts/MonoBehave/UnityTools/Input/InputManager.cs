@@ -3,8 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class InputManager : MonoBehaviour {
-    private static CustomLogger LOGGER = new CustomLogger(typeof(InputManager).ToString());
-
     private static InputManager input;
 
     /// <summary>

@@ -1,8 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
-public class MBUnit : MonoBehaviour, IMBUnit {
+public class MBUnit : MBClickable, IMBUnit {
 
     private MeshRenderer _renderer;
 
@@ -11,13 +12,12 @@ public class MBUnit : MonoBehaviour, IMBUnit {
     [SerializeField]
     private StageUnit _unit;
     public IStageUnit Unit { get { return _unit; } }
-    private bool _moved = false;
-    public bool Moved { get { return _moved; } }
+    [SerializeField]
+    private bool _isPlayer;
+    public bool IsPlayer { get { return _isPlayer; } }
 
     private void Awake() {
         _renderer = GetComponent<MeshRenderer>();
-
-        _unit.Init();
     }
 
     public void setStage(MBStage stage) {
@@ -38,14 +38,10 @@ public class MBUnit : MonoBehaviour, IMBUnit {
     public void Move(List<MapCoordinate> path) {
         MapCoordinate lastCoord = path[path.Count-1];
         gameObject.transform.localPosition = new Vector3(lastCoord.X, 0.25f + stage.Heights[lastCoord], lastCoord.Y);
-        _moved = true;
+        Unit.MoveTo(lastCoord);
     }
 
-    void OnMouseUp () {
+    public override void Click() {
         stage.ClickUnit(this);
-    }
-
-    public void ResetForTurn() {
-        _moved = false;
     }
 }

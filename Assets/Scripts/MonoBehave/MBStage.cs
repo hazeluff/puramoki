@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System.Linq;
+using System.Collections;
 using System.Collections.Generic;
 using System;
 using UnityEngine;
@@ -18,7 +19,6 @@ public class MBStage : MonoBehaviour {
     private InputManager input;
 
     public ControlState State { get; private set; }
-    private bool isPlayerTurn = true;
 
     public enum ControlState {
         DESELECTED, UNIT_MENU, UNIT_MOVE, UNIT_ATTACK, MENU, WAIT
@@ -28,14 +28,20 @@ public class MBStage : MonoBehaviour {
     private ReversableDictionary<MapCoordinate, MBTile> tiles = new ReversableDictionary<MapCoordinate, MBTile>();
     public Dictionary<MapCoordinate, int> Heights { get; private set; }
     private ReversableDictionary<MBUnit, MapCoordinate> units = new ReversableDictionary<MBUnit, MapCoordinate>();
+    public MapCoordinate GetUnitPos(MBUnit unit) {
+        return units.Get(unit);
+    }
 
 
-    public bool IsOccupied (MapCoordinate coordinate) {
-        return units.ContainsKey(coordinate);
+    public bool IsOccupied(MapCoordinate coordinate) {
+        return units.ContainsValue(coordinate);
     }
 
     private MapCoordinate cursorPos = new MapCoordinate(0, 0);
-
+    
+    public int TurnCount { get; private set; }
+    private MBUnit currentUnit = null;
+    private int currentUnitPrevCd = 0;
     private MapCoordinate selected = null;
 
     private HashSet<MapCoordinate> range;
@@ -44,7 +50,7 @@ public class MBStage : MonoBehaviour {
         return selected != null;
     }
 
-    public IStageUnit GetSelected() {
+    public IStageUnit GetSelectedUnit() {
         return units.Get(selected).Unit;
     }
 
@@ -75,10 +81,10 @@ public class MBStage : MonoBehaviour {
         menuUI.SetActive(false);
         unitMenuUI.SetActive(false);
         State = ControlState.DESELECTED;
-        Heights = new Dictionary<MapCoordinate, int>();
 
         // Register Tiles
         MBTile[] tileList = FindObjectsOfType<MBTile>();
+        Heights = new Dictionary<MapCoordinate, int>();
         foreach (MBTile tile in tileList) {
             Vector3 tilePos = tile.transform.position;
             MapCoordinate mapCoordinate = new MapCoordinate(Mathf.RoundToInt(tilePos.x), Mathf.RoundToInt(tilePos.z));
@@ -103,6 +109,18 @@ public class MBStage : MonoBehaviour {
             mbUnit.setStage(this);
             FactionDiplomacy.RegisterUnit(mbUnit);
         }
+
+        // Init Units
+        int fastestSpd = units.GetDictionary().Keys.Aggregate((agg, next) => next.Unit.c_Spd > agg.Unit.c_Spd ? next : agg).Unit.c_Spd;
+        foreach (MBUnit mbUnit in units.GetDictionary().Keys) {
+            mbUnit.Unit.InitCooldown(fastestSpd);
+            if (mbUnit.IsPlayer) {
+                mbUnit.Unit.SetLastTurn(-1);
+            }
+        }
+
+        TurnCount = 0;
+        FinishUnitTurn();
     }
 
     private void Start() {
@@ -111,12 +129,10 @@ public class MBStage : MonoBehaviour {
     }
 
     void Update () {
-        if (isPlayerTurn) {
-            UpdateCursor();
-        }
+        UpdateInput();
 	}
 
-    private void UpdateCursor() {
+    private void UpdateInput() {
         input = InputManager.get();
 
         if (!mbCamera.Rotating) {
@@ -223,10 +239,10 @@ public class MBStage : MonoBehaviour {
     }
 
     public void StartMoveSelection() {
-        if (!units.Get(selected).Moved) {
+        if (!units.Get(selected).Unit.Moved) {
             ChangeState(ControlState.UNIT_MOVE);
             unitMenuUI.SetActive(false);
-            range = FindMoveRange(units.Get(selected), selected);
+            range = FindMoveRange(currentUnit, selected);
             foreach (MapCoordinate coord in range) {
                 tiles.Get(coord).setMoveRangeColor();
             }
@@ -354,14 +370,62 @@ public class MBStage : MonoBehaviour {
         }
     }
 
+    public void FinishUnitTurn() {
+        State = ControlState.WAIT;
+        if (currentUnit != null) {
+            currentUnit.Unit.SetLastTurn(TurnCount++);
+        }
+        currentUnit = NextUnitTurn();
+        currentUnit.Unit.ResetForTurn();
+        Debug.Log("Current Unit: " + currentUnit);
+        MoveCursorTo(units.Get(currentUnit));
+        if (currentUnit.IsPlayer) {
+            State = ControlState.UNIT_MENU;
+            OpenUnitMenu();
+        } else {
+            StartCoroutine("AutomateTurn");
+        }
+    }
+
+    void AutomateTurn() {
+        Debug.Log("Automate Unit: " + currentUnit.Unit.Profile.Name);
+        // Do stuff
+        currentUnit.Unit.AddCooldown(500);
+        FinishUnitTurn();
+    }
+
+    private MBUnit NextUnitTurn() {
+        MBUnit nextUnit = new List<MBUnit>(this.units.GetDictionary().Keys)
+            .Aggregate((agg, next) => {
+                if (next.Unit.Cooldown == agg.Unit.Cooldown) {
+                    return next.Unit.LastTurn < agg.Unit.LastTurn ? next : agg;
+                }
+                return next.Unit.Cooldown < agg.Unit.Cooldown ? next : agg;
+            });
+        int cd = nextUnit.Unit.Cooldown;
+        foreach (KeyValuePair<MBUnit, MapCoordinate> unit in this.units) {
+            unit.Key.Unit.ReduceCooldown(cd);
+        }
+        return nextUnit;
+    }
+
     public void ClickTile(MBTile tile) {
         MapCoordinate coordinate = tiles.Get(tile);
+        MoveCursorTo(coordinate);
         switch (State) {
             case ControlState.DESELECTED:
-                MoveCursorTo(coordinate);
+                if (units.Get(currentUnit).Equals(coordinate)) {
+                    OpenUnitMenu();
+                } else {
+                    CloseUnitMenu();
+                }
+                break;
+            case ControlState.UNIT_MENU:
+                if (!units.Get(currentUnit).Equals(coordinate)) {
+                    CloseUnitMenu();
+                }
                 break;
             case ControlState.UNIT_MOVE:
-                MoveCursorTo(coordinate);
                 if (InRange(coordinate) && !IsOccupied(cursorPos)) {
                     MoveUnit(units.Get(selected), new List<MapCoordinate>() { selected, coordinate });
                     CloseRangeSelection();
@@ -372,7 +436,6 @@ public class MBStage : MonoBehaviour {
                 if (InRange(cursorPos) && IsOccupied(cursorPos)) {
                     ClickUnit(units.Get(cursorPos));                
                 }
-                MoveCursorTo(coordinate);
                 break;
             default:
                 break;
@@ -381,47 +444,24 @@ public class MBStage : MonoBehaviour {
 
     public void ClickUnit(MBUnit unit) {
         MapCoordinate pos = units.Get(unit);
+        MoveCursorTo(pos);
         switch (State) {
             case ControlState.DESELECTED:
             case ControlState.UNIT_MENU:
                 MoveCursorTo(pos);
-                OpenUnitMenu();
+                if (currentUnit.Equals(unit)) {
+                    OpenUnitMenu();
+                } else {
+                    CloseUnitMenu();
+                }
                 break;
             case ControlState.UNIT_ATTACK:
                 MoveCursorTo(pos);
-                GetSelected().Attack(unit.Unit);
+                GetSelectedUnit().Attack(unit.Unit);
                 CloseRangeSelection();
-                CloseUnitMenu();
                 break;
             default:
                 break;
-        }
-    }
-
-    public void EndTurn() {
-        isPlayerTurn = false;
-        State = ControlState.WAIT;
-        menuUI.SetActive(false);
-        StartCoroutine("StartEnemyTurn");
-    }
-
-    IEnumerator StartEnemyTurn() {
-        yield return null;
-        // Process Enemy Turn
-
-        // End Enemy Turn
-        InitializeTurns();
-        StartPlayerTurn();
-    }
-
-    public void StartPlayerTurn() {
-        isPlayerTurn = true;
-        Deselect();
-    }
-
-    public void InitializeTurns() {
-        foreach (KeyValuePair<MBUnit, MapCoordinate> unit in units) {
-            unit.Key.ResetForTurn();
         }
     }
 

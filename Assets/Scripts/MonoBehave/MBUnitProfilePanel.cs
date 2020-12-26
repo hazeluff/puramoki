@@ -22,7 +22,7 @@ public class MBUnitProfilePanel : MonoBehaviour {
         if (!stage.AnySelected()) {
             return;
         }
-        IStageUnit selectedUnit = stage.GetSelected();
+        IStageUnit selectedUnit = stage.GetSelectedUnit();
         int newSelectedUnitHash = selectedUnit.GetHashCode();
         if (selectedUnitHash != newSelectedUnitHash) {
             selectedUnitHash = newSelectedUnitHash;

@@ -40,8 +40,16 @@ public class ReversableDictionary<L, R> {
         return left.ContainsKey(l);
     }
 
-    public bool ContainsKey(R r) {
+    public bool ContainsValue(R r) {
         return right.ContainsKey(r);
+    }
+
+    public Dictionary<L, R> GetDictionary() {
+        return left;
+    }
+
+    public Dictionary<R, L> GetReverseDictionary() {
+        return right;
     }
 
     public Dictionary<L, R>.Enumerator GetEnumerator() {

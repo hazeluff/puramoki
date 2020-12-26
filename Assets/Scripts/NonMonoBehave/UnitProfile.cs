@@ -15,19 +15,19 @@ public class UnitProfile : ScriptableObject, IUnitProfile
     [SerializeField]
     private int _hp;
     [SerializeField]
-    private int _mp;
+    private int _ep;
     [SerializeField]
     private int _atk;
     [SerializeField]
     private int _def;
     [SerializeField]
-    private int _int;
+    private int _acc;
     [SerializeField]
-    private int _res;
-    [SerializeField]
-    private int _hit;
+    private int _eva;
     [SerializeField]
     private int _spd;
+    [SerializeField]
+    private int _rng;
     [SerializeField]
     private int _mv;
     [SerializeField]
@@ -48,13 +48,13 @@ public class UnitProfile : ScriptableObject, IUnitProfile
     }
 
     public int HP { get { return _hp; } set { _hp = value; } }
-    public int MP { get { return _mp; } set { _mp = value; } }
+    public int EP { get { return _ep; } set { _ep = value; } }
     public int Atk { get { return _atk; } set { _atk = value; } }
     public int Def { get { return _def; } set { _def = value; } }
-    public int Int { get { return _int; } set { _int = value; } }
-    public int Res { get { return _res; } set { _res = value; } }
-    public int Hit { get { return _hit; } set { _hit = value; } }
+    public int Acc { get { return _acc; } set { _acc = value; } }
+    public int Eva { get { return _eva; } set { _eva = value; } }
     public int Spd { get { return _spd; } set { _spd = value; } }
+    public int Rng { get { return _rng; } set { _rng = value; } }
     public int Mv { get { return _mv; } set { _mv = value; } }
 
     public Weapon Weapon { get { return _weapon; } set { _weapon = value; } }
