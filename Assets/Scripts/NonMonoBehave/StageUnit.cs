@@ -23,13 +23,15 @@ public class StageUnit : ScriptableObject, IStageUnit {
     public List<IUserStatusEffect> StatusEffects { get { throw new System.NotImplementedException(); } }
     public int c_HP { get { return _currentHP; } }
     public int c_EP { get { return _profile.EP; } }
-    public int c_Atk { get { return _profile.Atk + _profile.Weapon.Atk; } }
-    public int c_Def { get { return _profile.Def; } }
-    public int c_Acc { get { return _profile.Acc; } }
-    public int c_Eva { get { return _profile.Eva; } }
-    public int c_Spd { get { return _profile.Spd; } }
-    public int c_Rng { get { return _profile.Rng; } }
     public int c_Mv { get { return _profile.Mv; } }
+
+    public int c_Atk { get { return _profile.Atk + _profile.Weapon.Atk; } }
+    public int c_Acc { get { return _profile.Acc; } }
+    public int c_Spd { get { return _profile.Spd; } }
+
+    public int c_Def { get { return _profile.Def; } }
+    public int c_Eva { get { return _profile.Eva; } }
+    public int c_Rng { get { return _profile.Rng; } }
 
     public float c_ElemRes(Element element) {
         throw new System.NotImplementedException();

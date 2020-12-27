@@ -1,6 +1,6 @@
 ﻿public interface IUnitProfile {
     string Name { get; }
-    int Level { get; }
+    int Lvl { get; }
     UnitClass Class { get; }
     int ExpCurrent { get; }
     int ExpToNext { get; }

@@ -36,11 +36,11 @@ public class UnitProfile : ScriptableObject, IUnitProfile
     private IEquipment[] _equipments;
 
     public string Name { get { return _name; } set { _name = value; } }
-    public int Level { get { return _level; } set { _level = value; } }
+    public int Lvl { get { return _level; } set { _level = value; } }
     public UnitClass Class { get { return _class; } set { _class = value; } }
     public int ExpCurrent { get { return _expCurrent; } set { _expCurrent = value; } }
     public int ExpToNext {
-        get { throw new System.NotImplementedException(); } // Derive from level curve of class
+        get { return Lvl * 10; }
     }
 
     public void GainExp(int exp) {

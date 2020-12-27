@@ -107,6 +107,7 @@ public class MBStage : MonoBehaviour {
             MapCoordinate mapCoordinate = new MapCoordinate(Mathf.RoundToInt(unitPos.x), Mathf.RoundToInt(unitPos.z));
             units.Add(mbUnit, mapCoordinate);
             mbUnit.setStage(this);
+            mbUnit.Unit.Init(mapCoordinate);
             FactionDiplomacy.RegisterUnit(mbUnit);
         }
 

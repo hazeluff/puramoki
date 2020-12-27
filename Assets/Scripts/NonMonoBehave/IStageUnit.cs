@@ -9,14 +9,19 @@ public interface IStageUnit {
 
     int c_HP { get; }
     int c_EP { get; }
+    int c_Mv { get; }
+
     int c_Atk { get; }
     int c_Def { get; }
     int c_Acc { get; }
+
     int c_Eva { get; }
     int c_Spd { get; }
     int c_Rng { get; }
-    int c_Mv { get; }
+
     float c_ElemRes(Element element);
+
+    void Init(MapCoordinate pos);
 
     // State
     int Cooldown { get; }
