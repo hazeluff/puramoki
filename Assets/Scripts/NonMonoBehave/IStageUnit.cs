@@ -43,4 +43,5 @@ public interface IStageUnit {
     void ReceiveAttack(IDamageSource damage);
 
     void ResetForTurn();
+
 }

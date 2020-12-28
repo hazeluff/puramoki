@@ -110,4 +110,6 @@ public class StageUnit : ScriptableObject, IStageUnit {
         _moved = false;
         _attacked = false;
     }
+
+
 }

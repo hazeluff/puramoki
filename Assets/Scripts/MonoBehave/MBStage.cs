@@ -37,11 +37,7 @@ public class MBStage : MonoBehaviour {
         return units.ContainsValue(coordinate);
     }
 
-    private MapCoordinate cursorPos = new MapCoordinate(0, 0);
-    
-    public int TurnCount { get; private set; }
-    private MBUnit currentUnit = null;
-    private int currentUnitPrevCd = 0;
+    private MapCoordinate cursorPos = new MapCoordinate(0, 0);    
     private MapCoordinate selected = null;
 
     private HashSet<MapCoordinate> range;
@@ -243,7 +239,7 @@ public class MBStage : MonoBehaviour {
         if (!units.Get(selected).Unit.Moved) {
             ChangeState(ControlState.UNIT_MOVE);
             unitMenuUI.SetActive(false);
-            range = FindMoveRange(currentUnit, selected);
+            range = FindMoveRange(_currentUnit, selected);
             foreach (MapCoordinate coord in range) {
                 tiles.Get(coord).setMoveRangeColor();
             }
@@ -371,16 +367,31 @@ public class MBStage : MonoBehaviour {
         }
     }
 
+    // Turn Order
+    public int TurnCount { get; private set; }
+    private MBUnit _currentUnit = null;
+    public MBUnit CurrentUnit { get { return _currentUnit; } }
+
+    public List<MBUnit> GetTurnOrder() {
+        List<MBUnit> units = this.units.GetDictionary()
+            .ToList<KeyValuePair<MBUnit,MapCoordinate>>()
+            .ConvertAll<MBUnit>(pair => pair.Key)
+            .OrderBy(unit => unit.Unit.Cooldown)
+            .ThenBy(unit => unit.Unit.LastTurn)
+            .ToList<MBUnit>();
+        return units;
+    }
+
     public void FinishUnitTurn() {
         State = ControlState.WAIT;
-        if (currentUnit != null) {
-            currentUnit.Unit.SetLastTurn(TurnCount++);
+        if (_currentUnit != null) {
+            _currentUnit.Unit.SetLastTurn(TurnCount++);
         }
-        currentUnit = NextUnitTurn();
-        currentUnit.Unit.ResetForTurn();
-        Debug.Log("Current Unit: " + currentUnit);
-        MoveCursorTo(units.Get(currentUnit));
-        if (currentUnit.IsPlayer) {
+        _currentUnit = NextUnitTurn();
+        _currentUnit.Unit.ResetForTurn();
+        Debug.Log("Current Unit: " + _currentUnit);
+        MoveCursorTo(units.Get(_currentUnit));
+        if (_currentUnit.IsPlayer) {
             State = ControlState.UNIT_MENU;
             OpenUnitMenu();
         } else {
@@ -388,10 +399,11 @@ public class MBStage : MonoBehaviour {
         }
     }
 
-    void AutomateTurn() {
-        Debug.Log("Automate Unit: " + currentUnit.Unit.Profile.Name);
+    IEnumerator AutomateTurn() {
+        Debug.Log("Automate Unit: " + _currentUnit.Unit.Profile.Name);
         // Do stuff
-        currentUnit.Unit.AddCooldown(500);
+        yield return new WaitForSeconds(3);
+        _currentUnit.Unit.AddCooldown(500);
         FinishUnitTurn();
     }
 
@@ -415,14 +427,14 @@ public class MBStage : MonoBehaviour {
         MoveCursorTo(coordinate);
         switch (State) {
             case ControlState.DESELECTED:
-                if (units.Get(currentUnit).Equals(coordinate)) {
+                if (units.Get(_currentUnit).Equals(coordinate)) {
                     OpenUnitMenu();
                 } else {
                     CloseUnitMenu();
                 }
                 break;
             case ControlState.UNIT_MENU:
-                if (!units.Get(currentUnit).Equals(coordinate)) {
+                if (!units.Get(_currentUnit).Equals(coordinate)) {
                     CloseUnitMenu();
                 }
                 break;
@@ -450,7 +462,7 @@ public class MBStage : MonoBehaviour {
             case ControlState.DESELECTED:
             case ControlState.UNIT_MENU:
                 MoveCursorTo(pos);
-                if (currentUnit.Equals(unit)) {
+                if (_currentUnit.Equals(unit)) {
                     OpenUnitMenu();
                 } else {
                     CloseUnitMenu();
