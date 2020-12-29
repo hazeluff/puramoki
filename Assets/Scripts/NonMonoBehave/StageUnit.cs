@@ -89,17 +89,20 @@ public class StageUnit : ScriptableObject, IStageUnit {
         AddCooldown(100 + (1000 - c_Spd));
         _moved = true;
     }
+
     // Attack
     private bool _attacked = false;
     public bool Attacked { get { return _attacked; } }
 
     public void Attack(IStageUnit target) {
+        Debug.Log(Profile.Name + ": Attack [" + target.ToString() + "]");
         target.ReceiveAttack(new BasicAttackInstance(c_Atk, DamageType.PHYSICAL));
         AddCooldown(_profile.Weapon.Cooldown - c_Spd);
         _attacked = true;
     }
 
     public void ReceiveAttack(IDamageSource source) {
+        Debug.Log(Profile.Name + ": Receive Attack [" + source.ToString() + "]");
         int reducedDmg = source.Damage - c_Def;
         if ((this._currentHP = this._currentHP - reducedDmg) < 0) {
             _currentHP = 0;

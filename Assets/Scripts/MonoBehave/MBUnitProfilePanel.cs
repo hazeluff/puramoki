@@ -38,27 +38,27 @@ public class MBUnitProfilePanel : MonoBehaviour {
     private int selectedUnitHash;
 
     void Update() {
-        panel.SetActive(stage.AnySelected());
-        if (!stage.AnySelected()) {
+        panel.SetActive(stage.IsOccupied(stage.CursorPos));
+        if (!panel.activeSelf) {
             return;
         }
-        IStageUnit selectedUnit = stage.GetSelectedUnit();
-        int newSelectedUnitHash = selectedUnit.GetHashCode();
+        IStageUnit cursorUnit = stage.CursorUnit;
+        int newSelectedUnitHash = cursorUnit.GetHashCode();
         if (selectedUnitHash != newSelectedUnitHash) {
             selectedUnitHash = newSelectedUnitHash;
-            unitName.text = selectedUnit.Profile.Name;
-            unitLvl.text = String.Format("LVL {0}", selectedUnit.Profile.Lvl);
-            unitExp.text = String.Format("EXP {0} / {1}", selectedUnit.Profile.ExpCurrent, selectedUnit.Profile.ExpToNext);
-            unitFaction.text = selectedUnit.Faction.Name;
-            unitHp.text = String.Format("HP {0} / {1}", selectedUnit.c_HP, selectedUnit.Profile.HP);
-            unitEp.text = String.Format("EP {0} / {1}", selectedUnit.c_EP, selectedUnit.Profile.EP);
-            unitMv.text = String.Format("MV {0}", selectedUnit.c_Mv);
-            unitAtk.text = String.Format("ATK {0}", selectedUnit.c_Atk);
-            unitAcc.text = String.Format("ACC {0}", selectedUnit.c_Acc);
-            unitSpd.text = String.Format("SPD {0}", selectedUnit.c_Spd);
-            unitDef.text = String.Format("DEF {0}", selectedUnit.c_Def);
-            unitEva.text = String.Format("EVA {0}", selectedUnit.c_Eva);
-            unitRng.text = String.Format("RNG {0}", selectedUnit.c_Rng);
+            unitName.text = cursorUnit.Profile.Name;
+            unitLvl.text = String.Format("LVL {0}", cursorUnit.Profile.Lvl);
+            unitExp.text = String.Format("EXP {0} / {1}", cursorUnit.Profile.ExpCurrent, cursorUnit.Profile.ExpToNext);
+            unitFaction.text = cursorUnit.Faction.Name;
+            unitHp.text = String.Format("HP {0} / {1}", cursorUnit.c_HP, cursorUnit.Profile.HP);
+            unitEp.text = String.Format("EP {0} / {1}", cursorUnit.c_EP, cursorUnit.Profile.EP);
+            unitMv.text = String.Format("MV {0}", cursorUnit.c_Mv);
+            unitAtk.text = String.Format("ATK {0}", cursorUnit.c_Atk);
+            unitAcc.text = String.Format("ACC {0}", cursorUnit.c_Acc);
+            unitSpd.text = String.Format("SPD {0}", cursorUnit.c_Spd);
+            unitDef.text = String.Format("DEF {0}", cursorUnit.c_Def);
+            unitEva.text = String.Format("EVA {0}", cursorUnit.c_Eva);
+            unitRng.text = String.Format("RNG {0}", cursorUnit.c_Rng);
         }
     }
 }

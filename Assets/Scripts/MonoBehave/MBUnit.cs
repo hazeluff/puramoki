@@ -28,7 +28,7 @@ public class MBUnit : MBClickable, IMBUnit {
         if (stage == null) {
             return;
         }
-        setColor(stage.IsSelected(this) ? Color.magenta : Color.white);
+        setColor(this.Equals(stage.CurrentUnit) ? Color.magenta : Color.white);
     }
 
     public void setColor(Color color) {

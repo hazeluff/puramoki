@@ -27,29 +27,21 @@ public class MBStage : MonoBehaviour {
     FactionDiplomacy FactionDiplomacy;
     private ReversableDictionary<MapCoordinate, MBTile> tiles = new ReversableDictionary<MapCoordinate, MBTile>();
     public Dictionary<MapCoordinate, int> Heights { get; private set; }
+
     private ReversableDictionary<MBUnit, MapCoordinate> units = new ReversableDictionary<MBUnit, MapCoordinate>();
     public MapCoordinate GetUnitPos(MBUnit unit) {
         return units.Get(unit);
     }
 
-
     public bool IsOccupied(MapCoordinate coordinate) {
         return units.ContainsValue(coordinate);
     }
 
-    private MapCoordinate cursorPos = new MapCoordinate(0, 0);    
-    private MapCoordinate selected = null;
+    private MapCoordinate _cursorPos;
+    public MapCoordinate CursorPos { get { return _cursorPos; } }
+    public IStageUnit CursorUnit { get { return units.ContainsValue(CursorPos) ? units.Get(CursorPos).Unit : null; } }
 
     private HashSet<MapCoordinate> range;
-
-    public bool AnySelected() {
-        return selected != null;
-    }
-
-    public IStageUnit GetSelectedUnit() {
-        return units.Get(selected).Unit;
-    }
-
 
     private bool InBounds(MapCoordinate coordinate) {
         return tiles.ContainsKey(coordinate);
@@ -69,13 +61,10 @@ public class MBStage : MonoBehaviour {
         return range.Contains(coordinate);
     }
 
-    public bool IsSelected(MBUnit unit) {
-        return selected != null && units.Get(selected) == unit;
-    }
-
 	void Awake () {
         menuUI.SetActive(false);
         unitMenuUI.SetActive(false);
+        _cursorPos = new MapCoordinate(0, 0);
         State = ControlState.DESELECTED;
 
         // Register Tiles
@@ -122,7 +111,7 @@ public class MBStage : MonoBehaviour {
 
     private void Start() {
         input = InputManager.get();
-        MoveCursorTo(cursorPos);
+        MoveCursorTo(CursorPos);
     }
 
     void Update () {
@@ -165,7 +154,7 @@ public class MBStage : MonoBehaviour {
                 MoveCursor();
 
                 if (input.A) {
-                    if (selected == null && IsOccupied(cursorPos)) {
+                    if (CursorPos.Equals(CurrentUnitPos)) {
                         OpenUnitMenu();
                         return;
                     }
@@ -181,8 +170,8 @@ public class MBStage : MonoBehaviour {
                 MoveCursor();
 
                 if (input.A) {
-                    if (!IsOccupied(cursorPos) && InRange(cursorPos)) {
-                        MoveUnit(units.Get(selected), new List<MapCoordinate>() { selected, cursorPos });
+                    if (!IsOccupied(CursorPos) && InRange(CursorPos)) {
+                        MoveUnit(CurrentUnit, new List<MapCoordinate>() { CurrentUnitPos, CursorPos });
                         CloseRangeSelection();
                         OpenUnitMenu();
                         return;
@@ -197,8 +186,8 @@ public class MBStage : MonoBehaviour {
                 break;
             case ControlState.UNIT_ATTACK:
                 if (input.A) {
-                    if (!IsOccupied(cursorPos) && InRange(cursorPos)) {
-                        ClickUnit(units.Get(cursorPos));
+                    if (!IsOccupied(CursorPos) && InRange(CursorPos)) {
+                        ClickUnit(units.Get(CursorPos));
                         return;
                     }
                 }
@@ -236,10 +225,10 @@ public class MBStage : MonoBehaviour {
     }
 
     public void StartMoveSelection() {
-        if (!units.Get(selected).Unit.Moved) {
+        if (!CurrentUnit.Unit.Moved) {
             ChangeState(ControlState.UNIT_MOVE);
             unitMenuUI.SetActive(false);
-            range = FindMoveRange(_currentUnit, selected);
+            range = FindMoveRange(CurrentUnit, CurrentUnitPos);
             foreach (MapCoordinate coord in range) {
                 tiles.Get(coord).setMoveRangeColor();
             }
@@ -247,8 +236,7 @@ public class MBStage : MonoBehaviour {
     }
 
     public void CloseRangeSelection() {
-        cursorPos = selected;
-        MoveCursorTo(cursorPos);
+        MoveCursorTo(CurrentUnitPos);
         ResetRange();
     }
 
@@ -294,7 +282,7 @@ public class MBStage : MonoBehaviour {
     public void StartAttackSelection() {
         ChangeState(ControlState.UNIT_ATTACK);
         unitMenuUI.SetActive(false);
-        range = FindAttackRange(units.Get(selected), selected);
+        range = FindAttackRange(CurrentUnit, CurrentUnitPos);
         foreach (MapCoordinate coord in range) {
             tiles.Get(coord).setAttackRangeColor();
         }
@@ -322,7 +310,6 @@ public class MBStage : MonoBehaviour {
     public void OpenUnitMenu() {
         ChangeState(ControlState.UNIT_MENU);
         unitMenuUI.SetActive(true);
-        selected = cursorPos;
     }
 
     public void CloseUnitMenu() {
@@ -344,15 +331,16 @@ public class MBStage : MonoBehaviour {
     };
 
     private void MoveCursor(int direction) {
-        MapCoordinate newCursorPos = cursorPos + MAP_MOVEMENT_MAP[mbCamera.Orientation][direction];
+        MapCoordinate newCursorPos = CursorPos + MAP_MOVEMENT_MAP[mbCamera.Orientation][direction];
         MoveCursorTo(newCursorPos);
     }
 
     private void MoveCursorTo(MapCoordinate coordinate) {
         if (InBounds(coordinate) && InRange(coordinate)) {
-            MapCoordinate oldPos = cursorPos;
-            this.cursorPos = coordinate;
-            cursor.localPosition = cursorPos.Vector3 + (Vector3.up * Heights[cursorPos]);
+            MapCoordinate oldPos = CursorPos;
+            _cursorPos = coordinate;
+
+            cursor.localPosition = CursorPos.Vector3 + (Vector3.up * Heights[CursorPos]);
             mbCamera.MoveTo(coordinate.Vector3);
 
             MBTile tile = tiles.Get(coordinate);
@@ -371,6 +359,7 @@ public class MBStage : MonoBehaviour {
     public int TurnCount { get; private set; }
     private MBUnit _currentUnit = null;
     public MBUnit CurrentUnit { get { return _currentUnit; } }
+    public MapCoordinate CurrentUnitPos { get { return units.Get(_currentUnit); } }
 
     public List<MBUnit> GetTurnOrder() {
         List<MBUnit> units = this.units.GetDictionary()
@@ -403,7 +392,7 @@ public class MBStage : MonoBehaviour {
         Debug.Log("Automate Unit: " + _currentUnit.Unit.Profile.Name);
         // Do stuff
         yield return new WaitForSeconds(3);
-        _currentUnit.Unit.AddCooldown(500);
+        _currentUnit.Unit.MoveTo(units.Get(_currentUnit));
         FinishUnitTurn();
     }
 
@@ -423,31 +412,31 @@ public class MBStage : MonoBehaviour {
     }
 
     public void ClickTile(MBTile tile) {
-        MapCoordinate coordinate = tiles.Get(tile);
-        MoveCursorTo(coordinate);
+        MapCoordinate tilePos = tiles.Get(tile);
+        MoveCursorTo(tilePos);
         switch (State) {
             case ControlState.DESELECTED:
-                if (units.Get(_currentUnit).Equals(coordinate)) {
+                if (units.Get(_currentUnit).Equals(tilePos)) {
                     OpenUnitMenu();
                 } else {
                     CloseUnitMenu();
                 }
                 break;
             case ControlState.UNIT_MENU:
-                if (!units.Get(_currentUnit).Equals(coordinate)) {
+                if (!units.Get(_currentUnit).Equals(tilePos)) {
                     CloseUnitMenu();
                 }
                 break;
             case ControlState.UNIT_MOVE:
-                if (InRange(coordinate) && !IsOccupied(cursorPos)) {
-                    MoveUnit(units.Get(selected), new List<MapCoordinate>() { selected, coordinate });
+                if (InRange(tilePos) && !IsOccupied(CursorPos)) {
+                    MoveUnit(CurrentUnit, new List<MapCoordinate>() { CurrentUnitPos, tilePos });
                     CloseRangeSelection();
                     Deselect();
                 }
                 break;
             case ControlState.UNIT_ATTACK:
-                if (InRange(cursorPos) && IsOccupied(cursorPos)) {
-                    ClickUnit(units.Get(cursorPos));                
+                if (InRange(CursorPos) && IsOccupied(CursorPos)) {
+                    ClickUnit(units.Get(CursorPos));                
                 }
                 break;
             default:
@@ -470,7 +459,7 @@ public class MBStage : MonoBehaviour {
                 break;
             case ControlState.UNIT_ATTACK:
                 MoveCursorTo(pos);
-                GetSelectedUnit().Attack(unit.Unit);
+                CurrentUnit.Unit.Attack(unit.Unit);
                 CloseRangeSelection();
                 break;
             default:
@@ -488,7 +477,6 @@ public class MBStage : MonoBehaviour {
 
     private void Deselect() {
         ChangeState(ControlState.DESELECTED);
-        selected = null;
     }
 
     private void ChangeState(ControlState newState) {
