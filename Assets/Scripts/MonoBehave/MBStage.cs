@@ -36,8 +36,16 @@ public class MBStage : MonoBehaviour {
         return tiles.ContainsKey(coordinate);
     }
 
-    private ReversableDictionary<MBUnit, MapCoordinate> units = new ReversableDictionary<MBUnit, MapCoordinate>();
-    public MapCoordinate GetUnitPos(MBUnit unit) {
+    /*
+     * Units
+     */
+    private ReversableDictionary<IMBUnit, MapCoordinate> units = new ReversableDictionary<IMBUnit, MapCoordinate>();
+
+    public void RemoveUnit(IMBUnit unit) {
+        units.Remove(unit);
+    }
+
+    public MapCoordinate GetUnitPos(IMBUnit unit) {
         return units.Get(unit);
     }
 
@@ -51,64 +59,6 @@ public class MBStage : MonoBehaviour {
         }
         return _range.Contains(coordinate);
     }
-
-	void Awake () {
-        menuUI.SetActive(false);
-        unitMenuUI.SetActive(false);
-        _cursorPos = new MapCoordinate(0, 0);
-        State = ControlState.DESELECTED;
-
-        // Register Tiles
-        MBTile[] tileList = FindObjectsOfType<MBTile>();
-        Heights = new Dictionary<MapCoordinate, int>();
-        foreach (MBTile tile in tileList) {
-            Vector3 tilePos = tile.transform.position;
-            MapCoordinate mapCoordinate = new MapCoordinate(Mathf.RoundToInt(tilePos.x), Mathf.RoundToInt(tilePos.z));
-            tiles.Add(mapCoordinate, tile);
-            Heights.Add(mapCoordinate, Mathf.RoundToInt(tilePos.y - tile.transform.localPosition.y));
-            tile.setStage(this);
-        }
-
-        // Register Factions
-        HashSet<Faction> factions = new HashSet<Faction>();
-        foreach (MBUnit mbUnit in FindObjectsOfType<MBUnit>()) {
-            factions.Add(mbUnit.Unit.Faction);
-        }
-
-        FactionDiplomacy = new FactionDiplomacy(factions);
-
-        // Register Units
-        foreach (MBUnit mbUnit in FindObjectsOfType<MBUnit>()) {
-            Vector3 unitPos = mbUnit.transform.position;
-            MapCoordinate mapCoordinate = new MapCoordinate(Mathf.RoundToInt(unitPos.x), Mathf.RoundToInt(unitPos.z));
-            units.Add(mbUnit, mapCoordinate);
-            mbUnit.setStage(this);
-            mbUnit.Unit.Init(mapCoordinate);
-            FactionDiplomacy.RegisterUnit(mbUnit);
-        }
-
-        // Init Units
-        int fastestSpd = units.GetDictionary().Keys.Aggregate((agg, next) => next.Unit.c_Spd > agg.Unit.c_Spd ? next : agg).Unit.c_Spd;
-        foreach (MBUnit mbUnit in units.GetDictionary().Keys) {
-            mbUnit.Unit.InitCooldown(fastestSpd);
-            if (mbUnit.IsPlayer) {
-                mbUnit.Unit.SetLastTurn(-1);
-            }
-        }
-
-        TurnCount = 0;
-        FinishUnitTurn();
-    }
-
-    private void Start() {
-        input = InputManager.get();
-        MoveCursorTo(CursorPos);
-    }
-
-    void Update () {
-        UpdateCamera();
-        UpdateControllerInput();
-	}
 
     private void UpdateCamera() {
         if (!mbCamera.Rotating) {
@@ -145,45 +95,49 @@ public class MBStage : MonoBehaviour {
      */
 
     // Game State Update
-    private void ValidateGameState() {
+    /**
+     * Maintains the game state by continually validating and fixing game state issues. Puts events on the stack
+     */
+    private void MaintainGameState() {
+        ValidateAndFixGameState();
+        while (events.Count > 0) {
+            Action evnt = events.Pop();
+            evnt();
+            ValidateAndFixGameState();
+        }
+    }
 
+    /**
+     *  Validates and fixes the game state and adds animations/events to the event stack
+     */
+    private void ValidateAndFixGameState() {
+        List<IMBUnit> deadUnits = units.GetDictionary().Keys.Where(mbUnit => mbUnit.Unit.c_HP <= 0).ToList();
+        foreach (IMBUnit mbUnit in deadUnits) {
+            if (mbUnit.Unit.c_HP <= 0) {
+                RemoveUnit(mbUnit);
+                events.Push(() => mbUnit.Destroy());
+            }
+        }
     }
 
     // Turn Order
     public int TurnCount { get; private set; }
-    private MBUnit _currentUnit = null;
-    public MBUnit CurrentUnit { get { return _currentUnit; } }
-    public MapCoordinate CurrentUnitPos { get { return units.Get(_currentUnit); } }
+    private IMBUnit _currentUnit = null;
+    public IMBUnit CurrentUnit { get { return _currentUnit; } }
+    public MapCoordinate CurrentUnitPos { get { return units.Get(CurrentUnit); } }
 
-    public List<MBUnit> GetTurnOrder() {
-        List<MBUnit> units = this.units.GetDictionary()
-            .ToList<KeyValuePair<MBUnit,MapCoordinate>>()
-            .ConvertAll<MBUnit>(pair => pair.Key)
+    public List<IMBUnit> GetTurnOrder() {
+        List<IMBUnit> units = this.units.GetDictionary()
+            .ToList<KeyValuePair<IMBUnit, MapCoordinate>>()
+            .ConvertAll<IMBUnit>(pair => pair.Key)
             .OrderBy(unit => unit.Unit.Cooldown)
             .ThenBy(unit => unit.Unit.LastTurn)
-            .ToList<MBUnit>();
+            .ToList<IMBUnit>();
         return units;
     }
 
-    public void FinishUnitTurn() {
-        State = ControlState.WAIT;
-        if (_currentUnit != null) {
-            _currentUnit.Unit.SetLastTurn(TurnCount++);
-        }
-        _currentUnit = NextUnitTurn();
-        _currentUnit.Unit.ResetForTurn();
-        Debug.Log("Current Unit: " + _currentUnit);
-        MoveCursorTo(units.Get(_currentUnit));
-        if (_currentUnit.IsPlayer) {
-            State = ControlState.UNIT_MENU;
-            ua_OpenUnitMenu();
-        } else {
-            StartCoroutine("AutomateTurn");
-        }
-    }
-
-    private MBUnit NextUnitTurn() {
-        MBUnit nextUnit = new List<MBUnit>(this.units.GetDictionary().Keys)
+    private IMBUnit NextUnitTurn() {
+        IMBUnit nextUnit = new List<IMBUnit>(this.units.GetDictionary().Keys)
             .Aggregate((agg, next) => {
                 if (next.Unit.Cooldown == agg.Unit.Cooldown) {
                     return next.Unit.LastTurn < agg.Unit.LastTurn ? next : agg;
@@ -191,10 +145,18 @@ public class MBStage : MonoBehaviour {
                 return next.Unit.Cooldown < agg.Unit.Cooldown ? next : agg;
             });
         int cd = nextUnit.Unit.Cooldown;
-        foreach (KeyValuePair<MBUnit, MapCoordinate> unit in this.units) {
+        foreach (KeyValuePair<IMBUnit, MapCoordinate> unit in this.units) {
             unit.Key.Unit.ReduceCooldown(cd);
         }
         return nextUnit;
+    }
+
+    private void FinishUnitTurn() {
+        if (_currentUnit != null) {
+            _currentUnit.FinishTurn(TurnCount++);
+        }
+        _currentUnit = NextUnitTurn();
+        StartUnitTurn();
     }
 
     // Bot/AI
@@ -202,42 +164,49 @@ public class MBStage : MonoBehaviour {
         Debug.Log("Automate Unit: " + _currentUnit.Unit.Profile.Name);
         // Do stuff
         yield return new WaitForSeconds(3);
-        _currentUnit.Unit.MoveTo(CurrentUnitPos);
-        FinishUnitTurn();
+        CurrentUnit.Move(new List<MapCoordinate>() { CurrentUnitPos });
+        UA_FinishUnitTurn();
     }
 
     /*
      * User Actions (Controller/UI Interaction invoke these)
      */
-    public void ua_OpenMenu() {
+    public void UA_OpenMenu() {
         menuUI.SetActive(true);
     }
 
-    private void ua_CloseMenu() {
+    private void UA_CloseMenu() {
         menuUI.SetActive(false);
     }
 
-    public void ua_OpenUnitMenu() {
+    public void UA_OpenUnitMenu() {
         ChangeState(ControlState.UNIT_MENU);
         unitMenuUI.SetActive(true);
     }
 
-    public void ua_CloseUnitMenu() {
+    public void UA_CloseUnitMenu() {
         unitMenuUI.SetActive(false);
         Deselect();
     }
 
-    public void ua_CloseRangeSelection() {
+    public void UA_CloseRangeSelection() {
         MoveCursorTo(CurrentUnitPos);
-        ResetRange();
+        if (_range != null) {
+            // Reset tile colors
+            foreach (MapCoordinate coord in _range) {
+                tiles.Get(coord).setDefaultColor();
+            }
+        }
+        _range = null;
     }
 
     // Unit Move Range
-    public void ua_StartMoveSelection() {
+    public void UA_StartMoveSelection() {
         if (!CurrentUnit.Unit.Moved) {
             ChangeState(ControlState.UNIT_MOVE);
             unitMenuUI.SetActive(false);
             _range = FindMoveRange(CurrentUnit, CurrentUnitPos);
+            // Set tile colors
             foreach (MapCoordinate coord in _range) {
                 tiles.Get(coord).setMoveRangeColor();
             }
@@ -284,7 +253,7 @@ public class MBStage : MonoBehaviour {
     }
 
     // Move
-    bool ua_MoveUnit(MapCoordinate mapPos) {
+    bool UA_MoveUnit(MapCoordinate mapPos) {
         if (IsOccupied(CursorPos)) {
             return false;
         }
@@ -298,12 +267,12 @@ public class MBStage : MonoBehaviour {
         units.Add(CurrentUnit, path[path.Count - 1]);
         CurrentUnit.Move(path);
 
-        ValidateGameState();
+        MaintainGameState();
         return true;
     }
 
     // Unit Attack Range
-    public void ua_StartAttackSelection() {
+    public void UA_StartAttackSelection() {
         ChangeState(ControlState.UNIT_ATTACK);
         unitMenuUI.SetActive(false);
         _range = FindAttackRange(CurrentUnit, CurrentUnitPos);
@@ -332,7 +301,7 @@ public class MBStage : MonoBehaviour {
     }
 
     // Attack
-    bool ua_AttackTarget(MapCoordinate targetPos) {
+    bool UA_AttackTarget(MapCoordinate targetPos) {
         if (!IsOccupied(CursorPos)) {
             return false;
         }
@@ -341,13 +310,20 @@ public class MBStage : MonoBehaviour {
             return false;
         }
 
-        CurrentUnit.Unit.Attack(units.Get(targetPos).Unit);
+        CurrentUnit.Attack(units.Get(targetPos));
 
-        ua_CloseRangeSelection();
+        UA_CloseRangeSelection();
 
-        ValidateGameState();
+        MaintainGameState();
 
         return true;
+    }
+    
+    // Finish Turn
+    public void UA_FinishUnitTurn() {
+        UA_CloseUnitMenu();
+        State = ControlState.WAIT;
+        FinishUnitTurn();
     }
 
     /*
@@ -360,13 +336,13 @@ public class MBStage : MonoBehaviour {
 
                 if (input.A) {
                     if (CursorPos.Equals(CurrentUnitPos)) {
-                        ua_OpenUnitMenu();
+                        UA_OpenUnitMenu();
                         return;
                     }
                 }
 
                 if (input.BACK) {
-                    ua_OpenMenu();
+                    UA_OpenMenu();
                 }
                 break;
             case ControlState.UNIT_MENU:
@@ -375,36 +351,37 @@ public class MBStage : MonoBehaviour {
                 MoveCursor();
 
                 if (input.A) {
-                    if (ua_MoveUnit(CursorPos)) {
-                        ua_CloseRangeSelection();
-                        ua_OpenUnitMenu();
+                    if (UA_MoveUnit(CursorPos)) {
+                        UA_CloseRangeSelection();
+                        UA_OpenUnitMenu();
                     }
                     return;
                 }
 
                 if (input.B) {
-                    ua_CloseRangeSelection();
-                    ua_OpenUnitMenu();
+                    UA_CloseRangeSelection();
+                    UA_OpenUnitMenu();
                     return;
                 }
                 break;
             case ControlState.UNIT_ATTACK:
                 if (input.A) {
-                    if (ua_AttackTarget(CursorPos)) {
-                        ua_CloseRangeSelection();
-                        ua_OpenUnitMenu();
+                    if (UA_AttackTarget(CursorPos)) {
+                        MoveCursorTo(CurrentUnitPos);
+                        UA_CloseRangeSelection();
+                        UA_OpenUnitMenu();
                     }
                 }
 
                 if (input.B) {
-                    ua_CloseRangeSelection();
-                    ua_OpenUnitMenu();
+                    UA_CloseRangeSelection();
+                    UA_OpenUnitMenu();
                     return;
                 }
                 break;
             case ControlState.MENU:
                 if (input.B || input.BACK) {
-                    ua_CloseMenu();
+                    UA_CloseMenu();
                 }
                 break;
             default:
@@ -437,26 +414,27 @@ public class MBStage : MonoBehaviour {
         switch (State) {
             case ControlState.DESELECTED:
                 if (units.Get(_currentUnit).Equals(tilePos)) {
-                    ua_OpenUnitMenu();
+                    UA_OpenUnitMenu();
                 } else {
-                    ua_CloseUnitMenu();
+                    UA_CloseUnitMenu();
                 }
                 break;
             case ControlState.UNIT_MENU:
                 if (!units.Get(_currentUnit).Equals(tilePos)) {
-                    ua_CloseUnitMenu();
+                    UA_CloseUnitMenu();
                 }
                 break;
             case ControlState.UNIT_MOVE:
-                if (ua_MoveUnit(CursorPos)) {
-                    ua_CloseRangeSelection();
-                    ua_OpenUnitMenu();
+                if (UA_MoveUnit(tilePos)) {
+                    UA_CloseRangeSelection();
+                    UA_OpenUnitMenu();
                 }
                 break;
             case ControlState.UNIT_ATTACK:
-                if (ua_AttackTarget(CursorPos)) {
-                    ua_CloseRangeSelection();
-                    ua_OpenUnitMenu();
+                if (UA_AttackTarget(tilePos)) {
+                    MoveCursorTo(CurrentUnitPos);
+                    UA_CloseRangeSelection();
+                    UA_OpenUnitMenu();
                 }
                 break;
             default:
@@ -465,22 +443,23 @@ public class MBStage : MonoBehaviour {
     }
 
     public void ClickUnit(MBUnit unit) {
-        MapCoordinate pos = units.Get(unit);
-        MoveCursorTo(pos);
+        MapCoordinate unitPos = units.Get(unit);
+        MoveCursorTo(unitPos);
         switch (State) {
             case ControlState.DESELECTED:
             case ControlState.UNIT_MENU:
-                MoveCursorTo(pos);
+                MoveCursorTo(unitPos);
                 if (_currentUnit.Equals(unit)) {
-                    ua_OpenUnitMenu();
+                    UA_OpenUnitMenu();
                 } else {
-                    ua_CloseUnitMenu();
+                    UA_CloseUnitMenu();
                 }
                 break;
             case ControlState.UNIT_ATTACK:
-                if (ua_AttackTarget(CursorPos)) {
-                    ua_CloseRangeSelection();
-                    ua_OpenUnitMenu();
+                if (UA_AttackTarget(CursorPos)) {
+                    MoveCursorTo(CurrentUnitPos);
+                    UA_CloseRangeSelection();
+                    UA_OpenUnitMenu();
                 }
                 break;
             default:
@@ -510,7 +489,7 @@ public class MBStage : MonoBehaviour {
     }
 
     private void MoveCursorTo(MapCoordinate coordinate) {
-        if (InBounds(coordinate) && InRange(coordinate)) {
+        if (InBounds(coordinate)) {
             MapCoordinate oldPos = CursorPos;
             _cursorPos = coordinate;
 
@@ -533,16 +512,6 @@ public class MBStage : MonoBehaviour {
     private HashSet<MapCoordinate> _range;
     public HashSet<MapCoordinate> Range { get { return _range; } }
 
-    private void ResetRange() {
-        if (_range == null) {
-            return;
-        }
-        foreach (MapCoordinate coord in _range) {
-            tiles.Get(coord).setDefaultColor();
-        }
-        _range = null;
-    }
-
     /*
      * State Changes
      */
@@ -558,5 +527,88 @@ public class MBStage : MonoBehaviour {
         State = ControlState.WAIT;
         yield return null;
         State = newState;
+    }
+
+    private void StartUnitTurn() {
+        CurrentUnit.Unit.ResetForTurn();
+        MoveCursorTo(CurrentUnitPos);
+        if (CurrentUnit.IsPlayer) {
+            ChangeState(ControlState.UNIT_MENU);
+            UA_OpenUnitMenu();
+        } else {
+            StartCoroutine("AutomateTurn");
+        }
+    }
+
+    /*
+     * Events
+     */
+    Stack<Action> events = new Stack<Action>();
+
+    void AddEvent(Action evnt) {
+        events.Push(evnt);
+    }
+
+
+    /*
+     * MonoBehaviour Awake, Start, Update
+     */
+    void Awake() {
+        menuUI.SetActive(false);
+        unitMenuUI.SetActive(false);
+        _cursorPos = new MapCoordinate(0, 0);
+        State = ControlState.DESELECTED;
+
+        // Register Tiles
+        MBTile[] tileList = FindObjectsOfType<MBTile>();
+        Heights = new Dictionary<MapCoordinate, int>();
+        foreach (MBTile tile in tileList) {
+            Vector3 tilePos = tile.transform.position;
+            MapCoordinate mapCoordinate = new MapCoordinate(Mathf.RoundToInt(tilePos.x), Mathf.RoundToInt(tilePos.z));
+            tiles.Add(mapCoordinate, tile);
+            Heights.Add(mapCoordinate, Mathf.RoundToInt(tilePos.y - tile.transform.localPosition.y));
+            tile.setStage(this);
+        }
+
+        // Register Factions
+        HashSet<Faction> factions = new HashSet<Faction>();
+        foreach (MBUnit mbUnit in FindObjectsOfType<MBUnit>()) {
+            factions.Add(mbUnit.Unit.Faction);
+        }
+
+        FactionDiplomacy = new FactionDiplomacy(factions);
+
+        // Register Units
+        foreach (MBUnit mbUnit in FindObjectsOfType<MBUnit>()) {
+            Vector3 unitPos = mbUnit.transform.position;
+            MapCoordinate mapCoordinate = new MapCoordinate(Mathf.RoundToInt(unitPos.x), Mathf.RoundToInt(unitPos.z));
+            units.Add(mbUnit, mapCoordinate);
+            mbUnit.setStage(this);
+            mbUnit.Unit.Init(mapCoordinate);
+            FactionDiplomacy.RegisterUnit(mbUnit);
+        }
+
+        // Init Units
+        int fastestSpd = units.GetDictionary().Keys.Aggregate((agg, next) => next.Unit.c_Spd > agg.Unit.c_Spd ? next : agg).Unit.c_Spd;
+        foreach (MBUnit mbUnit in units.GetDictionary().Keys) {
+            mbUnit.Unit.InitCooldown(fastestSpd);
+            if (mbUnit.IsPlayer) {
+                mbUnit.Unit.SetLastTurn(-1);
+            }
+        }
+
+        TurnCount = 0;
+        _currentUnit = NextUnitTurn();
+        StartUnitTurn();
+    }
+
+    private void Start() {
+        input = InputManager.get();
+        MoveCursorTo(CursorPos);
+    }
+
+    void Update() {
+        UpdateCamera();
+        UpdateControllerInput();
     }
 }

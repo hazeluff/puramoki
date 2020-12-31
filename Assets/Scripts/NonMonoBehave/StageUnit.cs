@@ -86,7 +86,7 @@ public class StageUnit : ScriptableObject, IStageUnit {
     public void MoveTo(MapCoordinate newPos) {
         _lastPos = _currentPos;
         _currentPos = newPos;
-        AddCooldown(100 + (1000 - c_Spd));
+        AddCooldown(100);
         _moved = true;
     }
 
@@ -109,10 +109,22 @@ public class StageUnit : ScriptableObject, IStageUnit {
         }
     }
 
+    // Start of turn
     public void ResetForTurn() {
         _moved = false;
         _attacked = false;
     }
 
+    // Finish Turn
+    public void FinishTurn() {
+        AddCooldown(FinishTurnCooldown);
+    }
+
+    public int FinishTurnCooldown {
+        get {
+            int cd = 1000 - c_Spd;
+            return cd < 300 ? 300 : cd;
+        }
+    }
 
 }

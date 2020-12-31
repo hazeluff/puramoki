@@ -37,6 +37,7 @@ public interface IStageUnit {
     MapCoordinate Position { get; }
     MapCoordinate LastPos { get; }
     void MoveTo(MapCoordinate newPos);
+
     //Attack
     bool Attacked { get; }
     void Attack(IStageUnit target);
@@ -44,4 +45,5 @@ public interface IStageUnit {
 
     void ResetForTurn();
 
+    void FinishTurn();
 }

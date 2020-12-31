@@ -41,6 +41,25 @@ public class MBUnit : MBClickable, IMBUnit {
         Unit.MoveTo(lastCoord);
     }
 
+    public void Attack(IMBUnit target) {
+        Unit.Attack(target.Unit);
+        target.ReceiveAttack();
+    }
+
+    public void ReceiveAttack() {
+
+    }
+
+    public void FinishTurn(int lastTurnCount) {
+        Unit.SetLastTurn(lastTurnCount);
+        Unit.FinishTurn();        
+    }
+
+    public void Destroy() {
+        // Play animation
+        Destroy(this.gameObject);
+    }
+
     public override void Click() {
         stage.ClickUnit(this);
     }
