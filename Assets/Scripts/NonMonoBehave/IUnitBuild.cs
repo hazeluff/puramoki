@@ -1,14 +1,15 @@
-﻿public interface IUnitProfile {
+﻿public interface IUnitBuild {
     string Name { get; }
     int Lvl { get; }
-    UnitClass Class { get; }
+    void LevelUp();
     int ExpCurrent { get; }
     int ExpToNext { get; }
     void GainExp(int exp);
+    void GainExp(IUnitBuild unitDestroyed);
 
     // Base Stats
-    int HP { get; }
-    int EP { get; }
+    int Hp { get; }
+    int Ep { get; }
     int Atk { get; }
     int Def { get; }
     int Acc { get; }
@@ -23,6 +24,6 @@
     float ElemRes(Element element);
 
     // Gear
-    Weapon Weapon { get; }
+    IWeapon Weapon { get; }
     IEquipment[] Equipments { get; }
 }

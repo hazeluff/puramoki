@@ -1,5 +1,4 @@
-﻿public interface IDamageSource
-{
+﻿public interface IDamageInstance {
     int Damage { get; }
     DamageType Type { get; }
 }

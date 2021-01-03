@@ -14,7 +14,7 @@ public class MBTurnOrderDisplay : MonoBehaviour {
 
     private void Update() {
         List<string> unitCooldowns = stage.GetTurnOrder()
-            .ConvertAll<string>(unit => string.Format("{{{0}:{1}}}", unit.Unit.Profile.Name, unit.Unit.Cooldown));
+            .ConvertAll<string>(mbUnit => string.Format("{{{0}:{1}}}", mbUnit.Unit.Build.Name, mbUnit.Unit.Cooldown));
             
         text.text = string.Format("Turn #: {0}\nTurn Order: [{1}]\nCurrent Unit: {2}", 
             stage.TurnCount, String.Join(",", unitCooldowns.ToArray()), stage.CurrentUnit.Unit);

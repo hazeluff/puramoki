@@ -13,16 +13,13 @@ MonoBehaviour:
   m_Name: Rocketer
   m_EditorClassIdentifier: 
   _name: Rocketer
-  _level: 1
   _class: 1
-  _expCurrent: 0
-  _hp: 15
-  _mp: 7
-  _atk: 6
-  _def: 4
-  _int: 5
-  _res: 5
-  _hit: 3
-  _spd: 3
+  _baseHp: 10
+  _baseEp: 10
+  _baseAtk: 15
+  _baseDef: 5
+  _baseAcc: 10
+  _baseEva: 5
+  _baseSpd: 5
+  _baseRng: 15
   _mv: 2
-  _weapon: {fileID: 11400000, guid: ae1aaed3eba2cf549873f32904d298b8, type: 2}

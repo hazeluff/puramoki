@@ -631,8 +631,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1b6a3448f799fe40868be81a063d149, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _unit: {fileID: 11400000, guid: 7b004251057dce84182c2b108b6433d8, type: 2}
   _isPlayer: 1
+  _name: Hazeluff
+  _faction: {fileID: 11400000, guid: c41d0cf2aa82d294bb509ff678dbbd1f, type: 2}
+  _lvl: 1
+  _currentExp: 0
+  _baseUnit: {fileID: 11400000, guid: 40808d16460ad9b458fe11b9dd98315b, type: 2}
+  _weapon: {fileID: 11400000, guid: dbe37426650eb7c449704987cfd8338b, type: 2}
+  _equipment:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!1 &211549992
 GameObject:
   m_ObjectHideFlags: 0
@@ -4616,8 +4625,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1b6a3448f799fe40868be81a063d149, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _unit: {fileID: 11400000, guid: 9a21848ea9aa7b343a9b8708d874913e, type: 2}
   _isPlayer: 0
+  _name: RC
+  _faction: {fileID: 11400000, guid: 6cf4d69ea01b50146948ab2d14558e02, type: 2}
+  _lvl: 1
+  _currentExp: 0
+  _baseUnit: {fileID: 11400000, guid: 40d3a48bd31723f409a186cc1210607d, type: 2}
+  _weapon: {fileID: 11400000, guid: ae1aaed3eba2cf549873f32904d298b8, type: 2}
+  _equipment:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!135 &1108746081
 SphereCollider:
   m_ObjectHideFlags: 0

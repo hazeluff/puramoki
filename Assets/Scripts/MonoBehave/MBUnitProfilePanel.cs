@@ -46,12 +46,12 @@ public class MBUnitProfilePanel : MonoBehaviour {
         int newSelectedUnitHash = cursorUnit.GetHashCode();
         if (selectedUnitHash != newSelectedUnitHash) {
             selectedUnitHash = newSelectedUnitHash;
-            unitName.text = cursorUnit.Profile.Name;
-            unitLvl.text = String.Format("LVL {0}", cursorUnit.Profile.Lvl);
-            unitExp.text = String.Format("EXP {0} / {1}", cursorUnit.Profile.ExpCurrent, cursorUnit.Profile.ExpToNext);
+            unitName.text = cursorUnit.Build.Name;
+            unitLvl.text = String.Format("LVL {0}", cursorUnit.Build.Lvl);
+            unitExp.text = String.Format("EXP {0} / {1}", cursorUnit.Build.ExpCurrent, cursorUnit.Build.ExpToNext);
             unitFaction.text = cursorUnit.Faction.Name;
-            unitHp.text = String.Format("HP {0} / {1}", cursorUnit.c_HP, cursorUnit.Profile.HP);
-            unitEp.text = String.Format("EP {0} / {1}", cursorUnit.c_EP, cursorUnit.Profile.EP);
+            unitHp.text = String.Format("HP {0} / {1}", cursorUnit.c_Hp, cursorUnit.Build.Hp);
+            unitEp.text = String.Format("EP {0} / {1}", cursorUnit.c_Ep, cursorUnit.Build.Ep);
             unitMv.text = String.Format("MV {0}", cursorUnit.c_Mv);
             unitAtk.text = String.Format("ATK {0}", cursorUnit.c_Atk);
             unitAcc.text = String.Format("ACC {0}", cursorUnit.c_Acc);

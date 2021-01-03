@@ -1,48 +1,44 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-[CreateAssetMenu(fileName = "StageUnit", menuName = "Stage/Unit", order = 1)]
-public class StageUnit : ScriptableObject, IStageUnit {
+public class StageUnit : IStageUnit {
 
-    // Underlying serializable fields
-    [SerializeField]
-    private UnitProfile _profile;
-    [SerializeField]
+    public string Name { get { return Build.Name; } }
     private Faction _faction;
-
-    public const int UNINITIALIZED_START_HP = -1;
-    [SerializeField]
-    private List<IUserStatusEffect> _statusEffects;
-    public int overrideHP = UNINITIALIZED_START_HP;
-    private int _currentHP;
-
-
-    public IUnitProfile Profile { get { return _profile; } }
     public Faction Faction { get { return _faction; } }
 
+
+    private IUnitBuild _build;
+    public IUnitBuild Build { get { return _build; } }
+
+    private List<IUserStatusEffect> _statusEffects;
     public List<IUserStatusEffect> StatusEffects { get { throw new System.NotImplementedException(); } }
-    public int c_HP { get { return _currentHP; } }
-    public int c_EP { get { return _profile.EP; } }
-    public int c_Mv { get { return _profile.Mv; } }
 
-    public int c_Atk { get { return _profile.Atk + _profile.Weapon.Atk; } }
-    public int c_Acc { get { return _profile.Acc; } }
-    public int c_Spd { get { return _profile.Spd; } }
+    public const int UNINITIALIZED_START_HP = -1;
+    private int _currentHp;
+    public int c_Hp { get { return _currentHp; } }
+    public int c_Ep { get { return Build.Ep; } }
+    public int c_Mv { get { return Build.Mv; } }
 
-    public int c_Def { get { return _profile.Def; } }
-    public int c_Eva { get { return _profile.Eva; } }
-    public int c_Rng { get { return _profile.Rng; } }
+    public int c_Atk { get { return Build.Atk + Build.Weapon.Atk; } }
+    public int c_Acc { get { return Build.Acc; } }
+    public int c_Spd { get { return Build.Spd; } }
+
+    public int c_Def { get { return Build.Def; } }
+    public int c_Eva { get { return Build.Eva; } }
+    public int c_Rng { get { return Build.Rng; } }
 
     public float c_ElemRes(Element element) {
         throw new System.NotImplementedException();
     }
 
+    public StageUnit(string name, Faction faction, int lvl, int currentExp, IBaseUnit baseUnit, IWeapon weapon, IEquipment[] equipment) {
+        _faction = faction;
+        _build = new UnitBuild(name, lvl, currentExp, baseUnit, weapon, equipment);
+        _currentHp = Build.Hp;
+    }
+
     public void Init(MapCoordinate pos) {
-        if (overrideHP == StageUnit.UNINITIALIZED_START_HP) {
-            _currentHP = Profile.HP;
-        } else {      
-            _currentHP = overrideHP;
-        }
         _lastPos = pos;
         _currentPos = pos;
     }
@@ -95,18 +91,26 @@ public class StageUnit : ScriptableObject, IStageUnit {
     public bool Attacked { get { return _attacked; } }
 
     public void Attack(IStageUnit target) {
-        Debug.Log(Profile.Name + ": Attack [" + target.ToString() + "]");
-        target.ReceiveAttack(new BasicAttackInstance(c_Atk, DamageType.PHYSICAL));
-        AddCooldown(_profile.Weapon.Cooldown - c_Spd);
+        Debug.Log(Build.Name + ": Attack [" + target.ToString() + "]");
+        DamageResult damageResult = target.ReceiveAttack(new BasicAttackInstance(this, c_Atk, DamageType.PHYSICAL));
+        if (damageResult.IsKill) {
+            Build.GainExp(target.Build);
+        }
+        int atkCd = Build.Weapon.Cooldown - c_Spd;
+        AddCooldown(atkCd < 100 ? 100 : atkCd);
         _attacked = true;
     }
 
-    public void ReceiveAttack(IDamageSource source) {
-        Debug.Log(Profile.Name + ": Receive Attack [" + source.ToString() + "]");
+    public DamageResult ReceiveAttack(IDamageInstance source) {
+        Debug.Log(Build.Name + ": Receive Attack [" + source.ToString() + "]");
+        int startHP = _currentHp;
+        int damageReduced = c_Def;
         int reducedDmg = source.Damage - c_Def;
-        if ((this._currentHP = this._currentHP - reducedDmg) < 0) {
-            _currentHP = 0;
+        if ((_currentHp = _currentHp - reducedDmg) < 0) {
+            _currentHp = 0;
         }
+        int damageDealt = startHP - _currentHp;
+        return new DamageResult(damageReduced, damageDealt, startHP > 0 && _currentHp <= 0);
     }
 
     // Start of turn

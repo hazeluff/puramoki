@@ -1,15 +1,9 @@
 ﻿using UnityEngine;
 
-[CreateAssetMenu(fileName = "Weapon", menuName = "Equipment/Weapon", order = 1)]
-public class Weapon : ScriptableObject, IWeapon {
+[CreateAssetMenu(fileName = "Equipment", menuName = "Equipment/Equipment", order = 1)]
+public class Equipment : ScriptableObject, IEquipment {
     [SerializeField]
     private string _name;
-    [SerializeField]
-    private WeaponType _type;
-    [SerializeField]
-    private int _rangeMin;
-    [SerializeField]
-    private int _rangeMax;
     [SerializeField]
     private int  _hp;
     [SerializeField]
@@ -28,13 +22,8 @@ public class Weapon : ScriptableObject, IWeapon {
     private int _spd;
     [SerializeField]
     private int _mv;
-    [SerializeField]
-    private int _cooldown;
 
     public string Name { get { return _name; } }
-    public WeaponType Type { get { return _type; } }
-    public int RangeMin { get { return _rangeMin; } }
-    public int RangeMax { get { return _rangeMax; } }
     public int Hp { get { return _hp; } }
     public int Ep { get { return _mp; } }
     public int Atk { get { return _atk; } }
@@ -44,8 +33,6 @@ public class Weapon : ScriptableObject, IWeapon {
     public int Spd { get { return _spd; } }
     public int Rng { get { return _rng; } }
     public int Mv { get { return _mv; } }
-
-    public int Cooldown { get { return _cooldown; } }
 
     public float ElemRes(Element element) {
         return 0.0f;

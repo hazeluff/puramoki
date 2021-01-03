@@ -13,16 +13,13 @@ MonoBehaviour:
   m_Name: Fighter
   m_EditorClassIdentifier: 
   _name: Fighter
-  _level: 1
   _class: 0
-  _expCurrent: 0
-  _hp: 20
-  _ep: 2
-  _atk: 7
-  _def: 6
-  _acc: 5
-  _eva: 6
-  _spd: 100
-  _rng: 3
+  _baseHp: 20
+  _baseEp: 5
+  _baseAtk: 15
+  _baseDef: 10
+  _baseAcc: 5
+  _baseEva: 5
+  _baseSpd: 10
+  _baseRng: 5
   _mv: 3
-  _weapon: {fileID: 11400000, guid: dbe37426650eb7c449704987cfd8338b, type: 2}

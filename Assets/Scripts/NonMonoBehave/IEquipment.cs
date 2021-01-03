@@ -1,6 +1,6 @@
 ﻿public interface IEquipment {
-    int HP { get; }
-    int EP { get; }
+    int Hp { get; }
+    int Ep { get; }
     int Atk { get; }
     int Def { get; }
     int Acc { get; }

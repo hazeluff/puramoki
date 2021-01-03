@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 
-public interface IStageUnit {
+public interface IStageUnit : IStagePermanent {
 
-    IUnitProfile Profile { get; }
+    IUnitBuild Build { get; }
     Faction Faction { get; }
     
     List<IUserStatusEffect> StatusEffects { get; }
 
-    int c_HP { get; }
-    int c_EP { get; }
+    int c_Hp { get; }
+    int c_Ep { get; }
     int c_Mv { get; }
 
     int c_Atk { get; }
@@ -41,7 +41,7 @@ public interface IStageUnit {
     //Attack
     bool Attacked { get; }
     void Attack(IStageUnit target);
-    void ReceiveAttack(IDamageSource damage);
+    DamageResult ReceiveAttack(IDamageInstance damage);
 
     void ResetForTurn();
 

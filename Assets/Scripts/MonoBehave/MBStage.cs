@@ -111,9 +111,9 @@ public class MBStage : MonoBehaviour {
      *  Validates and fixes the game state and adds animations/events to the event stack
      */
     private void ValidateAndFixGameState() {
-        List<IMBUnit> deadUnits = units.GetDictionary().Keys.Where(mbUnit => mbUnit.Unit.c_HP <= 0).ToList();
+        List<IMBUnit> deadUnits = units.GetDictionary().Keys.Where(mbUnit => mbUnit.Unit.c_Hp <= 0).ToList();
         foreach (IMBUnit mbUnit in deadUnits) {
-            if (mbUnit.Unit.c_HP <= 0) {
+            if (mbUnit.Unit.c_Hp <= 0) {
                 RemoveUnit(mbUnit);
                 events.Push(() => mbUnit.Destroy());
             }
@@ -161,7 +161,7 @@ public class MBStage : MonoBehaviour {
 
     // Bot/AI
     IEnumerator AutomateTurn() {
-        Debug.Log("Automate Unit: " + _currentUnit.Unit.Profile.Name);
+        Debug.Log("Automate Unit: " + _currentUnit.Unit.Build.Name);
         // Do stuff
         yield return new WaitForSeconds(3);
         CurrentUnit.Move(new List<MapCoordinate>() { CurrentUnitPos });
@@ -254,18 +254,19 @@ public class MBStage : MonoBehaviour {
 
     // Move
     bool UA_MoveUnit(MapCoordinate mapPos) {
-        if (IsOccupied(CursorPos)) {
+        if (IsOccupied(mapPos)) {
             return false;
         }
 
-        if (!InRange(CursorPos)) {
+        if (!InRange(mapPos)) {
             return false;
         }
 
-        List<MapCoordinate> path = new List<MapCoordinate>() { CurrentUnitPos, mapPos };
         units.Remove(CurrentUnit);
-        units.Add(CurrentUnit, path[path.Count - 1]);
-        CurrentUnit.Move(path);
+        units.Add(CurrentUnit, mapPos);
+        Debug.Log(units.Get(mapPos));
+
+        CurrentUnit.Move(new List<MapCoordinate>() { CurrentUnitPos, mapPos });
 
         MaintainGameState();
         return true;
@@ -282,8 +283,8 @@ public class MBStage : MonoBehaviour {
     }
 
     private HashSet<MapCoordinate> FindAttackRange(IMBUnit mbUnit, MapCoordinate origin) {
-        int maxAttackRange = mbUnit.Unit.Profile.Weapon.RangeMax;
-        int minAttackRange = mbUnit.Unit.Profile.Weapon.RangeMin;
+        int maxAttackRange = mbUnit.Unit.Build.Weapon.RangeMax;
+        int minAttackRange = mbUnit.Unit.Build.Weapon.RangeMin;
         HashSet<MapCoordinate> range = new HashSet<MapCoordinate>();
         for (int xOffset = -maxAttackRange; xOffset <= maxAttackRange; xOffset++) {
             int yAbsRange = maxAttackRange - Math.Abs(xOffset);
@@ -442,7 +443,7 @@ public class MBStage : MonoBehaviour {
         }
     }
 
-    public void ClickUnit(MBUnit unit) {
+    public void ClickUnit(TestMBUnit unit) {
         MapCoordinate unitPos = units.Get(unit);
         MoveCursorTo(unitPos);
         switch (State) {
@@ -572,14 +573,14 @@ public class MBStage : MonoBehaviour {
 
         // Register Factions
         HashSet<Faction> factions = new HashSet<Faction>();
-        foreach (MBUnit mbUnit in FindObjectsOfType<MBUnit>()) {
+        foreach (TestMBUnit mbUnit in FindObjectsOfType<TestMBUnit>()) {
             factions.Add(mbUnit.Unit.Faction);
         }
 
         FactionDiplomacy = new FactionDiplomacy(factions);
 
         // Register Units
-        foreach (MBUnit mbUnit in FindObjectsOfType<MBUnit>()) {
+        foreach (TestMBUnit mbUnit in FindObjectsOfType<TestMBUnit>()) {
             Vector3 unitPos = mbUnit.transform.position;
             MapCoordinate mapCoordinate = new MapCoordinate(Mathf.RoundToInt(unitPos.x), Mathf.RoundToInt(unitPos.z));
             units.Add(mbUnit, mapCoordinate);
@@ -590,7 +591,7 @@ public class MBStage : MonoBehaviour {
 
         // Init Units
         int fastestSpd = units.GetDictionary().Keys.Aggregate((agg, next) => next.Unit.c_Spd > agg.Unit.c_Spd ? next : agg).Unit.c_Spd;
-        foreach (MBUnit mbUnit in units.GetDictionary().Keys) {
+        foreach (TestMBUnit mbUnit in units.GetDictionary().Keys) {
             mbUnit.Unit.InitCooldown(fastestSpd);
             if (mbUnit.IsPlayer) {
                 mbUnit.Unit.SetLastTurn(-1);
