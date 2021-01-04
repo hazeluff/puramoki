@@ -1,4 +1,7 @@
-﻿public class UnitBuild : IUnitBuild
+﻿using System.Collections.Generic;
+using UnityEngine;
+
+public class UnitBuild : IUnitBuild
 {
     private string _name;
 
@@ -16,7 +19,7 @@
 
     public void GainExp(int exp) {
         c_Exp += exp;
-        while (c_Exp > ExpToNext) {
+        while (c_Exp >= ExpToNext) {
             c_Exp -= ExpToNext;
             LevelUp();
         }
@@ -24,7 +27,6 @@
 
     public void GainExp(IUnitBuild unitDestroyed) {
         int levelDiff = unitDestroyed.Lvl - this.Lvl;
-        
         GainExp(EvalDestroyExp(levelDiff));
     }
 
@@ -84,4 +86,60 @@
         _weapon = weapon;
         _equipments = equipments;
     }
+
+    // Equals, GetHashCode
+    public override bool Equals(object obj) {
+        var build = obj as UnitBuild;
+        return build != null &&
+               _name == build._name &&
+               Name == build.Name &&
+               _level == build._level &&
+               Lvl == build.Lvl &&
+               c_Exp == build.c_Exp &&
+               ExpCurrent == build.ExpCurrent &&
+               ExpToNext == build.ExpToNext &&
+               Hp == build.Hp &&
+               Ep == build.Ep &&
+               Atk == build.Atk &&
+               Def == build.Def &&
+               Acc == build.Acc &&
+               Eva == build.Eva &&
+               Spd == build.Spd &&
+               Rng == build.Rng &&
+               Mv == build.Mv &&
+               EqualityComparer<IBaseUnit>.Default.Equals(_baseUnit, build._baseUnit) &&
+               EqualityComparer<IBaseUnit>.Default.Equals(BaseUnit, build.BaseUnit) &&
+               EqualityComparer<IWeapon>.Default.Equals(_weapon, build._weapon) &&
+               EqualityComparer<IWeapon>.Default.Equals(Weapon, build.Weapon) &&
+               EqualityComparer<IEquipment[]>.Default.Equals(_equipments, build._equipments) &&
+               EqualityComparer<IEquipment[]>.Default.Equals(Equipments, build.Equipments);
+    }
+
+    public override int GetHashCode() {
+        var hashCode = -2049291569;
+        hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(_name);
+        hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Name);
+        hashCode = hashCode * -1521134295 + _level.GetHashCode();
+        hashCode = hashCode * -1521134295 + Lvl.GetHashCode();
+        hashCode = hashCode * -1521134295 + c_Exp.GetHashCode();
+        hashCode = hashCode * -1521134295 + ExpCurrent.GetHashCode();
+        hashCode = hashCode * -1521134295 + ExpToNext.GetHashCode();
+        hashCode = hashCode * -1521134295 + Hp.GetHashCode();
+        hashCode = hashCode * -1521134295 + Ep.GetHashCode();
+        hashCode = hashCode * -1521134295 + Atk.GetHashCode();
+        hashCode = hashCode * -1521134295 + Def.GetHashCode();
+        hashCode = hashCode * -1521134295 + Acc.GetHashCode();
+        hashCode = hashCode * -1521134295 + Eva.GetHashCode();
+        hashCode = hashCode * -1521134295 + Spd.GetHashCode();
+        hashCode = hashCode * -1521134295 + Rng.GetHashCode();
+        hashCode = hashCode * -1521134295 + Mv.GetHashCode();
+        hashCode = hashCode * -1521134295 + EqualityComparer<IBaseUnit>.Default.GetHashCode(_baseUnit);
+        hashCode = hashCode * -1521134295 + EqualityComparer<IBaseUnit>.Default.GetHashCode(BaseUnit);
+        hashCode = hashCode * -1521134295 + EqualityComparer<IWeapon>.Default.GetHashCode(_weapon);
+        hashCode = hashCode * -1521134295 + EqualityComparer<IWeapon>.Default.GetHashCode(Weapon);
+        hashCode = hashCode * -1521134295 + EqualityComparer<IEquipment[]>.Default.GetHashCode(_equipments);
+        hashCode = hashCode * -1521134295 + EqualityComparer<IEquipment[]>.Default.GetHashCode(Equipments);
+        return hashCode;
+    }
+
 }

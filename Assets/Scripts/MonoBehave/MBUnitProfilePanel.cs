@@ -35,7 +35,7 @@ public class MBUnitProfilePanel : MonoBehaviour {
     [SerializeField]
     private Text unitRng;
 
-    private int selectedUnitHash;
+    private int cursorUnitHash;
 
     void Update() {
         panel.SetActive(stage.IsOccupied(stage.CursorPos));
@@ -43,9 +43,9 @@ public class MBUnitProfilePanel : MonoBehaviour {
             return;
         }
         IStageUnit cursorUnit = stage.CursorUnit;
-        int newSelectedUnitHash = cursorUnit.GetHashCode();
-        if (selectedUnitHash != newSelectedUnitHash) {
-            selectedUnitHash = newSelectedUnitHash;
+        int hash = cursorUnit.GetHashCode();
+        if (cursorUnitHash != hash) {
+            cursorUnitHash = hash;
             unitName.text = cursorUnit.Build.Name;
             unitLvl.text = String.Format("LVL {0}", cursorUnit.Build.Lvl);
             unitExp.text = String.Format("EXP {0} / {1}", cursorUnit.Build.ExpCurrent, cursorUnit.Build.ExpToNext);

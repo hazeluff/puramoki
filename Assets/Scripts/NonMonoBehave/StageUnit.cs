@@ -12,7 +12,7 @@ public class StageUnit : IStageUnit {
     public IUnitBuild Build { get { return _build; } }
 
     private List<IUserStatusEffect> _statusEffects;
-    public List<IUserStatusEffect> StatusEffects { get { throw new System.NotImplementedException(); } }
+    public List<IUserStatusEffect> StatusEffects { get { return new List<IUserStatusEffect>(); } }
 
     public const int UNINITIALIZED_START_HP = -1;
     private int _currentHp;
@@ -130,5 +130,77 @@ public class StageUnit : IStageUnit {
             return cd < 300 ? 300 : cd;
         }
     }
+
+    // Equals, GetHashCode
+    public override bool Equals(object obj) {
+        var unit = obj as StageUnit;
+        return unit != null &&
+               Name == unit.Name &&
+               EqualityComparer<Faction>.Default.Equals(_faction, unit._faction) &&
+               EqualityComparer<Faction>.Default.Equals(Faction, unit.Faction) &&
+               EqualityComparer<IUnitBuild>.Default.Equals(_build, unit._build) &&
+               EqualityComparer<IUnitBuild>.Default.Equals(Build, unit.Build) &&
+               EqualityComparer<List<IUserStatusEffect>>.Default.Equals(_statusEffects, unit._statusEffects) &&
+               EqualityComparer<List<IUserStatusEffect>>.Default.Equals(StatusEffects, unit.StatusEffects) &&
+               _currentHp == unit._currentHp &&
+               c_Hp == unit.c_Hp &&
+               c_Ep == unit.c_Ep &&
+               c_Mv == unit.c_Mv &&
+               c_Atk == unit.c_Atk &&
+               c_Acc == unit.c_Acc &&
+               c_Spd == unit.c_Spd &&
+               c_Def == unit.c_Def &&
+               c_Eva == unit.c_Eva &&
+               c_Rng == unit.c_Rng &&
+               _cooldown == unit._cooldown &&
+               Cooldown == unit.Cooldown &&
+               _lastTurn == unit._lastTurn &&
+               LastTurn == unit.LastTurn &&
+               _moved == unit._moved &&
+               Moved == unit.Moved &&
+               EqualityComparer<MapCoordinate>.Default.Equals(_currentPos, unit._currentPos) &&
+               EqualityComparer<MapCoordinate>.Default.Equals(Position, unit.Position) &&
+               EqualityComparer<MapCoordinate>.Default.Equals(_lastPos, unit._lastPos) &&
+               EqualityComparer<MapCoordinate>.Default.Equals(LastPos, unit.LastPos) &&
+               _attacked == unit._attacked &&
+               Attacked == unit.Attacked &&
+               FinishTurnCooldown == unit.FinishTurnCooldown;
+    }
+
+    public override int GetHashCode() {
+        var hashCode = -838004479;
+        hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Name);
+        hashCode = hashCode * -1521134295 + EqualityComparer<Faction>.Default.GetHashCode(_faction);
+        hashCode = hashCode * -1521134295 + EqualityComparer<Faction>.Default.GetHashCode(Faction);
+        hashCode = hashCode * -1521134295 + EqualityComparer<IUnitBuild>.Default.GetHashCode(_build);
+        hashCode = hashCode * -1521134295 + EqualityComparer<IUnitBuild>.Default.GetHashCode(Build);
+        hashCode = hashCode * -1521134295 + EqualityComparer<List<IUserStatusEffect>>.Default.GetHashCode(_statusEffects);
+        hashCode = hashCode * -1521134295 + EqualityComparer<List<IUserStatusEffect>>.Default.GetHashCode(StatusEffects);
+        hashCode = hashCode * -1521134295 + _currentHp.GetHashCode();
+        hashCode = hashCode * -1521134295 + c_Hp.GetHashCode();
+        hashCode = hashCode * -1521134295 + c_Ep.GetHashCode();
+        hashCode = hashCode * -1521134295 + c_Mv.GetHashCode();
+        hashCode = hashCode * -1521134295 + c_Atk.GetHashCode();
+        hashCode = hashCode * -1521134295 + c_Acc.GetHashCode();
+        hashCode = hashCode * -1521134295 + c_Spd.GetHashCode();
+        hashCode = hashCode * -1521134295 + c_Def.GetHashCode();
+        hashCode = hashCode * -1521134295 + c_Eva.GetHashCode();
+        hashCode = hashCode * -1521134295 + c_Rng.GetHashCode();
+        hashCode = hashCode * -1521134295 + _cooldown.GetHashCode();
+        hashCode = hashCode * -1521134295 + Cooldown.GetHashCode();
+        hashCode = hashCode * -1521134295 + _lastTurn.GetHashCode();
+        hashCode = hashCode * -1521134295 + LastTurn.GetHashCode();
+        hashCode = hashCode * -1521134295 + _moved.GetHashCode();
+        hashCode = hashCode * -1521134295 + Moved.GetHashCode();
+        hashCode = hashCode * -1521134295 + EqualityComparer<MapCoordinate>.Default.GetHashCode(_currentPos);
+        hashCode = hashCode * -1521134295 + EqualityComparer<MapCoordinate>.Default.GetHashCode(Position);
+        hashCode = hashCode * -1521134295 + EqualityComparer<MapCoordinate>.Default.GetHashCode(_lastPos);
+        hashCode = hashCode * -1521134295 + EqualityComparer<MapCoordinate>.Default.GetHashCode(LastPos);
+        hashCode = hashCode * -1521134295 + _attacked.GetHashCode();
+        hashCode = hashCode * -1521134295 + Attacked.GetHashCode();
+        hashCode = hashCode * -1521134295 + FinishTurnCooldown.GetHashCode();
+        return hashCode;
+    }
+
 
 }
