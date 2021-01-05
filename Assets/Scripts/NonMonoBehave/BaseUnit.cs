@@ -7,7 +7,7 @@ public class BaseUnit : ScriptableObject, IBaseUnit
     [SerializeField]
     private string _name;
     [SerializeField]
-    private UnitClass _class;
+    private UnitType _type;
     [SerializeField]
     private int _baseHp;
     [SerializeField]
@@ -28,7 +28,7 @@ public class BaseUnit : ScriptableObject, IBaseUnit
     private int _mv;
 
     public string Name { get { return _name; } }
-    public UnitClass Class { get { return _class; } }
+    public UnitType Type { get { return _type; } }
     
     public int BaseHp { get { return _baseHp; } }
     public int HpAt(int lvl) { return BaseHp + (int) Mathf.Floor(BaseHp * Mathf.Pow(1.1f, lvl - 1)); }

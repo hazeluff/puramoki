@@ -4,8 +4,8 @@ using UnityEngine;
 public class UnitBuild : IUnitBuild
 {
     private string _name;
-
     public string Name { get { return _name == null || _name.Equals("") ? BaseUnit.Name: _name; } }
+    public UnitType Type { get { return BaseUnit.Type; } }
     private int _level;
     public int Lvl { get { return _level; } }
 

@@ -1,5 +1,6 @@
 ﻿public interface IUnitBuild {
     string Name { get; }
+    UnitType Type { get; }
     int Lvl { get; }
     void LevelUp();
     int ExpCurrent { get; }

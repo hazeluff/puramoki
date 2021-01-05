@@ -1,6 +1,6 @@
 ﻿public interface IBaseUnit {
     string Name { get; }
-    UnitClass Class { get; }
+    UnitType Type { get; }
 
     // Base Stats
     int BaseHp { get; }
