@@ -128,8 +128,7 @@ public class MBStage : MonoBehaviour {
 
     public List<IMBUnit> GetTurnOrder() {
         List<IMBUnit> units = this.units.GetDictionary()
-            .ToList<KeyValuePair<IMBUnit, MapCoordinate>>()
-            .ConvertAll<IMBUnit>(pair => pair.Key)
+            .Select<KeyValuePair<IMBUnit, MapCoordinate>, IMBUnit>(pair => pair.Key)
             .OrderBy(unit => unit.Unit.Cooldown)
             .ThenBy(unit => unit.Unit.LastTurn)
             .ToList<IMBUnit>();

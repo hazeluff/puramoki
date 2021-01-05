@@ -793,7 +793,7 @@ MonoBehaviour:
   _baseUnit: {fileID: 11400000, guid: 40808d16460ad9b458fe11b9dd98315b, type: 2}
   _weapon: {fileID: 11400000, guid: dbe37426650eb7c449704987cfd8338b, type: 2}
   _equipment:
-  - {fileID: 0}
+  - {fileID: 11400000, guid: e0a1bc3c6b2378a40b437c2378a5ed26, type: 2}
   - {fileID: 0}
   - {fileID: 0}
 --- !u!1 &211549992

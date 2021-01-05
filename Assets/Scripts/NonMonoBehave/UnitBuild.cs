@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Linq;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class UnitBuild : IUnitBuild
@@ -57,15 +59,15 @@ public class UnitBuild : IUnitBuild
         }
 }
 
-    public int Hp { get { return BaseUnit.HpAt(Lvl) + Weapon.Hp; } }
-    public int Ep { get { return BaseUnit.EpAt(Lvl) + Weapon.Ep; } }
-    public int Atk { get { return BaseUnit.AtkAt(Lvl) + Weapon.Atk; } }
-    public int Def { get { return BaseUnit.DefAt(Lvl) + Weapon.Def; } }
-    public int Acc { get { return BaseUnit.AccAt(Lvl) + Weapon.Acc; } }
-    public int Eva { get { return BaseUnit.EvaAt(Lvl) + Weapon.Eva; } }
-    public int Spd { get { return BaseUnit.SpdAt(Lvl) + Weapon.Spd; } }
-    public int Rng { get { return BaseUnit.RngAt(Lvl) + Weapon.Rng; } }
-    public int Mv { get { return BaseUnit.Mv + Weapon.Mv; } }
+    public int Hp { get { return BaseUnit.HpAt(Lvl) + Weapon.Hp + EquipmentsStat(e => e.Hp); } }
+    public int Ep { get { return BaseUnit.EpAt(Lvl) + Weapon.Ep + EquipmentsStat(e => e.Ep); } }
+    public int Atk { get { return BaseUnit.AtkAt(Lvl) + Weapon.Atk + EquipmentsStat(e => e.Atk); } }
+    public int Def { get { return BaseUnit.DefAt(Lvl) + Weapon.Def + EquipmentsStat(e => e.Def); } }
+    public int Acc { get { return BaseUnit.AccAt(Lvl) + Weapon.Acc + EquipmentsStat(e => e.Acc); } }
+    public int Eva { get { return BaseUnit.EvaAt(Lvl) + Weapon.Eva + EquipmentsStat(e => e.Eva); } }
+    public int Spd { get { return BaseUnit.SpdAt(Lvl) + Weapon.Spd + EquipmentsStat(e => e.Spd); } }
+    public int Rng { get { return BaseUnit.RngAt(Lvl) + Weapon.Rng + EquipmentsStat(e => e.Rng); } }
+    public int Mv { get { return BaseUnit.Mv + Weapon.Mv + EquipmentsStat(e => e.Mv); } }
 
     private IBaseUnit _baseUnit;
     public IBaseUnit BaseUnit { get { return _baseUnit; } set { _baseUnit = value; } }
@@ -73,6 +75,9 @@ public class UnitBuild : IUnitBuild
     public IWeapon Weapon { get { return _weapon; } set { _weapon = value; } }
     private IEquipment[] _equipments;
     public IEquipment[] Equipments { get { return _equipments; } set { _equipments = value; } }
+    private int EquipmentsStat(Func<IEquipment, int> statFunc) {
+        return new List<IEquipment>(Equipments).Where(equip => equip != null).Select<IEquipment, int>(statFunc).Sum();
+    }
 
     public float ElemRes(Element element) {
         throw new System.NotImplementedException();
@@ -89,7 +94,7 @@ public class UnitBuild : IUnitBuild
 
     // Equals, GetHashCode
     public override bool Equals(object obj) {
-        var build = obj as UnitBuild;
+        UnitBuild build = obj as UnitBuild;
         return build != null &&
                _name == build._name &&
                Name == build.Name &&
@@ -116,7 +121,7 @@ public class UnitBuild : IUnitBuild
     }
 
     public override int GetHashCode() {
-        var hashCode = -2049291569;
+        int hashCode = -2049291569;
         hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(_name);
         hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Name);
         hashCode = hashCode * -1521134295 + _level.GetHashCode();
