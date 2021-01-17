@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 public interface IMBUnit {
+    void Init(MBStage stage, IStageUnit unit, MapCoordinate pos);
     IStageUnit Unit { get; }
     bool IsPlayer { get; }
 
@@ -11,5 +13,5 @@ public interface IMBUnit {
     void Destroy();
 
     // Finish Turn
-    void FinishTurn(int lastTurnCount);
+    void FinishTurn(int turnNum);
 }

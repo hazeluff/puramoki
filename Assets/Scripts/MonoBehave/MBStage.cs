@@ -16,6 +16,15 @@ public class MBStage : MonoBehaviour {
     [SerializeField]
     private GameObject menuUI;
 
+    [SerializeField]
+    private MapCoordinate[] userDeployPos = new MapCoordinate[5] {
+        new MapCoordinate(0,0),
+        new MapCoordinate(0,1),
+        new MapCoordinate(0,-1),
+        new MapCoordinate(1,0),
+        new MapCoordinate(-1,0)
+    };
+
     private InputManager input;
 
     public ControlState State { get; private set; }
@@ -121,7 +130,8 @@ public class MBStage : MonoBehaviour {
     }
 
     // Turn Order
-    public int TurnCount { get; private set; }
+    private int _turnCount = 0;
+    public int TurnCount { get; }
     private IMBUnit _currentUnit = null;
     public IMBUnit CurrentUnit { get { return _currentUnit; } }
     public MapCoordinate CurrentUnitPos { get { return units.Get(CurrentUnit); } }
@@ -152,7 +162,7 @@ public class MBStage : MonoBehaviour {
 
     private void FinishUnitTurn() {
         if (_currentUnit != null) {
-            _currentUnit.FinishTurn(TurnCount++);
+            _currentUnit.FinishTurn(_turnCount++);
         }
         _currentUnit = NextUnitTurn();
         StartUnitTurn();
@@ -442,7 +452,7 @@ public class MBStage : MonoBehaviour {
         }
     }
 
-    public void ClickUnit(TestMBUnit unit) {
+    public void ClickUnit(IMBUnit unit) {
         MapCoordinate unitPos = units.Get(unit);
         MoveCursorTo(unitPos);
         switch (State) {
@@ -554,6 +564,8 @@ public class MBStage : MonoBehaviour {
      * MonoBehaviour Awake, Start, Update
      */
     void Awake() {
+        MBStageLoader stageLoader = FindObjectOfType<MBStageLoader>();
+
         menuUI.SetActive(false);
         unitMenuUI.SetActive(false);
         _cursorPos = new MapCoordinate(0, 0);
@@ -570,36 +582,44 @@ public class MBStage : MonoBehaviour {
             tile.setStage(this);
         }
 
-        // Register Factions
-        HashSet<Faction> factions = new HashSet<Faction>();
-        foreach (TestMBUnit mbUnit in FindObjectsOfType<TestMBUnit>()) {
-            factions.Add(mbUnit.Unit.Faction);
-        }
-
-        FactionDiplomacy = new FactionDiplomacy(factions);
-
-        // Register Units
-        foreach (TestMBUnit mbUnit in FindObjectsOfType<TestMBUnit>()) {
+        // Instantiate Units
+        foreach (MBUnit mbUnit in FindObjectsOfType<MBUnit>()) {
             Vector3 unitPos = mbUnit.transform.position;
             MapCoordinate mapCoordinate = new MapCoordinate(Mathf.RoundToInt(unitPos.x), Mathf.RoundToInt(unitPos.z));
-            units.Add(mbUnit, mapCoordinate);
-            mbUnit.setStage(this);
-            mbUnit.Unit.Init(mapCoordinate);
+            mbUnit.Init(this, null, mapCoordinate);
+        }
+
+        for (int i=0; i < stageLoader.UserBuilds.Count && i < userDeployPos.Length; i++) {
+            IUnitBuild userBuild = stageLoader.UserBuilds[i];
+            MapCoordinate unitPos = userDeployPos[i];
+            GameObject unitPrefab = (GameObject) Resources.Load("Model/Stage/Unit");
+            IStageUnit stageUnit = new StageUnit(Factions.GOOD, userBuild);
+            GameObject unitGo = (GameObject) Instantiate(unitPrefab);
+            unitGo.GetComponent<IMBUnit>().Init(this, stageUnit, unitPos);
+        }
+
+        // Init Factions
+        HashSet<Faction> factions = new HashSet<Faction>();
+        foreach (MBUnit mbUnit in FindObjectsOfType<MBUnit>()) {
+            factions.Add(mbUnit.Unit.Faction);
+        }
+        FactionDiplomacy = new FactionDiplomacy(factions);
+
+        // Register Units
+        foreach (MBUnit mbUnit in FindObjectsOfType<MBUnit>()) {
+            units.Add(mbUnit, mbUnit.Unit.Position);
             FactionDiplomacy.RegisterUnit(mbUnit);
         }
 
         // Init Units
         int fastestSpd = units.GetDictionary().Keys.Aggregate((agg, next) => next.Unit.c_Spd > agg.Unit.c_Spd ? next : agg).Unit.c_Spd;
-        foreach (TestMBUnit mbUnit in units.GetDictionary().Keys) {
+        foreach (MBUnit mbUnit in units.GetDictionary().Keys) {
             mbUnit.Unit.InitCooldown(fastestSpd);
-            if (mbUnit.IsPlayer) {
-                mbUnit.Unit.SetLastTurn(-1);
-            }
         }
-
-        TurnCount = 0;
+        
         _currentUnit = NextUnitTurn();
         StartUnitTurn();
+        Destroy(stageLoader);
     }
 
     private void Start() {

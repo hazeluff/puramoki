@@ -4,7 +4,7 @@ using System.Collections.Generic;
 public class FactionDiplomacy {
     private Dictionary<Faction, Dictionary<Faction, DiplomacyStatus>> Diplomacy = 
         new Dictionary<Faction, Dictionary<Faction, DiplomacyStatus>>();
-    private Dictionary<Faction, List<TestMBUnit>> Units = new Dictionary<Faction, List<TestMBUnit>>();
+    private Dictionary<Faction, List<IMBUnit>> Units = new Dictionary<Faction, List<IMBUnit>>();
 
     public FactionDiplomacy(HashSet<Faction> factions) {
         foreach (Faction faction in factions) {
@@ -25,10 +25,10 @@ public class FactionDiplomacy {
         }
 
         Diplomacy.Add(faction, new Dictionary<Faction, DiplomacyStatus>());
-        Units.Add(faction, new List<TestMBUnit>());
+        Units.Add(faction, new List<IMBUnit>());
     }
 
-    public void RegisterUnit(TestMBUnit unit) {
+    public void RegisterUnit(IMBUnit unit) {
         Units[unit.Unit.Faction].Add(unit);
     }
 }

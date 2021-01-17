@@ -29,7 +29,6 @@ public interface IStageUnit : IStagePermanent {
     void InitCooldown(int highestUnitSpd);
     void AddCooldown(int amt);
     void ReduceCooldown(int amt);
-    void SetLastTurn(int turn);
 
     // Actions
     // Move
@@ -45,5 +44,5 @@ public interface IStageUnit : IStagePermanent {
 
     void ResetForTurn();
 
-    void FinishTurn();
+    void FinishTurn(int turnNum);
 }

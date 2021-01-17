@@ -17,6 +17,6 @@ public class MBTurnOrderDisplay : MonoBehaviour {
             .ConvertAll<string>(mbUnit => string.Format("{{{0}:{1}}}", mbUnit.Unit.Build.Name, mbUnit.Unit.Cooldown));
             
         text.text = string.Format("Turn #: {0}\nTurn Order: [{1}]\nCurrent Unit: {2}", 
-            stage.TurnCount, String.Join(",", unitCooldowns.ToArray()), stage.CurrentUnit.Unit);
+            stage.TurnCount, String.Join(",", unitCooldowns.ToArray()), stage.CurrentUnit == null ? null : stage.CurrentUnit.Unit);
     }
 }

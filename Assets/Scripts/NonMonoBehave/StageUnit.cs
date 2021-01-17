@@ -32,10 +32,15 @@ public class StageUnit : IStageUnit {
         throw new System.NotImplementedException();
     }
 
-    public StageUnit(string name, Faction faction, int lvl, int currentExp, IBaseUnit baseUnit, IWeapon weapon, IEquipment[] equipment) {
+    public StageUnit(Faction faction, IUnitBuild build) {
         _faction = faction;
-        _build = new UnitBuild(name, lvl, currentExp, baseUnit, weapon, equipment);
-        _currentHp = Build.Hp;
+        _build = build;
+        _currentHp = build.Hp;
+    }
+
+    public StageUnit(string name, Faction faction, int lvl, int currentExp, IBaseUnit baseUnit, IWeapon weapon, IEquipment[] equipment) 
+        :this(faction, new UnitBuild(name, lvl, currentExp, baseUnit, weapon, equipment)){
+
     }
 
     public void Init(MapCoordinate pos) {
@@ -47,7 +52,7 @@ public class StageUnit : IStageUnit {
     public const int MINIMUM_COOLDOWN = 200;
     private int _cooldown = 0;
     public int Cooldown { get { return _cooldown; } }
-    private int _lastTurn = 0;
+    private int _lastTurn = -1;
     public int LastTurn { get { return _lastTurn; } }
 
     public void InitCooldown(int highestUnitSpd) {
@@ -64,10 +69,6 @@ public class StageUnit : IStageUnit {
 
     public void ReduceCooldown(int amt) {
         _cooldown -= amt;
-    }
-
-    public void SetLastTurn(int turn) {
-        _lastTurn = turn;
     }
 
     // Actions
@@ -120,7 +121,8 @@ public class StageUnit : IStageUnit {
     }
 
     // Finish Turn
-    public void FinishTurn() {
+    public void FinishTurn(int turnNum) {
+        _lastTurn = turnNum;
         AddCooldown(FinishTurnCooldown);
     }
 
