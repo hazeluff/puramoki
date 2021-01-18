@@ -502,8 +502,6 @@ public class MBStage : MonoBehaviour {
         if (InBounds(coordinate)) {
             MapCoordinate oldPos = CursorPos;
             _cursorPos = coordinate;
-
-            cursor.localPosition = CursorPos.Vector3 + (Vector3.up * Heights[CursorPos]);
             mbCamera.MoveTo(coordinate.Vector3);
 
             MBTile tile = tiles.Get(coordinate);
@@ -592,7 +590,7 @@ public class MBStage : MonoBehaviour {
         for (int i=0; i < stageLoader.UserBuilds.Count && i < userDeployPos.Length; i++) {
             IUnitBuild userBuild = stageLoader.UserBuilds[i];
             MapCoordinate unitPos = userDeployPos[i];
-            GameObject unitPrefab = (GameObject) Resources.Load("Model/Stage/Unit");
+            GameObject unitPrefab = (GameObject) Resources.Load("Model/Stage/TestUnit");
             IStageUnit stageUnit = new StageUnit(Factions.GOOD, userBuild);
             GameObject unitGo = (GameObject) Instantiate(unitPrefab);
             unitGo.GetComponent<IMBUnit>().Init(this, stageUnit, unitPos);
@@ -603,7 +601,8 @@ public class MBStage : MonoBehaviour {
         foreach (MBUnit mbUnit in FindObjectsOfType<MBUnit>()) {
             factions.Add(mbUnit.Unit.Faction);
         }
-        FactionDiplomacy = new FactionDiplomacy(factions);
+        FactionDiplomacy = new FactionDiplomacy(factions);
+
 
         // Register Units
         foreach (MBUnit mbUnit in FindObjectsOfType<MBUnit>()) {

@@ -5,10 +5,6 @@ using UnityEngine.EventSystems;
 
 public class MBUnit : MBClickable, IMBUnit {
 
-    private static readonly Vector3 Y_OFFSET = new Vector3(0.0f, 0.25f, 0.0f);
-
-    protected MeshRenderer _renderer;
-
     private MBStage _stage;
     
     protected IStageUnit _unit;
@@ -20,7 +16,7 @@ public class MBUnit : MBClickable, IMBUnit {
             _unit = unit;
         }
         _unit.Init(pos);
-        transform.position = new Vector3(pos.X, 0.0f, pos.Y) + Y_OFFSET;
+        transform.position = new Vector3(pos.X, 0.0f, pos.Y);
     }
 
     [SerializeField]
@@ -28,19 +24,14 @@ public class MBUnit : MBClickable, IMBUnit {
     public bool IsPlayer { get { return _isPlayer; } }
 
     protected virtual void Awake() {
-        _renderer = GetComponent<MeshRenderer>();
+
     }
 
     void Update() {
         if (_stage == null || _unit == null) {
             return;
         }
-        transform.localPosition = new Vector3(Unit.Position.X, _stage.Heights[Unit.Position], Unit.Position.Y) + Y_OFFSET;
-        setColor(this.Equals(_stage.CurrentUnit) ? Color.magenta : Color.white);
-    }
-
-    public void setColor(Color color) {
-        _renderer.material.color = color;
+        transform.localPosition = new Vector3(Unit.Position.X, _stage.Heights[Unit.Position], Unit.Position.Y);
     }
 
     public void Move(List<MapCoordinate> path) {
