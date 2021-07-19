@@ -18,6 +18,11 @@ public class MapCoordinate {
         this.Y = y;
     }
 
+    public MapCoordinate(Vector2Int v2int) {
+        this.X = v2int.x;
+        this.Y = v2int.y;
+    }
+
     public static MapCoordinate operator +(MapCoordinate c1, MapCoordinate c2) {
         return new MapCoordinate(c1.X + c2.X, c1.Y + c2.Y);
     }

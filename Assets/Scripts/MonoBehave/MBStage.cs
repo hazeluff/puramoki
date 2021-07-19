@@ -17,12 +17,12 @@ public class MBStage : MonoBehaviour {
     private GameObject menuUI;
 
     [SerializeField]
-    private MapCoordinate[] userDeployPos = new MapCoordinate[5] {
-        new MapCoordinate(0,0),
-        new MapCoordinate(0,1),
-        new MapCoordinate(0,-1),
-        new MapCoordinate(1,0),
-        new MapCoordinate(-1,0)
+    private Vector2Int[] userDeployPos = new Vector2Int[5] {
+        new Vector2Int(0,0),
+        new Vector2Int(0,1),
+        new Vector2Int(0,-1),
+        new Vector2Int(1,0),
+        new Vector2Int(-1,0)
     };
 
     private InputManager input;
@@ -589,7 +589,7 @@ public class MBStage : MonoBehaviour {
 
         for (int i=0; i < stageLoader.UserBuilds.Count && i < userDeployPos.Length; i++) {
             IUnitBuild userBuild = stageLoader.UserBuilds[i];
-            MapCoordinate unitPos = userDeployPos[i];
+            MapCoordinate unitPos = new MapCoordinate(userDeployPos[i]);
             GameObject unitPrefab = (GameObject) Resources.Load("Model/Stage/TestUnit");
             IStageUnit stageUnit = new StageUnit(Factions.GOOD, userBuild);
             GameObject unitGo = (GameObject) Instantiate(unitPrefab);

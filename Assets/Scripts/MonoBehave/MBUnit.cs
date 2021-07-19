@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class MBUnit : MBClickable, IMBUnit {
+public abstract class MBUnit : MBClickable, IMBUnit {
 
     private MBStage _stage;
     
     protected IStageUnit _unit;
     public IStageUnit Unit { get { return _unit; } }
+
+    public abstract float ModelHeight { get; }
 
     public void Init(MBStage stage, IStageUnit unit, MapCoordinate pos) {
         _stage = stage;
@@ -16,7 +18,6 @@ public class MBUnit : MBClickable, IMBUnit {
             _unit = unit;
         }
         _unit.Init(pos);
-        transform.position = new Vector3(pos.X, 0.0f, pos.Y);
     }
 
     [SerializeField]
@@ -31,7 +32,12 @@ public class MBUnit : MBClickable, IMBUnit {
         if (_stage == null || _unit == null) {
             return;
         }
-        transform.localPosition = new Vector3(Unit.Position.X, _stage.Heights[Unit.Position], Unit.Position.Y);
+        SetModelPosition();
+    }
+
+    void SetModelPosition() {
+        float mapHeight = _stage.Heights[Unit.Position];
+        transform.localPosition = new Vector3(Unit.Position.X, mapHeight + ModelHeight, Unit.Position.Y);
     }
 
     public void Move(List<MapCoordinate> path) {

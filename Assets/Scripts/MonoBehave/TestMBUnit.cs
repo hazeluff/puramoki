@@ -21,6 +21,10 @@ public class TestMBUnit : MBUnit, IMBUnit {
     [SerializeField]
     private Equipment[] _equipment = new Equipment[3];
 
+    [SerializeField]
+    private float _modelHeight = 0.25f;
+    public override float ModelHeight { get { return _modelHeight; } }
+
     protected override void Awake() {
         base.Awake();
         _unit = new StageUnit(_name, _faction, _lvl, _currentExp, _baseUnit, _weapon, _equipment);

@@ -6,6 +6,9 @@ public interface IMBUnit {
     IStageUnit Unit { get; }
     bool IsPlayer { get; }
 
+    // Character Model
+    float ModelHeight { get; }
+
     // Actions
     void Move(List<MapCoordinate> path);
     void Attack(IMBUnit target);
