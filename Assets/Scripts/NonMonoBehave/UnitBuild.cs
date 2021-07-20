@@ -3,8 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UnitBuild : IUnitBuild
-{
+public class UnitBuild {
     private string _name;
     public string Name { get { return _name == null || _name.Equals("") ? BaseUnit.Name: _name; } }
     public UnitType Type { get { return BaseUnit.Type; } }
@@ -27,7 +26,7 @@ public class UnitBuild : IUnitBuild
         }
     }
 
-    public void GainExp(IUnitBuild unitDestroyed) {
+    public void GainExp(UnitBuild unitDestroyed) {
         int levelDiff = unitDestroyed.Lvl - this.Lvl;
         GainExp(EvalDestroyExp(levelDiff));
     }
@@ -91,6 +90,9 @@ public class UnitBuild : IUnitBuild
         _weapon = weapon;
         _equipments = equipments;
     }
+
+    // Assets
+    public GameObject Model { get { return BaseUnit.Model; } }
 
     // Equals, GetHashCode
     public override bool Equals(object obj) {

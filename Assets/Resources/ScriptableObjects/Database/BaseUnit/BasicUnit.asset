@@ -13,16 +13,14 @@ MonoBehaviour:
   m_Name: BasicUnit
   m_EditorClassIdentifier: 
   _name: BasicUnit
-  _level: 1
-  _class: 0
-  _expCurrent: 0
-  _hp: 10
-  _mp: 10
-  _atk: 5
-  _def: 5
-  _int: 5
-  _res: 5
-  _hit: 5
-  _spd: 5
+  _type: 0
+  _baseHp: 0
+  _baseEp: 0
+  _baseAtk: 0
+  _baseDef: 0
+  _baseAcc: 0
+  _baseEva: 0
+  _baseSpd: 0
+  _baseRng: 0
   _mv: 3
-  _weapon: {fileID: 11400000, guid: dbe37426650eb7c449704987cfd8338b, type: 2}
+  _model: {fileID: 8108177893325580632, guid: 6fbaf49d57238484081f2dd338d4ee3a, type: 3}

@@ -1,6 +1,10 @@
-﻿public interface IBaseUnit {
+﻿using UnityEngine;
+
+public interface IBaseUnit {
     string Name { get; }
     UnitType Type { get; }
+
+    GameObject Model { get; }
 
     // Base Stats
     int BaseHp { get; }

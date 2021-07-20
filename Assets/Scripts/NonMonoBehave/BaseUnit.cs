@@ -26,6 +26,10 @@ public class BaseUnit : ScriptableObject, IBaseUnit
     private int _baseRng;
     [SerializeField]
     private int _mv;
+    [SerializeField]
+    private GameObject _model;
+
+    public GameObject Model { get { return _model; } }
 
     public string Name { get { return _name; } }
     public UnitType Type { get { return _type; } }

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Rocketer
   m_EditorClassIdentifier: 
   _name: Rocketer
-  _class: 1
+  _type: 0
   _baseHp: 10
   _baseEp: 10
   _baseAtk: 15
@@ -23,3 +23,4 @@ MonoBehaviour:
   _baseSpd: 5
   _baseRng: 15
   _mv: 2
+  _model: {fileID: 8108177893325580632, guid: 6fbaf49d57238484081f2dd338d4ee3a, type: 3}

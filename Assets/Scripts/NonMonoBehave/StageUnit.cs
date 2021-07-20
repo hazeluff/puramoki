@@ -8,8 +8,8 @@ public class StageUnit : IStageUnit {
     public Faction Faction { get { return _faction; } }
 
 
-    private IUnitBuild _build;
-    public IUnitBuild Build { get { return _build; } }
+    private UnitBuild _build;
+    public UnitBuild Build { get { return _build; } }
 
     private List<IUserStatusEffect> _statusEffects;
     public List<IUserStatusEffect> StatusEffects { get { return new List<IUserStatusEffect>(); } }
@@ -32,7 +32,7 @@ public class StageUnit : IStageUnit {
         throw new System.NotImplementedException();
     }
 
-    public StageUnit(Faction faction, IUnitBuild build) {
+    public StageUnit(Faction faction, UnitBuild build) {
         _faction = faction;
         _build = build;
         _currentHp = build.Hp;
@@ -140,8 +140,8 @@ public class StageUnit : IStageUnit {
                Name == unit.Name &&
                EqualityComparer<Faction>.Default.Equals(_faction, unit._faction) &&
                EqualityComparer<Faction>.Default.Equals(Faction, unit.Faction) &&
-               EqualityComparer<IUnitBuild>.Default.Equals(_build, unit._build) &&
-               EqualityComparer<IUnitBuild>.Default.Equals(Build, unit.Build) &&
+               EqualityComparer<UnitBuild>.Default.Equals(_build, unit._build) &&
+               EqualityComparer<UnitBuild>.Default.Equals(Build, unit.Build) &&
                EqualityComparer<List<IUserStatusEffect>>.Default.Equals(_statusEffects, unit._statusEffects) &&
                EqualityComparer<List<IUserStatusEffect>>.Default.Equals(StatusEffects, unit.StatusEffects) &&
                _currentHp == unit._currentHp &&
@@ -174,8 +174,8 @@ public class StageUnit : IStageUnit {
         hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Name);
         hashCode = hashCode * -1521134295 + EqualityComparer<Faction>.Default.GetHashCode(_faction);
         hashCode = hashCode * -1521134295 + EqualityComparer<Faction>.Default.GetHashCode(Faction);
-        hashCode = hashCode * -1521134295 + EqualityComparer<IUnitBuild>.Default.GetHashCode(_build);
-        hashCode = hashCode * -1521134295 + EqualityComparer<IUnitBuild>.Default.GetHashCode(Build);
+        hashCode = hashCode * -1521134295 + EqualityComparer<UnitBuild>.Default.GetHashCode(_build);
+        hashCode = hashCode * -1521134295 + EqualityComparer<UnitBuild>.Default.GetHashCode(Build);
         hashCode = hashCode * -1521134295 + EqualityComparer<List<IUserStatusEffect>>.Default.GetHashCode(_statusEffects);
         hashCode = hashCode * -1521134295 + EqualityComparer<List<IUserStatusEffect>>.Default.GetHashCode(StatusEffects);
         hashCode = hashCode * -1521134295 + _currentHp.GetHashCode();

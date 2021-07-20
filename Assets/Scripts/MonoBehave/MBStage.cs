@@ -588,11 +588,10 @@ public class MBStage : MonoBehaviour {
         }
 
         for (int i=0; i < stageLoader.UserBuilds.Count && i < userDeployPos.Length; i++) {
-            IUnitBuild userBuild = stageLoader.UserBuilds[i];
+            UnitBuild userBuild = stageLoader.UserBuilds[i];
             MapCoordinate unitPos = new MapCoordinate(userDeployPos[i]);
-            GameObject unitPrefab = (GameObject) Resources.Load("Model/Stage/TestUnit");
             IStageUnit stageUnit = new StageUnit(Factions.GOOD, userBuild);
-            GameObject unitGo = (GameObject) Instantiate(unitPrefab);
+            GameObject unitGo = (GameObject) Instantiate(userBuild.BaseUnit.Model);
             unitGo.GetComponent<IMBUnit>().Init(this, stageUnit, unitPos);
         }
 

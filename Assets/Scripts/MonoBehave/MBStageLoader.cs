@@ -6,12 +6,12 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class MBStageLoader : MonoBehaviour {
-    private List<IUnitBuild> _units;
+    private List<UnitBuild> _units;
 
-    public List<IUnitBuild> UserBuilds { get { return _units; } }
+    public List<UnitBuild> UserBuilds { get { return _units; } }
 
     public void LoadStage() {
-        _units = new List<IUnitBuild> {
+        _units = new List<UnitBuild> {
             new UnitBuild(
                 "Hazeluff", 1, 0,
                 Resources.Load<BaseUnit>("ScriptableObjects/Database/BaseUnit/Fighter"),

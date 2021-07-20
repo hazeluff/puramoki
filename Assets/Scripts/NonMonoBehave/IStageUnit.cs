@@ -2,7 +2,7 @@
 
 public interface IStageUnit : IStagePermanent {
 
-    IUnitBuild Build { get; }
+    UnitBuild Build { get; }
     Faction Faction { get; }
     
     List<IUserStatusEffect> StatusEffects { get; }
