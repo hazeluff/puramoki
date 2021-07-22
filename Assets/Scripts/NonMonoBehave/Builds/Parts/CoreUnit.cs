@@ -1,13 +1,17 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
-[CreateAssetMenu(fileName = "BaseUnit", menuName = "Unit", order = 1)]
-public class BaseUnit : ScriptableObject, IBaseUnit
+[CreateAssetMenu(fileName = "CoreUnit", menuName = "Builds/Parts/Core", order = 1)]
+public class CoreUnit : ScriptableObject, ICoreUnit
 {
     // Underlying serializable fields
     [SerializeField]
     private string _name;
     [SerializeField]
     private UnitType _type;
+    [SerializeField]
+    private GameObject _model;
+
     [SerializeField]
     private int _baseHp;
     [SerializeField]
@@ -26,17 +30,14 @@ public class BaseUnit : ScriptableObject, IBaseUnit
     private int _baseRng;
     [SerializeField]
     private int _mv;
-    [SerializeField]
-    private GameObject _model;
-
-    public GameObject Model { get { return _model; } }
 
     public string Name { get { return _name; } }
     public UnitType Type { get { return _type; } }
-    
+    public GameObject Model { get { return _model; } }
+
     public int BaseHp { get { return _baseHp; } }
-    public int HpAt(int lvl) { return BaseHp + (int) Mathf.Floor(BaseHp * Mathf.Pow(1.1f, lvl - 1)); }
-    
+    public int HpAt(int lvl) { return BaseHp + (int)Mathf.Floor(BaseHp * Mathf.Pow(1.1f, lvl - 1)); }
+
     public int BaseEp { get { return _baseEp; } }
     public int EpAt(int lvl) { return BaseEp + (int) Mathf.Floor(BaseEp * Mathf.Pow(1.1f, lvl - 1)); }
     

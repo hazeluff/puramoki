@@ -1,6 +1,7 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
-public interface IBaseUnit {
+public interface ICoreUnit {
     string Name { get; }
     UnitType Type { get; }
 
@@ -9,7 +10,7 @@ public interface IBaseUnit {
     // Base Stats
     int BaseHp { get; }
     int HpAt(int level);
-    
+
     int BaseEp { get; }
     int EpAt(int level);
     

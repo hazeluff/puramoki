@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 9f06b70d0befd6e4ca2dc315c82d0b60
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - _coreUnit: {fileID: 11400000, guid: a27a66be977b46e4c9c043d32d0c20f6, type: 2}
+  - _bodyPart: {fileID: 11400000, guid: bcc918ed0767a274d90f4d4c9dcad717, type: 2}
+  - _armsPart: {fileID: 11400000, guid: ee04030bff637734789e608214baaa0b, type: 2}
+  - _lowerPart: {fileID: 11400000, guid: 6e90a62c4b1d47849b56ef8615d0be10, type: 2}
+  - _weapon: {instanceID: 0}
+  - modelFrame: {fileID: 4325819771909807159, guid: 2b79590d69ef4e140b7c8d83f7f5461b,
+      type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

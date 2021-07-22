@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f06b70d0befd6e4ca2dc315c82d0b60, type: 3}
+  m_Name: TestBuild
+  m_EditorClassIdentifier: 
+  _name: TestBuild
+  _level: 1
+  c_Exp: 0
+  _coreUnit: {fileID: 11400000, guid: a27a66be977b46e4c9c043d32d0c20f6, type: 2}
+  _bodyPart: {fileID: 11400000, guid: bcc918ed0767a274d90f4d4c9dcad717, type: 2}
+  _armsPart: {fileID: 11400000, guid: ee04030bff637734789e608214baaa0b, type: 2}
+  _lowerPart: {fileID: 11400000, guid: 6e90a62c4b1d47849b56ef8615d0be10, type: 2}
+  _weapon: {fileID: 11400000, guid: dbe37426650eb7c449704987cfd8338b, type: 2}

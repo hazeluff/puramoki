@@ -10,17 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1832bf64f0b1e3d4fb18ecec48c896b5, type: 3}
-  m_Name: BasicUnit
+  m_Name: BasicCore
   m_EditorClassIdentifier: 
-  _name: BasicUnit
+  _name: BasicCore
   _type: 0
-  _baseHp: 0
-  _baseEp: 0
-  _baseAtk: 0
-  _baseDef: 0
-  _baseAcc: 0
-  _baseEva: 0
-  _baseSpd: 0
-  _baseRng: 0
+  _baseHp: 5
+  _baseEp: 5
+  _baseAtk: 5
+  _baseDef: 5
+  _baseAcc: 5
+  _baseEva: 5
+  _baseSpd: 5
+  _baseRng: 5
   _mv: 3
   _model: {fileID: 8108177893325580632, guid: 6fbaf49d57238484081f2dd338d4ee3a, type: 3}

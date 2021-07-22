@@ -584,15 +584,14 @@ public class MBStage : MonoBehaviour {
         foreach (MBUnit mbUnit in FindObjectsOfType<MBUnit>()) {
             Vector3 unitPos = mbUnit.transform.position;
             MapCoordinate mapCoordinate = new MapCoordinate(Mathf.RoundToInt(unitPos.x), Mathf.RoundToInt(unitPos.z));
-            mbUnit.Init(this, null, mapCoordinate);
+            mbUnit.Init(this, null, false, mapCoordinate);
         }
 
         for (int i=0; i < stageLoader.UserBuilds.Count && i < userDeployPos.Length; i++) {
             UnitBuild userBuild = stageLoader.UserBuilds[i];
             MapCoordinate unitPos = new MapCoordinate(userDeployPos[i]);
             IStageUnit stageUnit = new StageUnit(Factions.GOOD, userBuild);
-            GameObject unitGo = (GameObject) Instantiate(userBuild.BaseUnit.Model);
-            unitGo.GetComponent<IMBUnit>().Init(this, stageUnit, unitPos);
+            userBuild.InstantiateStageObject(this, stageUnit, true, unitPos);
         }
 
         // Init Factions

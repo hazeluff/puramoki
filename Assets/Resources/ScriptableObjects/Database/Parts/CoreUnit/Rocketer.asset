@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Rocketer
   m_EditorClassIdentifier: 
   _name: Rocketer
-  _type: 0
+  _type: 1
   _baseHp: 10
   _baseEp: 10
   _baseAtk: 15

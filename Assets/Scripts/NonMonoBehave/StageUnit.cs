@@ -15,7 +15,7 @@ public class StageUnit : IStageUnit {
     public List<IUserStatusEffect> StatusEffects { get { return new List<IUserStatusEffect>(); } }
 
     public const int UNINITIALIZED_START_HP = -1;
-    private int _currentHp;
+    private int _currentHp = UNINITIALIZED_START_HP;
     public int c_Hp { get { return _currentHp; } }
     public int c_Ep { get { return Build.Ep; } }
     public int c_Mv { get { return Build.Mv; } }
@@ -35,11 +35,14 @@ public class StageUnit : IStageUnit {
     public StageUnit(Faction faction, UnitBuild build) {
         _faction = faction;
         _build = build;
-        _currentHp = build.Hp;
+        _currentHp = _build != null ? _build.Hp : 1;
     }
 
-    public StageUnit(string name, Faction faction, int lvl, int currentExp, IBaseUnit baseUnit, IWeapon weapon, IEquipment[] equipment) 
-        :this(faction, new UnitBuild(name, lvl, currentExp, baseUnit, weapon, equipment)){
+    public StageUnit(Faction faction, string name, int lvl, int currentExp, 
+        CoreUnit coreUnit,  BodyPart bodyPart, ArmsPart armsPart, LowerPart lowerPart, Weapon weapon) 
+        :this(faction, new UnitBuild(
+            name, lvl, currentExp, 
+            coreUnit, bodyPart, armsPart, lowerPart, weapon)){
 
     }
 

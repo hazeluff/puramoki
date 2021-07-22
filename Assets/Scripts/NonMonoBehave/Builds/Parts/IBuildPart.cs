@@ -1,4 +1,6 @@
-﻿public interface IEquipment {
+﻿using UnityEngine;
+
+public interface IBuildPart {
     int Hp { get; }
     int Ep { get; }
     int Atk { get; }
@@ -9,6 +11,8 @@
     int Rng { get; }
 
     int Mv { get; }
+
+    GameObject Model { get; }
 
     float ElemRes(Element element);
 }

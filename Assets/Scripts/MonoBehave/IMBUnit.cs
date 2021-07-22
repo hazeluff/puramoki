@@ -2,12 +2,11 @@
 using UnityEngine;
 
 public interface IMBUnit {
-    void Init(MBStage stage, IStageUnit unit, MapCoordinate pos);
     IStageUnit Unit { get; }
     bool IsPlayer { get; }
+    float Height { get; }
 
-    // Character Model
-    float ModelHeight { get; }
+    void Init(MBStage stage, IStageUnit unit, bool isPlayer, MapCoordinate pos);
 
     // Actions
     void Move(List<MapCoordinate> path);

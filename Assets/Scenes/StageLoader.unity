@@ -704,6 +704,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09a75fdbef4c72b4d8ddb49caacf277c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _units:
+  - {fileID: 11400000, guid: b3c71d6f1e4c2274c86c5648d7e1b4bf, type: 2}
 --- !u!1 &1638631197
 GameObject:
   m_ObjectHideFlags: 0
@@ -1093,8 +1095,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_MethodName: UA_StartAttackSelection
+      - m_Target: {fileID: 1121011893}
+        m_MethodName: LoadStageModel
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1103,7 +1105,7 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
-        m_CallState: 2
+        m_CallState: 1
 --- !u!114 &1984942434
 MonoBehaviour:
   m_ObjectHideFlags: 0
