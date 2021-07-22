@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5b8a5cd84dece9447a2385d2a1def939, type: 3}
-  m_Name: LowerPart
+  m_Name: BasicLower
   m_EditorClassIdentifier: 
   _name: BasicLower
   _hp: 5
