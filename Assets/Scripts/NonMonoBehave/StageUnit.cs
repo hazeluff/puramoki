@@ -20,7 +20,7 @@ public class StageUnit : IStageUnit {
     public int c_Ep { get { return Build.Ep; } }
     public int c_Mv { get { return Build.Mv; } }
 
-    public int c_Atk { get { return Build.Atk + Build.Weapon.Atk; } }
+    public int c_Atk { get { return Build.Atk + Build.WeaponPart.Atk; } }
     public int c_Acc { get { return Build.Acc; } }
     public int c_Spd { get { return Build.Spd; } }
 
@@ -100,7 +100,7 @@ public class StageUnit : IStageUnit {
         if (damageResult.IsKill) {
             Build.GainExp(target.Build);
         }
-        int atkCd = Build.Weapon.Cooldown - c_Spd;
+        int atkCd = Build.WeaponPart.Cooldown - c_Spd;
         AddCooldown(atkCd < 100 ? 100 : atkCd);
         _attacked = true;
     }

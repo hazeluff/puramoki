@@ -13,6 +13,7 @@ public class TestMBUnit : MBUnit, IMBUnit {
 
     protected override void Awake() {
         base.Awake();
+        UnitBuild buildInstance = GameObject.Instantiate(_build);
         _unit = new StageUnit(_faction, _build);
     }
 }

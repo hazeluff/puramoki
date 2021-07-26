@@ -24,4 +24,4 @@ MonoBehaviour:
   _mv: 5
   _model: {fileID: 3324270676494358684, guid: 1525f39947f634446a6f1103e46689b1, type: 3}
   _height: 0
-  _joinPoint: {x: 0, y: 0, z: 0}
+  _joinPoint: {x: 0, y: 0.41, z: 0}

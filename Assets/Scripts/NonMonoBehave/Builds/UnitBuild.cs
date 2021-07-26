@@ -114,10 +114,10 @@ public class UnitBuild : ScriptableObject {
     }
 
     [SerializeField]
-    private Weapon _weapon;
-    public Weapon Weapon { get { return _weapon; } set { _weapon = value; } }
+    private Weapon _weaponPart;
+    public Weapon WeaponPart { get { return _weaponPart; } set { _weaponPart = value; } }
     private int WeaponStats(Func<IBuildPart, int> statFunc) {
-        return Weapon != null ? statFunc.Invoke(Weapon) : 0;
+        return WeaponPart != null ? statFunc.Invoke(WeaponPart) : 0;
     }
 
     public float ElemRes(Element element) {
@@ -133,7 +133,7 @@ public class UnitBuild : ScriptableObject {
         _bodyPart = bodyPart;
         _armsPart = armsPart;
         _lowerPart = lowerPart;
-        _weapon = weapon;
+        _weaponPart = weapon;
     }
 
     // Assets
@@ -141,14 +141,39 @@ public class UnitBuild : ScriptableObject {
 
     public GameObject InstantiateModel() {
         GameObject model = new GameObject("Model");
-        new GameObject("Core").transform.parent = model.transform;
-        new GameObject("Body").transform.parent = model.transform;
-        new GameObject("Arms").transform.parent = model.transform;
-        new GameObject("Lower").transform.parent = model.transform;
-        if (LowerPart != null) {
-            GameObject.Instantiate(LowerPart.Model).transform.parent = model.transform;
+
+        GameObject Core = new GameObject("Core");
+        Core.transform.parent = model.transform;
+        if (CoreUnit != null)
+        {
+            // GameObject.Instantiate(CoreUnit.Model).transform.parent = Core.transform;
         }
-        new GameObject("Weapon").transform.parent = model.transform;
+
+        GameObject Body = new GameObject("Body");
+        Body.transform.parent = model.transform;
+        if (BodyPart != null) {
+            GameObject.Instantiate(BodyPart.Model).transform.parent = Body.transform;
+            Body.transform.localPosition = LowerPart != null ? LowerPart.JoinPoint : Vector3.zero;
+        }
+
+        GameObject Arms = new GameObject("Arms");
+        Arms.transform.parent = model.transform;
+        if (ArmsPart != null)
+        {
+            // GameObject.Instantiate(ArmsPart.Model).transform.parent = Arms.transform;
+        }
+
+        GameObject Lower = new GameObject("Lower");
+        Lower.transform.parent = model.transform;
+        if (LowerPart != null) {
+            GameObject.Instantiate(LowerPart.Model).transform.parent = Lower.transform;
+        }
+
+        GameObject Weapon = new GameObject("Weapon");
+        Weapon.transform.parent = model.transform;
+        if (WeaponPart != null) {
+            // GameObject.Instantiate(WeaponPart.Model).transform.parent = Weapon.transform;
+        }
         return model;
     }
 
@@ -191,8 +216,8 @@ public class UnitBuild : ScriptableObject {
                EqualityComparer<LowerPart>.Default.Equals(_lowerPart, build._lowerPart) &&
                EqualityComparer<LowerPart>.Default.Equals(LowerPart, build.LowerPart) &&
                EqualityComparer<IBuildPart[]>.Default.Equals(Parts, build.Parts) &&
-               EqualityComparer<Weapon>.Default.Equals(_weapon, build._weapon) &&
-               EqualityComparer<Weapon>.Default.Equals(Weapon, build.Weapon);
+               EqualityComparer<Weapon>.Default.Equals(_weaponPart, build._weaponPart) &&
+               EqualityComparer<Weapon>.Default.Equals(WeaponPart, build.WeaponPart);
     }
 
     public override int GetHashCode() {
@@ -224,8 +249,8 @@ public class UnitBuild : ScriptableObject {
         hashCode = hashCode * -1521134295 + EqualityComparer<LowerPart>.Default.GetHashCode(_lowerPart);
         hashCode = hashCode * -1521134295 + EqualityComparer<LowerPart>.Default.GetHashCode(LowerPart);
         hashCode = hashCode * -1521134295 + EqualityComparer<IBuildPart[]>.Default.GetHashCode(Parts);
-        hashCode = hashCode * -1521134295 + EqualityComparer<Weapon>.Default.GetHashCode(_weapon);
-        hashCode = hashCode * -1521134295 + EqualityComparer<Weapon>.Default.GetHashCode(Weapon);
+        hashCode = hashCode * -1521134295 + EqualityComparer<Weapon>.Default.GetHashCode(_weaponPart);
+        hashCode = hashCode * -1521134295 + EqualityComparer<Weapon>.Default.GetHashCode(WeaponPart);
         return hashCode;
     }
 }

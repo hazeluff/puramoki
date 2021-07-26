@@ -273,7 +273,6 @@ public class MBStage : MonoBehaviour {
 
         units.Remove(CurrentUnit);
         units.Add(CurrentUnit, mapPos);
-        Debug.Log(units.Get(mapPos));
 
         CurrentUnit.Move(new List<MapCoordinate>() { CurrentUnitPos, mapPos });
 
@@ -292,8 +291,8 @@ public class MBStage : MonoBehaviour {
     }
 
     private HashSet<MapCoordinate> FindAttackRange(IMBUnit mbUnit, MapCoordinate origin) {
-        int maxAttackRange = mbUnit.Unit.Build.Weapon.RangeMax;
-        int minAttackRange = mbUnit.Unit.Build.Weapon.RangeMin;
+        int maxAttackRange = mbUnit.Unit.Build.WeaponPart.RangeMax;
+        int minAttackRange = mbUnit.Unit.Build.WeaponPart.RangeMin;
         HashSet<MapCoordinate> range = new HashSet<MapCoordinate>();
         for (int xOffset = -maxAttackRange; xOffset <= maxAttackRange; xOffset++) {
             int yAbsRange = maxAttackRange - Math.Abs(xOffset);
