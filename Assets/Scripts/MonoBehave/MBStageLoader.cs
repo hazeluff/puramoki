@@ -19,7 +19,7 @@ public class MBStageLoader : MonoBehaviour {
         DontDestroyOnLoad(this);
     }
 
-    public void LoadStageModel() {
+    public void InstantiateModel() {
         _units[0].InstantiateModel();
     }
 }

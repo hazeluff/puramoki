@@ -20,7 +20,7 @@ public class StageUnit : IStageUnit {
     public int c_Ep { get { return Build.Ep; } }
     public int c_Mv { get { return Build.Mv; } }
 
-    public int c_Atk { get { return Build.Atk + Build.WeaponPart.Atk; } }
+    public int c_Atk { get { return Build.Atk; } }
     public int c_Acc { get { return Build.Acc; } }
     public int c_Spd { get { return Build.Spd; } }
 

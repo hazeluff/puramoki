@@ -142,11 +142,11 @@ public class UnitBuild : ScriptableObject {
     public GameObject InstantiateModel() {
         GameObject model = new GameObject("Model");
 
-        GameObject Core = new GameObject("Core");
-        Core.transform.parent = model.transform;
-        if (CoreUnit != null)
+        GameObject Lower = new GameObject("Lower");
+        Lower.transform.parent = model.transform;
+        if (LowerPart != null)
         {
-            // GameObject.Instantiate(CoreUnit.Model).transform.parent = Core.transform;
+            GameObject.Instantiate(LowerPart.Model).transform.parent = Lower.transform;
         }
 
         GameObject Body = new GameObject("Body");
@@ -160,13 +160,22 @@ public class UnitBuild : ScriptableObject {
         Arms.transform.parent = model.transform;
         if (ArmsPart != null)
         {
-            // GameObject.Instantiate(ArmsPart.Model).transform.parent = Arms.transform;
+            GameObject ArmsModel = GameObject.Instantiate(ArmsPart.Model);
+            Transform LeftArmModelTransform = ArmsModel.transform.Find("LeftArm");
+            LeftArmModelTransform.parent = Arms.transform;
+            LeftArmModelTransform.localPosition = Body.transform.position + (BodyPart != null ? BodyPart.LeftArmJoinPoint : Vector3.zero);
+            Transform RightArmModelTransform = ArmsModel.transform.Find("RightArm");
+            RightArmModelTransform.parent = Arms.transform;
+            RightArmModelTransform.localPosition = Body.transform.position + (BodyPart != null ? BodyPart.RightArmJoinPoint : Vector3.zero);
+            GameObject.Destroy(ArmsModel); // Remove container of arms models
         }
 
-        GameObject Lower = new GameObject("Lower");
-        Lower.transform.parent = model.transform;
-        if (LowerPart != null) {
-            GameObject.Instantiate(LowerPart.Model).transform.parent = Lower.transform;
+        GameObject Core = new GameObject("Core");
+        Core.transform.parent = model.transform;
+        if (CoreUnit != null)
+        {
+            GameObject.Instantiate(CoreUnit.Model).transform.parent = Core.transform;
+            Core.transform.localPosition = Body.transform.position + (BodyPart != null ? BodyPart.CoreJoinPoint : Vector3.zero);
         }
 
         GameObject Weapon = new GameObject("Weapon");

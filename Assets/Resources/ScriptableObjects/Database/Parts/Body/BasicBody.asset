@@ -23,3 +23,6 @@ MonoBehaviour:
   _spd: 5
   _mv: 5
   _model: {fileID: 500339940279528757, guid: cb0ffe6843d43984480312ba450a5cf1, type: 3}
+  _leftArmJoinPoint: {x: -0.2, y: 0.19, z: 0}
+  _rightArmJoinPoint: {x: 0.2, y: 0.19, z: 0}
+  _coreJoinPoint: {x: 0, y: 0.26, z: 0}

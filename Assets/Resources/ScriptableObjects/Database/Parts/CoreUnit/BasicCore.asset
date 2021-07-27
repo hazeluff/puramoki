@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _name: BasicCore
   _type: 0
+  _model: {fileID: 5041679710911998358, guid: 3e2cc0a22693d574385f32b3b69af85b, type: 3}
   _baseHp: 5
   _baseEp: 5
   _baseAtk: 5
@@ -23,4 +24,3 @@ MonoBehaviour:
   _baseSpd: 5
   _baseRng: 5
   _mv: 3
-  _model: {fileID: 8108177893325580632, guid: 6fbaf49d57238484081f2dd338d4ee3a, type: 3}
