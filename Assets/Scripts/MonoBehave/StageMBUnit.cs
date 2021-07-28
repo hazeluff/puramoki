@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class TestMBUnit : MBUnit, IMBUnit {
+public class StageMBUnit : MBUnit, IMBUnit {
 
     // Init Unit
+    [SerializeField]
+    private string _name;
     [SerializeField]
     private Faction _faction;
     [SerializeField]
@@ -13,7 +15,8 @@ public class TestMBUnit : MBUnit, IMBUnit {
 
     protected override void Awake() {
         base.Awake();
-        UnitBuild buildInstance = GameObject.Instantiate(_build);
-        _unit = new StageUnit(_faction, _build);
+        UnitBuild buildInstance = ScriptableObject.Instantiate(_build);
+        buildInstance.SetName(_name);
+        _unit = new StageUnit(_faction, buildInstance);
     }
 }

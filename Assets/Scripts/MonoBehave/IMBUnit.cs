@@ -4,9 +4,9 @@ using UnityEngine;
 public interface IMBUnit {
     IStageUnit Unit { get; }
     bool IsPlayer { get; }
-    float Height { get; }
 
-    void Init(MBStage stage, IStageUnit unit, bool isPlayer, MapCoordinate pos);
+    void Init(MBStage stage, IStageUnit unit, MapCoordinate pos);
+    void Init(MBStage stage, IStageUnit unit, bool? isPlayer, MapCoordinate pos);
 
     // Actions
     void Move(List<MapCoordinate> path);

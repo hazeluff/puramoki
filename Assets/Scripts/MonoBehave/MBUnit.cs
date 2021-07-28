@@ -11,18 +11,23 @@ public abstract class MBUnit : MBClickable, IMBUnit {
     public IStageUnit Unit { get { return _unit; } }
 
     [SerializeField]
-    private bool _isPlayer = false;
+    protected bool _isPlayer = false;
     public bool IsPlayer { get { return _isPlayer; } }
 
-    public float Height { get { return Unit.Build.Height; } }
+    public void Init(MBStage stage, IStageUnit unit, MapCoordinate pos) {
+        Init(stage, unit, null, pos);
+    }
 
-    public void Init(MBStage stage, IStageUnit unit, bool isPlayer, MapCoordinate pos) {
+    public void Init(MBStage stage, IStageUnit unit, bool? isPlayer, MapCoordinate pos) {
         _stage = stage;
-        if (unit != null) {
+        if (unit != null)
+        {
             _unit = unit;
         }
-        _isPlayer = isPlayer;
         _unit.Init(pos);
+        if(isPlayer != null) {
+            _isPlayer = isPlayer.Value;
+        }
     }
 
     protected virtual void Awake() {
@@ -38,7 +43,7 @@ public abstract class MBUnit : MBClickable, IMBUnit {
 
     void SetModelPosition() {
         float mapHeight = _stage.Heights[Unit.Position];
-        transform.localPosition = new Vector3(Unit.Position.X, mapHeight + Height, Unit.Position.Y);
+        transform.localPosition = new Vector3(Unit.Position.X, mapHeight, Unit.Position.Y);
     }
 
     public void Move(List<MapCoordinate> path) {

@@ -583,7 +583,7 @@ public class MBStage : MonoBehaviour {
         foreach (MBUnit mbUnit in FindObjectsOfType<MBUnit>()) {
             Vector3 unitPos = mbUnit.transform.position;
             MapCoordinate mapCoordinate = new MapCoordinate(Mathf.RoundToInt(unitPos.x), Mathf.RoundToInt(unitPos.z));
-            mbUnit.Init(this, null, false, mapCoordinate);
+            mbUnit.Init(this, null, mapCoordinate);
         }
 
         for (int i=0; i < stageLoader.UserBuilds.Count && i < userDeployPos.Length; i++) {

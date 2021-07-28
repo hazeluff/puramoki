@@ -137,8 +137,6 @@ public class UnitBuild : ScriptableObject {
     }
 
     // Assets
-    public float Height { get { return 0.25f; } }
-
     public GameObject InstantiateModel() {
         GameObject model = new GameObject("Model");
 
@@ -188,7 +186,7 @@ public class UnitBuild : ScriptableObject {
 
     public GameObject InstantiateStageObject(MBStage stage, IStageUnit unit, bool isPlayer, MapCoordinate pos) {
         GameObject stageObject = new GameObject(Name);
-        stageObject.AddComponent<TestMBUnit>().Init(stage, unit, true, pos);
+        stageObject.AddComponent<UserMBUnit>().Init(stage, unit, isPlayer, pos);
         InstantiateModel().transform.parent = stageObject.transform;
         return stageObject;
     }

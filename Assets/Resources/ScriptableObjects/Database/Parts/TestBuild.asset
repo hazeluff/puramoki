@@ -19,4 +19,4 @@ MonoBehaviour:
   _bodyPart: {fileID: 11400000, guid: bcc918ed0767a274d90f4d4c9dcad717, type: 2}
   _armsPart: {fileID: 11400000, guid: ee04030bff637734789e608214baaa0b, type: 2}
   _lowerPart: {fileID: 11400000, guid: 6e90a62c4b1d47849b56ef8615d0be10, type: 2}
-  _weapon: {fileID: 11400000, guid: dbe37426650eb7c449704987cfd8338b, type: 2}
+  _weaponPart: {fileID: 11400000, guid: dbe37426650eb7c449704987cfd8338b, type: 2}
