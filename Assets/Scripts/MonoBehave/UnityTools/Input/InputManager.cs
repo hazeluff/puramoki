@@ -3,13 +3,26 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class InputManager : MonoBehaviour {
-    private static InputManager input;
+    private static InputManager _inputManager;
+
+    void Awake() {
+        if (_inputManager == null) {
+            DontDestroyOnLoad(gameObject);
+            _inputManager = this;
+        } else if (_inputManager != this) {
+            Destroy(gameObject);
+        }
+    }
+
+    public static InputManager get() {
+        return _inputManager;
+    }
 
     /// <summary>
     /// The layers we want to touch. (NOT IGNORE)
     /// </summary>
     public LayerMask touchLayers;
-    private MouseState _MouseState = MouseState.NEUTRAL;
+    // private MouseState _MouseState = MouseState.NEUTRAL;
     public Vector3 MOUSE { get { return Input.mousePosition; } }
     public bool LEFT_CLICK { get { return Input.GetMouseButtonDown(0); } }
     public bool RIGHT_CLICK { get { return Input.GetMouseButtonDown(1); } }
@@ -51,19 +64,6 @@ public class InputManager : MonoBehaviour {
     public bool BACK { get { return Input.GetKeyDown("joystick 1 button 10"); } }
     public bool START { get { return Input.GetKeyDown("joystick 1 button 9"); } }
 #endif
-
-    void Awake() {
-        if (input == null) {
-            DontDestroyOnLoad(gameObject);
-            input = this;        
-        } else if(input != this) {
-            Destroy(gameObject);
-        }
-    }
-
-    public static InputManager get() {
-        return input;
-    }
 
     public enum MouseState {
         NEUTRAL, PRESSED, HELD

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class BuildPart : ScriptableObject, IBuildPart {
+public class BuildPart : ScriptablePart, IBuildPart {
     [SerializeField]
     private string _name;
     [SerializeField]
@@ -21,6 +21,7 @@ public class BuildPart : ScriptableObject, IBuildPart {
     private int _spd;
     [SerializeField]
     private int _mv;
+
     [SerializeField]
     private GameObject _model;
 
@@ -35,9 +36,9 @@ public class BuildPart : ScriptableObject, IBuildPart {
     public int Rng { get { return _rng; } }
     public int Mv { get { return _mv; } }
 
-    public GameObject Model { get { return _model; } }
-
     public float ElemRes(Element element) {
         return 0.0f;
     }
+
+    public GameObject Model { get { return _model; } }
 }

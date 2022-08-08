@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 117b0221a1ec162479204b7d38257089, type: 3}
+  m_Name: ArmsPartDatabase
+  m_EditorClassIdentifier: 
+  parts:
+  - id: 1
+    part: {fileID: 11400000, guid: ee04030bff637734789e608214baaa0b, type: 2}
