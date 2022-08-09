@@ -2298,7 +2298,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1021376746
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2838,7 +2838,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   promptGO: {fileID: 1021376745}
   buildNameLabel: {fileID: 818253999}
-  buildNamePromptInput: {fileID: 0}
+  buildNamePromptInput: {fileID: 59053690}
 --- !u!1 &1453562840
 GameObject:
   m_ObjectHideFlags: 0
