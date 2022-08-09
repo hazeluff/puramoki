@@ -12,4 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d7a12a047e36bcd4da7b9442e77a2f92, type: 3}
   m_Name: LowerPartDatabase
   m_EditorClassIdentifier: 
-  parts: []
+  parts:
+  - id: test_basic
+    part: {fileID: 11400000, guid: 6e90a62c4b1d47849b56ef8615d0be10, type: 2}

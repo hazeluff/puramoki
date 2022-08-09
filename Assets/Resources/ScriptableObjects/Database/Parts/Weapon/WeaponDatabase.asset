@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: WeaponDatabase
   m_EditorClassIdentifier: 
   parts:
-  - id: 1
+  - id: beam_saber
     part: {fileID: 11400000, guid: dbe37426650eb7c449704987cfd8338b, type: 2}
-  - id: 2
+  - id: rocket_launcher
     part: {fileID: 11400000, guid: ae1aaed3eba2cf549873f32904d298b8, type: 2}

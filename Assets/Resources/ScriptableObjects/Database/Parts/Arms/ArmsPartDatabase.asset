@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: ArmsPartDatabase
   m_EditorClassIdentifier: 
   parts:
-  - id: 1
+  - id: test_basic
     part: {fileID: 11400000, guid: ee04030bff637734789e608214baaa0b, type: 2}

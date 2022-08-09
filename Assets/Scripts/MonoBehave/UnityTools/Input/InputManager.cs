@@ -22,7 +22,6 @@ public class InputManager : MonoBehaviour {
     /// The layers we want to touch. (NOT IGNORE)
     /// </summary>
     public LayerMask touchLayers;
-    // private MouseState _MouseState = MouseState.NEUTRAL;
     public Vector3 MOUSE { get { return Input.mousePosition; } }
     public bool LEFT_CLICK { get { return Input.GetMouseButtonDown(0); } }
     public bool RIGHT_CLICK { get { return Input.GetMouseButtonDown(1); } }
@@ -64,14 +63,6 @@ public class InputManager : MonoBehaviour {
     public bool BACK { get { return Input.GetKeyDown("joystick 1 button 10"); } }
     public bool START { get { return Input.GetKeyDown("joystick 1 button 9"); } }
 #endif
-
-    public enum MouseState {
-        NEUTRAL, PRESSED, HELD
-    }
-
-    private void Update() {
-
-    }
 
     void LateUpdate() {
         LEFT_STICK.UpdateState();
