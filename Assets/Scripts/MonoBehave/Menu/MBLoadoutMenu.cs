@@ -9,7 +9,7 @@ public class MBLoadoutMenu : MonoBehaviour {
     private GameObject promptGO;
 
     [SerializeField]
-    private Text buildNameLabel;
+    private TMP_Text buildNameLabel;
     [SerializeField]
     private TMP_Text buildNamePromptInput;
 
@@ -45,6 +45,7 @@ public class MBLoadoutMenu : MonoBehaviour {
 
     public void State_ExitName(string newName) {
         if (newName != null) {
+            Debug.Log(newName);
             buildNameLabel.text = newName;
         }
         State = MenuState.PART_SELECT;
