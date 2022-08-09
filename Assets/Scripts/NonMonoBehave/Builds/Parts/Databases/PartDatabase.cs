@@ -6,8 +6,8 @@ public abstract class PartDatabase<P> : ScriptableObject where P : ScriptablePar
 
     public List<Entry> parts;
 
-    public P Get(int id) {
-        Entry entry = parts.Find(e => e.id == id);
+    public P Get(string id) {
+        Entry entry = parts.Find(e => id.Equals(e.id));
         if (entry != null) {
             return entry.part;
         }
@@ -16,7 +16,7 @@ public abstract class PartDatabase<P> : ScriptableObject where P : ScriptablePar
 
     [Serializable]
     public class Entry {
-        public int id;
+        public string id;
         public P part;
     }
 }

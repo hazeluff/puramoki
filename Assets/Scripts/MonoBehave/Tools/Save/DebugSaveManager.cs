@@ -9,12 +9,13 @@ public class DebugSaveManager : MonoBehaviour {
     private string fileName = "test";
 
     private void OnGUI() {
-        GUI.Box(new Rect(10, 10, 300, 130), (saveManager.Data == null ? "null" : saveManager.Data.ToString()));
-        fileName = GUI.TextField(new Rect(10, 150, 300, 30), fileName);
-        if (GUI.Button(new Rect(10, 190, 300, 30), "Save")) {
+        GUI.skin.box.wordWrap = true;
+        GUI.Box(new Rect(10, 500, 300, 130), (saveManager.Data == null ? "null" : saveManager.Data.ToString()));
+        fileName = GUI.TextField(new Rect(10, 640, 300, 30), fileName);
+        if (GUI.Button(new Rect(10, 680, 300, 30), "Save")) {
             saveManager.Save(fileName);
         }
-        if (GUI.Button(new Rect(10, 230, 300, 30), "Load")) {
+        if (GUI.Button(new Rect(10, 720, 300, 30), "Load")) {
             saveManager.Load(fileName);
         }
     }

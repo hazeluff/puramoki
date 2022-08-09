@@ -30,35 +30,34 @@ public class SaveManager : MonoBehaviour {
 
     private void ReadSave(String saveName) {
         string path = GetFilePath();
-        string fileName = path + saveName + ".json";
-        
+        string fileName = GetFileName(saveName);
+
         if (File.Exists(fileName)) {
             using FileStream fileStream = File.Open(fileName, FileMode.Open);
-            using BinaryReader binaryReader = new(fileStream);
-            string strSave = binaryReader.ReadString();
-            saveData = SaveData.CreateFromJSON(strSave);
+            using StreamReader streamReader = new(fileStream);
+            string strSave = streamReader.ReadToEnd();
+            saveData = SaveData.Parse(JObject.Parse(strSave));
         } else {
             Debug.Log("No save exists.");
         }
     }
 
     public void Save(string saveName) {
-        SaveData data = new SaveData();
-        data.lastSave = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        SaveData data = SaveData.NewSave();
         WriteSave(saveName, data);
     }
 
-    private void WriteSave(string saveName, SaveData saveData) {
+    public void WriteSave(string saveName, SaveData saveData) {
         string path = GetFilePath();
-        string fileName = path + saveName + ".json";
+        string fileName = GetFileName(saveName);
 
         Directory.CreateDirectory(path);
         using FileStream fileStream = File.Open(fileName, FileMode.Create);
-        using BinaryWriter binaryWriter = new(fileStream);
-        binaryWriter.Write(JsonUtility.ToJson(saveData, true));
+        using StreamWriter streamWriter = new(fileStream);
+        streamWriter.Write(saveData.ToJson().ToString(Formatting.Indented));
     }
 
-    private string GetSaveFileName(string saveName) {
+    private string GetFileName(string saveName) {
         return GetFilePath() + saveName + ".json";
     }
 
