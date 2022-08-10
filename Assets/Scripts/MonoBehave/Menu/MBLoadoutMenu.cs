@@ -38,16 +38,20 @@ public class MBLoadoutMenu : MonoBehaviour {
     }
 
     private void UpdateEnterName() {
+        // Force focus on the input
+        if (!buildNamePromptInput.isFocused) {
+            buildNamePromptInput.Select();
+            return;
+        }
         InputManager input = InputManager.get();
-        if (input.START || input.A) {
+        if (input.JOYSTICK_START || input.JOYSTICK_A) {
             State_ExitName(buildNamePromptInput.text);
             return;
         }
-        if (input.BACK || input.B) {
+        if (input.KEYBOARD_ESC || input.JOYSTICK_B || input.JOYSTICK_BACK) {
             State_ExitName(null);
             return;
         }
-
     }
 
     public void State_ExitName(string newName) {
@@ -61,7 +65,15 @@ public class MBLoadoutMenu : MonoBehaviour {
 
     public void State_EnterName() {
         nextState = MenuState.ENTER_NAME;
-        EventSystem.current.SetSelectedGameObject(buildNamePromptInput.gameObject);
+        EventSystem.current.SetSelectedGameObject(null);
+        // EventSystem.current.SetSelectedGameObject(buildNamePromptInput.gameObject);
         promptGO.SetActive(true);
+    }
+
+    private void DeactivateInput(TMP_InputField inputField, bool clearInput) {
+        // EventSystem.current.SetSelectedGameObject(null);
+        inputField.DeactivateInputField(clearInput);
+        inputField.interactable = false;
+        inputField.interactable = true;
     }
 }
