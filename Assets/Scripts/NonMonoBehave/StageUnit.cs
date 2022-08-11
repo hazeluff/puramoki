@@ -38,14 +38,6 @@ public class StageUnit : IStageUnit {
         _currentHp = _build != null ? _build.Hp : 1;
     }
 
-    public StageUnit(Faction faction, string name, int lvl, int currentExp, 
-        CoreUnit coreUnit,  BodyPart bodyPart, ArmsPart armsPart, LowerPart lowerPart, Weapon weapon) 
-        :this(faction, new UnitBuild(
-            name, lvl, currentExp, 
-            coreUnit, bodyPart, armsPart, lowerPart, weapon)){
-
-    }
-
     public void Init(MapCoordinate pos) {
         _lastPos = pos;
         _currentPos = pos;

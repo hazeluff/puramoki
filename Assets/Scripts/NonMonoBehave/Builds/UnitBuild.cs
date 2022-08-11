@@ -5,6 +5,18 @@ using UnityEngine;
 
 [CreateAssetMenu(fileName = "UnitBuild", menuName = "Builds/UnitBuild", order = 1)]
 public class UnitBuild : ScriptableObject {
+
+    public UnitBuild(string name, int level, int currentExp, CoreUnit coreUnit, BodyPart bodyPart, ArmsPart armsPart, LowerPart lowerPart, Weapon weapon) {
+        _name = name;
+        _level = level;
+        c_Exp = currentExp;
+        _coreUnit = coreUnit;
+        _bodyPart = bodyPart;
+        _armsPart = armsPart;
+        _lowerPart = lowerPart;
+        _weaponPart = weapon;
+    }
+
     [SerializeField]
     private string _name;
     public string Name {
@@ -15,7 +27,7 @@ public class UnitBuild : ScriptableObject {
             if (CoreUnit != null) {
                 return CoreUnit.Name;
             }
-               
+
             return "null";
         }
     }
@@ -51,7 +63,6 @@ public class UnitBuild : ScriptableObject {
     }
 
     private int EvalDestroyExp(int levelDiff) {
-
         switch (levelDiff) {
             case 5:
                 return 35;
@@ -77,25 +88,49 @@ public class UnitBuild : ScriptableObject {
         }
 }
 
-    public int Hp { get { return CoreStats(unit => unit.HpAt(Lvl)) + WeaponStats(wpn => wpn.Hp) + PartsStats(pt => pt.Hp); } }
-    public int Ep { get { return CoreStats(unit => unit.EpAt(Lvl)) + WeaponStats(wpn => wpn.Ep) + PartsStats(pt => pt.Ep); } }
-    public int Atk { get { return CoreStats(unit => unit.AtkAt(Lvl)) + WeaponStats(wpn => wpn.Atk) + PartsStats(pt => pt.Atk); } }
-    public int Def { get { return CoreStats(unit => unit.DefAt(Lvl)) + WeaponStats(wpn => wpn.Def) + PartsStats(pt => pt.Def); } }
-    public int Acc { get { return CoreStats(unit => unit.AccAt(Lvl)) + WeaponStats(wpn => wpn.Acc) + PartsStats(pt => pt.Acc); } }
-    public int Eva { get { return CoreStats(unit => unit.EvaAt(Lvl)) + WeaponStats(wpn => wpn.Eva) + PartsStats(pt => pt.Eva); } }
-    public int Spd { get { return CoreStats(unit => unit.SpdAt(Lvl)) + WeaponStats(wpn => wpn.Spd) + PartsStats(pt => pt.Spd); } }
-    public int Rng { get { return CoreStats(unit => unit.RngAt(Lvl)) + WeaponStats(wpn => wpn.Rng) + PartsStats(pt => pt.Rng); } }
-    public int Mv { get { return CoreStats(e => CoreUnit.Mv) + WeaponStats(wpn => wpn.Mv) + PartsStats(pt => pt.Mv); } }
+    public int Hp { get { return HpAt(_level); } }
+    public int Ep { get { return EpAt(_level); } }
+    public int Atk { get { return AtkAt(_level); } }
+    public int Def { get { return DefAt(_level); } }
+    public int Acc { get { return AccAt(_level); } }
+    public int Eva { get { return EvaAt(_level); } }
+    public int Spd { get { return SpdAt(_level); } }
+    public int Rng { get { return RngAt(_level); } }
+    public int Mv { get { return MvAt(_level); } }
+
+    public int HpAt(int lvl) {
+        return CoreStats(core => core.HpAt(lvl)) + WeaponStats(wpn => wpn.Hp) + PartsStats(pt => pt.Hp);
+    }
+    public int EpAt(int lvl) {
+        return CoreStats(core => core.EpAt(lvl)) + WeaponStats(wpn => wpn.Ep) + PartsStats(pt => pt.Ep);
+    }
+    public int AtkAt(int lvl) {
+        return CoreStats(core => core.AtkAt(lvl)) + WeaponStats(wpn => wpn.Atk) + PartsStats(pt => pt.Atk);
+    }
+    public int DefAt(int lvl) {
+        return CoreStats(core => core.DefAt(lvl)) + WeaponStats(wpn => wpn.Def) + PartsStats(pt => pt.Def);
+    }
+    public int AccAt(int lvl) {
+        return CoreStats(core => core.AccAt(lvl)) + WeaponStats(wpn => wpn.Acc) + PartsStats(pt => pt.Acc);
+    }
+    public int EvaAt(int lvl) {
+        return CoreStats(core => core.EvaAt(lvl)) + WeaponStats(wpn => wpn.Eva) + PartsStats(pt => pt.Eva);
+    }
+    public int SpdAt(int lvl) {
+        return CoreStats(core => core.SpdAt(lvl)) + WeaponStats(wpn => wpn.Spd) + PartsStats(pt => pt.Spd);
+    }
+    public int RngAt(int lvl) {
+        return CoreStats(core => core.DefAt(lvl)) + WeaponStats(wpn => wpn.Rng) + PartsStats(pt => pt.Rng);
+    }
+    public int MvAt(int lvl) {
+        return CoreStats(core => core.Mv) + WeaponStats(wpn => wpn.Def) + PartsStats(pt => pt.Mv);
+    }
 
     [SerializeField]
     private CoreUnit _coreUnit;
     public CoreUnit CoreUnit { get { return _coreUnit; } set { _coreUnit = value; } }
     private int CoreStats(Func<CoreUnit, int> statFunc) {
         return CoreUnit != null ? statFunc.Invoke(CoreUnit) : 0;
-    }
-
-    private int CoreStats(Func<CoreUnit, int, int> statFunc) {
-        return CoreUnit != null ? statFunc.Invoke(CoreUnit, Lvl) : 0;
     }
 
     [SerializeField]
@@ -116,6 +151,7 @@ public class UnitBuild : ScriptableObject {
     [SerializeField]
     private Weapon _weaponPart;
     public Weapon WeaponPart { get { return _weaponPart; } set { _weaponPart = value; } }
+
     private int WeaponStats(Func<IBuildPart, int> statFunc) {
         return WeaponPart != null ? statFunc.Invoke(WeaponPart) : 0;
     }
@@ -124,37 +160,25 @@ public class UnitBuild : ScriptableObject {
         throw new System.NotImplementedException();
     }
 
-    public UnitBuild(string name, int level, int currentExp, 
-        CoreUnit coreUnit, BodyPart bodyPart, ArmsPart armsPart, LowerPart lowerPart, Weapon weapon) {
-        _name = name;
-        _level = level;
-        c_Exp = currentExp;
-        _coreUnit = coreUnit;
-        _bodyPart = bodyPart;
-        _armsPart = armsPart;
-        _lowerPart = lowerPart;
-        _weaponPart = weapon;
-    }
-
     // Assets
     public GameObject InstantiateModel() {
-        GameObject model = new GameObject("Model");
+        GameObject model = new("Model");
 
-        GameObject Lower = new GameObject("Lower");
+        GameObject Lower = new("Lower");
         Lower.transform.parent = model.transform;
         if (LowerPart != null)
         {
             GameObject.Instantiate(LowerPart.Model).transform.parent = Lower.transform;
         }
 
-        GameObject Body = new GameObject("Body");
+        GameObject Body = new("Body");
         Body.transform.parent = model.transform;
         if (BodyPart != null) {
             GameObject.Instantiate(BodyPart.Model).transform.parent = Body.transform;
             Body.transform.localPosition = LowerPart != null ? LowerPart.JoinPoint : Vector3.zero;
         }
 
-        GameObject Arms = new GameObject("Arms");
+        GameObject Arms = new("Arms");
         Arms.transform.parent = model.transform;
         if (ArmsPart != null)
         {
@@ -168,7 +192,7 @@ public class UnitBuild : ScriptableObject {
             GameObject.Destroy(ArmsModel); // Remove container of arms models
         }
 
-        GameObject Core = new GameObject("Core");
+        GameObject Core = new("Core");
         Core.transform.parent = model.transform;
         if (CoreUnit != null)
         {
@@ -176,7 +200,7 @@ public class UnitBuild : ScriptableObject {
             Core.transform.localPosition = Body.transform.position + (BodyPart != null ? BodyPart.CoreJoinPoint : Vector3.zero);
         }
 
-        GameObject Weapon = new GameObject("Weapon");
+        GameObject Weapon = new("Weapon");
         Weapon.transform.parent = model.transform;
         if (WeaponPart != null) {
             // GameObject.Instantiate(WeaponPart.Model).transform.parent = Weapon.transform;
@@ -185,79 +209,9 @@ public class UnitBuild : ScriptableObject {
     }
 
     public GameObject InstantiateStageObject(MBStage stage, IStageUnit unit, bool isPlayer, MapCoordinate pos) {
-        GameObject stageObject = new GameObject(Name);
+        GameObject stageObject = new(Name);
         stageObject.AddComponent<UserMBUnit>().Init(stage, unit, isPlayer, pos);
         InstantiateModel().transform.parent = stageObject.transform;
         return stageObject;
-    }
-
-    //
-
-    public override bool Equals(object obj) {
-        var build = obj as UnitBuild;
-        return build != null &&
-               base.Equals(obj) &&
-               _name == build._name &&
-               Name == build.Name &&
-               Type == build.Type &&
-               _level == build._level &&
-               Lvl == build.Lvl &&
-               c_Exp == build.c_Exp &&
-               ExpCurrent == build.ExpCurrent &&
-               ExpToNext == build.ExpToNext &&
-               Hp == build.Hp &&
-               Ep == build.Ep &&
-               Atk == build.Atk &&
-               Def == build.Def &&
-               Acc == build.Acc &&
-               Eva == build.Eva &&
-               Spd == build.Spd &&
-               Rng == build.Rng &&
-               Mv == build.Mv &&
-               EqualityComparer<CoreUnit>.Default.Equals(_coreUnit, build._coreUnit) &&
-               EqualityComparer<CoreUnit>.Default.Equals(CoreUnit, build.CoreUnit) &&
-               EqualityComparer<BodyPart>.Default.Equals(_bodyPart, build._bodyPart) &&
-               EqualityComparer<BodyPart>.Default.Equals(BodyPart, build.BodyPart) &&
-               EqualityComparer<ArmsPart>.Default.Equals(_armsPart, build._armsPart) &&
-               EqualityComparer<ArmsPart>.Default.Equals(ArmsPart, build.ArmsPart) &&
-               EqualityComparer<LowerPart>.Default.Equals(_lowerPart, build._lowerPart) &&
-               EqualityComparer<LowerPart>.Default.Equals(LowerPart, build.LowerPart) &&
-               EqualityComparer<IBuildPart[]>.Default.Equals(Parts, build.Parts) &&
-               EqualityComparer<Weapon>.Default.Equals(_weaponPart, build._weaponPart) &&
-               EqualityComparer<Weapon>.Default.Equals(WeaponPart, build.WeaponPart);
-    }
-
-    public override int GetHashCode() {
-        var hashCode = -19346833;
-        hashCode = hashCode * -1521134295 + base.GetHashCode();
-        hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(_name);
-        hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Name);
-        hashCode = hashCode * -1521134295 + Type.GetHashCode();
-        hashCode = hashCode * -1521134295 + _level.GetHashCode();
-        hashCode = hashCode * -1521134295 + Lvl.GetHashCode();
-        hashCode = hashCode * -1521134295 + c_Exp.GetHashCode();
-        hashCode = hashCode * -1521134295 + ExpCurrent.GetHashCode();
-        hashCode = hashCode * -1521134295 + ExpToNext.GetHashCode();
-        hashCode = hashCode * -1521134295 + Hp.GetHashCode();
-        hashCode = hashCode * -1521134295 + Ep.GetHashCode();
-        hashCode = hashCode * -1521134295 + Atk.GetHashCode();
-        hashCode = hashCode * -1521134295 + Def.GetHashCode();
-        hashCode = hashCode * -1521134295 + Acc.GetHashCode();
-        hashCode = hashCode * -1521134295 + Eva.GetHashCode();
-        hashCode = hashCode * -1521134295 + Spd.GetHashCode();
-        hashCode = hashCode * -1521134295 + Rng.GetHashCode();
-        hashCode = hashCode * -1521134295 + Mv.GetHashCode();
-        hashCode = hashCode * -1521134295 + EqualityComparer<CoreUnit>.Default.GetHashCode(_coreUnit);
-        hashCode = hashCode * -1521134295 + EqualityComparer<CoreUnit>.Default.GetHashCode(CoreUnit);
-        hashCode = hashCode * -1521134295 + EqualityComparer<BodyPart>.Default.GetHashCode(_bodyPart);
-        hashCode = hashCode * -1521134295 + EqualityComparer<BodyPart>.Default.GetHashCode(BodyPart);
-        hashCode = hashCode * -1521134295 + EqualityComparer<ArmsPart>.Default.GetHashCode(_armsPart);
-        hashCode = hashCode * -1521134295 + EqualityComparer<ArmsPart>.Default.GetHashCode(ArmsPart);
-        hashCode = hashCode * -1521134295 + EqualityComparer<LowerPart>.Default.GetHashCode(_lowerPart);
-        hashCode = hashCode * -1521134295 + EqualityComparer<LowerPart>.Default.GetHashCode(LowerPart);
-        hashCode = hashCode * -1521134295 + EqualityComparer<IBuildPart[]>.Default.GetHashCode(Parts);
-        hashCode = hashCode * -1521134295 + EqualityComparer<Weapon>.Default.GetHashCode(_weaponPart);
-        hashCode = hashCode * -1521134295 + EqualityComparer<Weapon>.Default.GetHashCode(WeaponPart);
-        return hashCode;
     }
 }

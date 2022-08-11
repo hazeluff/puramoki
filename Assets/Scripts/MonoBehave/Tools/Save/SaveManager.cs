@@ -36,15 +36,14 @@ public class SaveManager : MonoBehaviour {
             using FileStream fileStream = File.Open(fileName, FileMode.Open);
             using StreamReader streamReader = new(fileStream);
             string strSave = streamReader.ReadToEnd();
-            saveData = SaveData.Parse(JObject.Parse(strSave));
+            this.saveData = SaveData.Parse(JObject.Parse(strSave));
         } else {
             Debug.Log("No save exists.");
         }
     }
 
     public void Save(string saveName) {
-        SaveData data = SaveData.NewSave();
-        WriteSave(saveName, data);
+        WriteSave(saveName, Data);
     }
 
     public void WriteSave(string saveName, SaveData saveData) {

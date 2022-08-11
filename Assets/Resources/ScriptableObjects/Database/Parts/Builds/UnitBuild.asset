@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9f06b70d0befd6e4ca2dc315c82d0b60, type: 3}
-  m_Name: TestBuild
+  m_Name: UnitBuild
   m_EditorClassIdentifier: 
-  _name: TestBuild
+  _name: TestUnit
   _level: 1
   c_Exp: 0
   _coreUnit: {fileID: 11400000, guid: a27a66be977b46e4c9c043d32d0c20f6, type: 2}
