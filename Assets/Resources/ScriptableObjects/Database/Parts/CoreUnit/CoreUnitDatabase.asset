@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: CoreUnitDatabase
   m_EditorClassIdentifier: 
   parts:
-  - id: test
+  - id: test_basic
     part: {fileID: 11400000, guid: a27a66be977b46e4c9c043d32d0c20f6, type: 2}
