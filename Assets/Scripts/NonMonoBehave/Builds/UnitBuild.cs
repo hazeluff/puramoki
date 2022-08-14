@@ -6,16 +6,20 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "UnitBuild", menuName = "Builds/UnitBuild", order = 1)]
 public class UnitBuild : ScriptableObject {
 
-    public UnitBuild(string name, int level, int currentExp, CoreUnit coreUnit, BodyPart bodyPart, ArmsPart armsPart, LowerPart lowerPart, Weapon weapon) {
-        _name = name;
-        _level = level;
-        c_Exp = currentExp;
-        _coreUnit = coreUnit;
-        _bodyPart = bodyPart;
-        _armsPart = armsPart;
-        _lowerPart = lowerPart;
-        _weaponPart = weapon;
+    public static UnitBuild CreateInstance(string name, int level, int currentExp, CoreUnit coreUnit, BodyPart bodyPart, ArmsPart armsPart, LowerPart lowerPart, Weapon weapon) {
+        UnitBuild build = ScriptableObject.CreateInstance<UnitBuild>();
+        build._name = name;
+        build._level = level;
+        build.c_Exp = currentExp;
+        build._coreUnit = coreUnit;
+        build._bodyPart = bodyPart;
+        build._armsPart = armsPart;
+        build._lowerPart = lowerPart;
+        build._weaponPart = weapon;
+        return build;
     }
+
+
 
     [SerializeField]
     private string _name;

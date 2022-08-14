@@ -10,18 +10,20 @@ public class SaveData {
     readonly static string[] PART_TYPES = new string[] { "core", "arms", "body", "lower", "weapon" };
 
     // Saved Data
-    private readonly long lastSave;
-    private readonly Dictionary<string, List<string>> partsCollection;
-    private readonly List<UnitBuild> builds; 
+    private readonly long _lastSave;
+    private readonly Dictionary<string, List<string>> _partsCollection;
+    private readonly Dictionary<string, UnitBuild> _builds;
 
     // Accessors
-    public long LastSave { get { return lastSave; } }
-    public DateTime LastSaveDT { get { return DateTimeOffset.FromUnixTimeMilliseconds(lastSave).DateTime; } }
+    public long LastSave => _lastSave;
+    public DateTime LastSaveDT => DateTimeOffset.FromUnixTimeMilliseconds(_lastSave).DateTime;
+    public Dictionary<string, UnitBuild> Builds => _builds;
 
-    private SaveData(long lastSave, Dictionary<string, List<string>> partsCollection, List<UnitBuild> builds) {
-        this.lastSave = lastSave;
-        this.partsCollection = partsCollection;
-        this.builds = builds;
+
+    private SaveData(long lastSave, Dictionary<string, List<string>> partsCollection, Dictionary<string, UnitBuild> builds) {
+        this._lastSave = lastSave;
+        this._partsCollection = partsCollection;
+        this._builds = builds;
     }
 
     public static SaveData NewSave() {
@@ -30,7 +32,7 @@ public class SaveData {
         foreach (string partType in PART_TYPES) {
             partsCollection.Add(partType, new List<string>());
         }
-        return new SaveData(lastSave, partsCollection, new List<UnitBuild>());
+        return new SaveData(lastSave, partsCollection, new Dictionary<string, UnitBuild>());
     }
 
     public static SaveData Parse(JObject json) {
@@ -41,10 +43,10 @@ public class SaveData {
             partsCollection.Add(partType, json["partsCollection"][partType].Values<string>().ToList());
         }
 
-        List<UnitBuild> builds = json["builds"]
+        Dictionary<string, UnitBuild> builds = json["builds"]
             .Select(jsonBuild => new UnitBuild(
-                (string) jsonBuild["name"],
-                (int) jsonBuild["level"],
+                (string)jsonBuild["name"],
+                (int)jsonBuild["level"],
                 (int)jsonBuild["currentExp"],
                 (string)jsonBuild["core"],
                 (string)jsonBuild["arms"],
@@ -52,25 +54,29 @@ public class SaveData {
                 (string)jsonBuild["lower"],
                 (string)jsonBuild["weapon"]
             ))
-            .ToList();
+            .ToDictionary(
+                unitBuild => unitBuild.name,
+                unitBuild => unitBuild
+            );
         return new SaveData(lastSave, partsCollection, builds);
     }
 
     public JObject ToJson() {
         JObject json = new() {
-            { "lastSave", lastSave }
+            { "lastSave", _lastSave }
         };
 
         // Parts Collection
         JObject jsonPartsCollection = new();
-        foreach (KeyValuePair<string, List<string>> entry in partsCollection) {
+        foreach (KeyValuePair<string, List<string>> entry in _partsCollection) {
             JArray jsonCollection = JArray.FromObject(entry.Value);
             jsonPartsCollection.Add(entry.Key, jsonCollection);
         }
         json.Add("partsCollection", jsonPartsCollection);
 
         // Builds
-        json.Add("builds", JArray.FromObject(builds.Select(build => {
+        json.Add("builds", JArray.FromObject(_builds.Select(buildEntry => {
+            UnitBuild build = buildEntry.Value;
             JObject jsonBuild = new();
             jsonBuild.Add("name", build.name);
             jsonBuild.Add("level", build.level);
