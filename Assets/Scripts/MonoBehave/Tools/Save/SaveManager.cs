@@ -16,7 +16,7 @@ public class SaveManager : MonoBehaviour {
     [SerializeField]
     private LowerPartDatabase _lowerPartDatabase;
     [SerializeField]
-    private WeaponDatabase _weaponDatabase;
+    private WeaponPartDatabase _weaponPartDatabase;
 
     // Singleton Behaviour
     private static SaveManager _saveManager;
@@ -50,11 +50,47 @@ public class SaveManager : MonoBehaviour {
         if (File.Exists(fileName)) {
             using FileStream fileStream = File.Open(fileName, FileMode.Open);
             using StreamReader streamReader = new(fileStream);
-            string strSave = streamReader.ReadToEnd();
-            this.saveData = SaveData.Parse(JObject.Parse(strSave));
+            string strJsonSave = streamReader.ReadToEnd();
+            this.saveData = Parse(strJsonSave);
         } else {
             Debug.Log("No save exists.");
         }
+    }
+
+    // Json Parsing + Save Creation
+    readonly static string[] JSON_PART_TYPES = new string[] { "core", "arms", "body", "lower", "weapon" };
+
+    private SaveData Parse(string strJsonSave) {
+        JObject json = JObject.Parse(strJsonSave);
+        long lastSave = (long)json["lastSave"];
+
+        Dictionary<string, List<string>> partsCollection = new Dictionary<string, List<string>>();
+        foreach (string partType in JSON_PART_TYPES) {
+            partsCollection.Add(partType, json["partsCollection"][partType].Values<string>().ToList());
+        }
+
+        List<UnitBuild> builds = json["builds"]
+            .Select(jsonBuild => UnitBuild.CreateInstance(
+                (string)jsonBuild["name"],
+                (int)jsonBuild["level"],
+                (int)jsonBuild["currentExp"],
+                _coreUnitDatabase.Get((string)jsonBuild["core"]),
+                _bodyPartDatabase.Get((string)jsonBuild["body"]),
+                _armsPartDatabase.Get((string)jsonBuild["arms"]),
+                _lowerPartDatabase.Get((string)jsonBuild["lower"]),
+                _weaponPartDatabase.Get((string)jsonBuild["weapon"])
+            ))
+            .ToList();
+        return new SaveData(lastSave, partsCollection, builds);
+    }
+
+    public static SaveData NewSave() {
+        long lastSave = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        Dictionary<string, List<string>> partsCollection = new();
+        foreach (string partType in JSON_PART_TYPES) {
+            partsCollection.Add(partType, new List<string>());
+        }
+        return new SaveData(lastSave, partsCollection, new List<UnitBuild>());
     }
 
     public void Save(string saveName) {
@@ -68,7 +104,14 @@ public class SaveManager : MonoBehaviour {
         Directory.CreateDirectory(path);
         using FileStream fileStream = File.Open(fileName, FileMode.Create);
         using StreamWriter streamWriter = new(fileStream);
-        streamWriter.Write(saveData.ToJson().ToString(Formatting.Indented));
+
+        long currentTs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        try {
+            streamWriter.Write(saveData.ToJson(currentTs).ToString(Formatting.Indented));
+            saveData.UpdateSave(currentTs);
+        } catch (Exception e) {
+            Debug.Log("Failed to write save.\n" + e.Message);
+        }
     }
 
     private string GetFileName(string saveName) {
@@ -82,34 +125,4 @@ public class SaveManager : MonoBehaviour {
     // Accessors
     public long LastSave => Data.LastSave;
     public DateTime LastSaveDT => Data.LastSaveDT;
-
-    private Dictionary<string, UnitBuild> _builds;
-    public Dictionary<string, UnitBuild> Builds { 
-        get {
-            if (_builds != null) {
-                return _builds;
-            }
-            return LoadBuilds();
-        } 
-    }
-
-    private Dictionary<string, UnitBuild> LoadBuilds() {
-        return Data.Builds.ToDictionary(
-            saveBuildEntry => saveBuildEntry.Value.name, 
-            saveBuildEntry => LoadBuild(saveBuildEntry.Value)
-        );
-    }
-
-    private UnitBuild LoadBuild(SaveData.UnitBuild saveBuild) {
-        return UnitBuild.CreateInstance(
-            saveBuild.name,
-            saveBuild.level,
-            saveBuild.currentExp,
-            _coreUnitDatabase.Get(saveBuild.coreUnitId),
-            _bodyPartDatabase.Get(saveBuild.bodyId),
-            _armsPartDatabase.Get(saveBuild.armsId),
-            _lowerPartDatabase.Get(saveBuild.lowerId),
-            _weaponDatabase.Get(saveBuild.weaponId)
-        );
-    }
 }

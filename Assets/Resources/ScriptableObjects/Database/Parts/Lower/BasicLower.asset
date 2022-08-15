@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: BasicLower
   m_EditorClassIdentifier: 
   _name: BasicLower
+  _id: test_basic
   _hp: 5
   _mp: 5
   _atk: 5
@@ -23,5 +24,4 @@ MonoBehaviour:
   _spd: 5
   _mv: 5
   _model: {fileID: 3324270676494358684, guid: 1525f39947f634446a6f1103e46689b1, type: 3}
-  _height: 0
   _joinPoint: {x: 0, y: 0.41, z: 0}

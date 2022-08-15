@@ -2,21 +2,11 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 
-public abstract class PartDatabase<P> : ScriptableObject where P : ScriptablePart {
+public abstract class PartDatabase<P> : ScriptableObject where P : BuildPart {
 
-    public List<Entry> parts;
+    public List<P> parts;
 
     public P Get(string id) {
-        Entry entry = parts.Find(e => id.Equals(e.id));
-        if (entry != null) {
-            return entry.part;
-        }
-        return null;
-    }
-
-    [Serializable]
-    public class Entry {
-        public string id;
-        public P part;
+        return parts.Find(e => id.Equals(e.Id));
     }
 }

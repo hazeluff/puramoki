@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: BasicArms
   m_EditorClassIdentifier: 
   _name: BasicArms
+  _id: test_basic
   _hp: 5
   _mp: 5
   _atk: 5

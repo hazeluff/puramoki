@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: BasicBody
   m_EditorClassIdentifier: 
   _name: BasicBody
+  _id: test_basic
   _hp: 5
   _mp: 5
   _atk: 5

@@ -2,10 +2,8 @@
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "CoreUnit", menuName = "Builds/Parts/Core", order = 1)]
-public class CoreUnit : ScriptablePart, ICoreUnit {
+public class CoreUnit : BuildPart, ICoreUnit {
     // Underlying serializable fields
-    [SerializeField]
-    private string _name;
     [SerializeField]
     private UnitType _type;
 
@@ -25,13 +23,10 @@ public class CoreUnit : ScriptablePart, ICoreUnit {
     private int _baseSpd;
     [SerializeField]
     private int _baseRng;
-    [SerializeField]
-    private int _mv;
 
     [SerializeField]
     private GameObject _model;
 
-    public string Name { get { return _name; } }
     public UnitType Type { get { return _type; } }
 
     public int BaseHp { get { return _baseHp; } }
@@ -57,12 +52,4 @@ public class CoreUnit : ScriptablePart, ICoreUnit {
     
     public int BaseRng { get { return _baseRng; } }
     public int RngAt(int lvl) { return BaseRng + (int) Mathf.Floor(BaseRng * Mathf.Pow(1.1f, lvl - 1)); }
-
-    public int Mv { get { return _mv; } }
-
-    public float ElemRes(Element element) {
-        return 0.0f;
-    }
-
-    public GameObject Model { get { return _model; } }
 }

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -18,8 +19,9 @@ public class MBLoadoutMenu : MonoBehaviour {
     private TMP_InputField buildNamePromptInput;
 
 
-    [SerializeField]
-    private string buildName;
+    private UnitBuild _selectedBuild = null;
+    public UnitBuild Selected => _selectedBuild;
+
     [SerializeField]
     private TMP_Text coreUnitNameButtonLabel;
     [SerializeField]
@@ -41,9 +43,15 @@ public class MBLoadoutMenu : MonoBehaviour {
         NEXT_WAIT // only for nextState to denote "null"
     }
 
-    private void Update() {
-        UpdateButtonLabels();
+    private void Start() {
+        saveManager.Load("test");
+        if (saveManager.Data.Builds.Count > 0) {
+            SelectBuild(saveManager.Data.Builds[0]);
+            EventSystem.current.SetSelectedGameObject(buildNameButtonLabel.transform.parent.gameObject);
+        }
+    }
 
+    private void Update() {
         switch (state) {
             case MenuState.ENTER_NAME:
                 UpdateEnterName();
@@ -58,34 +66,27 @@ public class MBLoadoutMenu : MonoBehaviour {
         }
     }
 
-    private void UpdateButtonLabels() {
-        if (buildName == null) {
-            UpdateButtonsToBlank();
-            return;
+    private void SelectBuild(UnitBuild build) {
+        this._selectedBuild = build;
+        if (Selected != null) {
+            buildNameButtonLabel.text = Selected.Name;
+            coreUnitNameButtonLabel.text = Selected.CoreUnit.Name;
+            bodyNameButtonLabel.text = Selected.BodyPart.Name;
+            armsNameButtonLabel.text = Selected.ArmsPart.Name;
+            lowerNameButtonLabel.text = Selected.LowerPart.Name;
+            weaponNameButtonLabel.text = Selected.WeaponPart.Name;
+        } else {
+            buildNameButtonLabel.text = "<none selected>";
+            coreUnitNameButtonLabel.text = "<core>";
+            bodyNameButtonLabel.text = "<body>";
+            armsNameButtonLabel.text = "<arms>";
+            lowerNameButtonLabel.text = "<lower>";
+            weaponNameButtonLabel.text = "<weapon>";
         }
-        if (saveManager.Data == null) {
-            UpdateButtonsToBlank();
-            return;
-        }
-        if (!saveManager.Builds.ContainsKey(buildName)) {
-            UpdateButtonsToBlank();
-            return;
-        }
-        UnitBuild selectedBuild = saveManager.Builds[buildName];
-        coreUnitNameButtonLabel.text = selectedBuild.CoreUnit.Name;
-        bodyNameButtonLabel.text = selectedBuild.BodyPart.Name ;
-        armsNameButtonLabel.text = selectedBuild.ArmsPart.Name;
-        lowerNameButtonLabel.text = selectedBuild.LowerPart.Name;
-        weaponNameButtonLabel.text = selectedBuild.WeaponPart.Name;
     }
 
-    private void UpdateButtonsToBlank() {
-        coreUnitNameButtonLabel.text = "<core>";
-        bodyNameButtonLabel.text = "<body>";
-        armsNameButtonLabel.text = "<arms>";
-        lowerNameButtonLabel.text = "<lower>";
-        weaponNameButtonLabel.text = "<weapon>";
-
+    private void DeselectBuilds() {
+        _selectedBuild = null;
     }
 
     private void UpdateEnterName() {
@@ -107,7 +108,9 @@ public class MBLoadoutMenu : MonoBehaviour {
 
     public void State_ExitName(string newName) {
         if (newName != null) {
+            // Save new name
             buildNameButtonLabel.text = newName;
+            Selected.SetName(newName);
         }
         nextState = MenuState.PART_SELECT;
         EventSystem.current.SetSelectedGameObject(buildNameButtonLabel.transform.parent.gameObject);
@@ -115,6 +118,7 @@ public class MBLoadoutMenu : MonoBehaviour {
     }
 
     public void State_EnterName() {
+        buildNamePromptInput.text = Selected.Name;
         nextState = MenuState.ENTER_NAME;
         EventSystem.current.SetSelectedGameObject(null);
         promptGO.SetActive(true);

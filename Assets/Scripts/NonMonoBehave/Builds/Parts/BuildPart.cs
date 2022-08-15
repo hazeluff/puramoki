@@ -4,6 +4,8 @@ public class BuildPart : ScriptablePart, IBuildPart {
     [SerializeField]
     private string _name;
     [SerializeField]
+    private string _id;
+    [SerializeField]
     private int  _hp;
     [SerializeField]
     private int _mp;
@@ -26,6 +28,7 @@ public class BuildPart : ScriptablePart, IBuildPart {
     private GameObject _model;
 
     public string Name { get { return _name; } }
+    public string Id { get { return _id; } }
     public int Hp { get { return _hp; } }
     public int Ep { get { return _mp; } }
     public int Atk { get { return _atk; } }

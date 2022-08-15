@@ -6,13 +6,14 @@ MonoImporter:
   defaultReferences:
   - _coreUnitDatabase: {fileID: 11400000, guid: 6f4e0618c21936d4c9c6b92bbfdd8f21,
       type: 2}
-  - _armsPartDatabase: {fileID: 11400000, guid: 200fc493547af044a80847cfe06f82fe,
-      type: 2}
   - _bodyPartDatabase: {fileID: 11400000, guid: c4a1579e02d27f3428577ab915df88a4,
+      type: 2}
+  - _armsPartDatabase: {fileID: 11400000, guid: 200fc493547af044a80847cfe06f82fe,
       type: 2}
   - _lowerPartDatabase: {fileID: 11400000, guid: f16a02248323809429295754ba00c660,
       type: 2}
-  - _weaponDatabase: {fileID: 11400000, guid: c91af9cbe79027444afd61f2ae92363c, type: 2}
+  - _weaponPartDatabase: {fileID: 11400000, guid: c91af9cbe79027444afd61f2ae92363c,
+      type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

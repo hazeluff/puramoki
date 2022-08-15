@@ -19,8 +19,6 @@ public class UnitBuild : ScriptableObject {
         return build;
     }
 
-
-
     [SerializeField]
     private string _name;
     public string Name {
@@ -36,7 +34,7 @@ public class UnitBuild : ScriptableObject {
         }
     }
     public void SetName(string name) {
-        _name = name;
+        this._name = name;
     }
 
     public UnitType Type { get { return CoreUnit.Type; } }

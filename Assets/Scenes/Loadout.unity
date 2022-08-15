@@ -3024,7 +3024,6 @@ MonoBehaviour:
   promptGO: {fileID: 1021376745}
   buildNameButtonLabel: {fileID: 1446216373}
   buildNamePromptInput: {fileID: 538793948}
-  buildName: test
   coreUnitNameButtonLabel: {fileID: 936187127}
   bodyNameButtonLabel: {fileID: 2089271512}
   armsNameButtonLabel: {fileID: 52121934}
@@ -3118,7 +3117,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: <build name>
+  m_text: <none selected>
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -3362,7 +3361,8 @@ MonoBehaviour:
   _bodyPartDatabase: {fileID: 11400000, guid: c4a1579e02d27f3428577ab915df88a4, type: 2}
   _armsPartDatabase: {fileID: 11400000, guid: 200fc493547af044a80847cfe06f82fe, type: 2}
   _lowerPartDatabase: {fileID: 11400000, guid: f16a02248323809429295754ba00c660, type: 2}
-  _weaponDatabase: {fileID: 11400000, guid: c91af9cbe79027444afd61f2ae92363c, type: 2}
+  _weaponPartDatabase: {fileID: 11400000, guid: c91af9cbe79027444afd61f2ae92363c,
+    type: 2}
 --- !u!4 &1673745523
 Transform:
   m_ObjectHideFlags: 0
