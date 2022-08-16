@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 [CreateAssetMenu(fileName = "Weapon", menuName = "Builds/Parts/Weapon", order = 1)]
-public class Weapon : BuildPart, IWeapon {
+public class WeaponPart : BuildPart, IWeapon {
     [SerializeField]
     private WeaponType _type;
     [SerializeField]
@@ -9,6 +9,7 @@ public class Weapon : BuildPart, IWeapon {
     [SerializeField]
     private int _rangeMax;
 
+    [SerializeField]
     private int _cooldown;
 
     public WeaponType Type { get { return _type; } }

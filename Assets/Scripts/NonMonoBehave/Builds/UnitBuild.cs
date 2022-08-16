@@ -6,7 +6,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "UnitBuild", menuName = "Builds/UnitBuild", order = 1)]
 public class UnitBuild : ScriptableObject {
 
-    public static UnitBuild CreateInstance(string name, int level, int currentExp, CoreUnit coreUnit, BodyPart bodyPart, ArmsPart armsPart, LowerPart lowerPart, Weapon weapon) {
+    public static UnitBuild CreateInstance(string name, int level, int currentExp, CoreUnit coreUnit, BodyPart bodyPart, ArmsPart armsPart, LowerPart lowerPart, WeaponPart weaponPart) {
         UnitBuild build = ScriptableObject.CreateInstance<UnitBuild>();
         build._name = name;
         build._level = level;
@@ -15,7 +15,7 @@ public class UnitBuild : ScriptableObject {
         build._bodyPart = bodyPart;
         build._armsPart = armsPart;
         build._lowerPart = lowerPart;
-        build._weaponPart = weapon;
+        build._weaponPart = weaponPart;
         return build;
     }
 
@@ -151,8 +151,8 @@ public class UnitBuild : ScriptableObject {
     }
 
     [SerializeField]
-    private Weapon _weaponPart;
-    public Weapon WeaponPart { get { return _weaponPart; } set { _weaponPart = value; } }
+    private WeaponPart _weaponPart;
+    public WeaponPart WeaponPart { get { return _weaponPart; } set { _weaponPart = value; } }
 
     private int WeaponStats(Func<IBuildPart, int> statFunc) {
         return WeaponPart != null ? statFunc.Invoke(WeaponPart) : 0;

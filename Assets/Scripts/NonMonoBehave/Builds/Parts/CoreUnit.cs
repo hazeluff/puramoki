@@ -24,9 +24,6 @@ public class CoreUnit : BuildPart, ICoreUnit {
     [SerializeField]
     private int _baseRng;
 
-    [SerializeField]
-    private GameObject _model;
-
     public UnitType Type { get { return _type; } }
 
     public int BaseHp { get { return _baseHp; } }

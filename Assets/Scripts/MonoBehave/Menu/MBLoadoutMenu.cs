@@ -33,6 +33,12 @@ public class MBLoadoutMenu : MonoBehaviour {
     [SerializeField]
     private TMP_Text weaponNameButtonLabel;
 
+    private readonly float ROTATION_RATE = 120.0f;
+    [SerializeField]
+    private Transform unitDisplay;
+    [SerializeField]
+    private Transform unitAnchor;
+    private Transform unitModel;
 
     private MenuState state = MenuState.PART_SELECT;
     private MenuState nextState;
@@ -52,6 +58,8 @@ public class MBLoadoutMenu : MonoBehaviour {
     }
 
     private void Update() {
+        RotateModel();
+
         switch (state) {
             case MenuState.ENTER_NAME:
                 UpdateEnterName();
@@ -66,8 +74,15 @@ public class MBLoadoutMenu : MonoBehaviour {
         }
     }
 
+    private void RotateModel() {
+        float rotateAmt = InputManager.get().RIGHT_STICK.Horizontal * Time.deltaTime * ROTATION_RATE;
+        unitDisplay.localEulerAngles = unitDisplay.localEulerAngles + new Vector3(0, rotateAmt, 0);
+    }
+
     private void SelectBuild(UnitBuild build) {
         this._selectedBuild = build;
+
+        // Update UI Labels
         if (Selected != null) {
             buildNameButtonLabel.text = Selected.Name;
             coreUnitNameButtonLabel.text = Selected.CoreUnit.Name;
@@ -83,6 +98,11 @@ public class MBLoadoutMenu : MonoBehaviour {
             lowerNameButtonLabel.text = "<lower>";
             weaponNameButtonLabel.text = "<weapon>";
         }
+
+        // Spawn the Model
+        unitModel = build.InstantiateModel().transform;
+        unitModel.localScale = new Vector3(4,4,4);
+        unitModel.parent = unitAnchor;
     }
 
     private void DeselectBuilds() {
