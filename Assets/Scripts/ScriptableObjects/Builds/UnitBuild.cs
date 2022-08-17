@@ -48,13 +48,14 @@ public class UnitBuild : ScriptableObject {
 
     [SerializeField]
     private int c_Exp;
-    public int ExpCurrent { get { return c_Exp; } }
-    public int ExpToNext { get { return 100 + (Lvl-1) * 10; } }
+    public int ExpCurrent => c_Exp;
+    public int ExpTillNext => ExpCurrent >= NextLevelExp ? 0 : NextLevelExp - ExpCurrent;
+    public int NextLevelExp => 100 + (Lvl - 1) * 10;
 
     public void GainExp(int exp) {
         c_Exp += exp;
-        while (c_Exp >= ExpToNext) {
-            c_Exp -= ExpToNext;
+        while (c_Exp >= NextLevelExp) {
+            c_Exp -= NextLevelExp;
             LevelUp();
         }
     }

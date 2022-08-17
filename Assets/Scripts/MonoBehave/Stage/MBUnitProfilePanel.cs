@@ -50,7 +50,7 @@ public class MBUnitProfilePanel : MonoBehaviour {
             cursorUnitHash = hash;
             unitName.text = cursorUnit.Build.Name;
             unitLvl.text = cursorUnit.Build.Lvl.ToString();
-            unitExp.text = String.Format("{0} / {1}", cursorUnit.Build.ExpCurrent, cursorUnit.Build.ExpToNext);
+            unitExp.text = String.Format("{0} / {1}", cursorUnit.Build.ExpCurrent, cursorUnit.Build.NextLevelExp);
             unitType.text = cursorUnit.Build.Type.ToString();
             unitFaction.text = cursorUnit.Faction.Name;
             unitHp.text = String.Format("{0} / {1}", cursorUnit.c_Hp, cursorUnit.Build.Hp);
