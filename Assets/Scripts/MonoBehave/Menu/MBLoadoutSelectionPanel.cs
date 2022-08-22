@@ -85,7 +85,7 @@ public class MBLoadoutSelectionPanel : MonoBehaviour {
         // Update UI Labels
         if (Selected != null) {
             buildNameButtonLabel.text = Selected.Name;
-            coreUnitNameButtonLabel.text = Selected.CoreUnit.Name;
+            coreUnitNameButtonLabel.text = Selected.CoreUnitPart.Name;
             bodyNameButtonLabel.text = Selected.BodyPart.Name;
             armsNameButtonLabel.text = Selected.ArmsPart.Name;
             lowerNameButtonLabel.text = Selected.LowerPart.Name;

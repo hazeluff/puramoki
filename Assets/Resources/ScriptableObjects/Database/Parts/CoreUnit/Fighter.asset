@@ -14,16 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _name: Fighter
   _id: fighter
-  _hp: 0
-  _mp: 0
-  _atk: 0
-  _def: 0
-  _acc: 0
-  _eva: 0
-  _rng: 0
-  _spd: 0
-  _mv: 3
-  _model: {fileID: 8108177893325580632, guid: 6fbaf49d57238484081f2dd338d4ee3a, type: 3}
   _type: 0
   _baseHp: 20
   _baseEp: 5
@@ -33,4 +23,5 @@ MonoBehaviour:
   _baseEva: 5
   _baseSpd: 10
   _baseRng: 5
-  _model: {fileID: 8108177893325580632, guid: 6fbaf49d57238484081f2dd338d4ee3a, type: 3}
+  _baseMv: 0
+  _model: {fileID: 5041679710911998358, guid: 3e2cc0a22693d574385f32b3b69af85b, type: 3}

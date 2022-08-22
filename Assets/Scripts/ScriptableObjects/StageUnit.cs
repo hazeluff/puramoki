@@ -90,7 +90,7 @@ public class StageUnit : IStageUnit {
         Debug.Log(Build.Name + ": Attack [" + target.ToString() + "]");
         DamageResult damageResult = target.ReceiveAttack(new BasicAttackInstance(this, c_Atk, DamageType.PHYSICAL));
         if (damageResult.IsKill) {
-            Build.GainExp(target.Build);
+            Build.CoreUnitPart.GainExp(target.Build);
         }
         int atkCd = Build.WeaponPart.Cooldown - c_Spd;
         AddCooldown(atkCd < 100 ? 100 : atkCd);

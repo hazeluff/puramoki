@@ -788,6 +788,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 537d00a952eaf75468c5da167128439a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  buildNameButton: {fileID: 1502993968}
+  coreUnitButton: {fileID: 1963914156}
+  bodyButton: {fileID: 625962813}
+  armsButton: {fileID: 1049003403}
+  lowerButton: {fileID: 873676585}
+  weaponButton: {fileID: 0}
   statsLabel: {fileID: 2022119030}
   selectionPanel: {fileID: 827126775}
 --- !u!1 &399445187

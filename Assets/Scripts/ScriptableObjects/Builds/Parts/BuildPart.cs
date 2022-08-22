@@ -1,6 +1,7 @@
-﻿using UnityEngine;
+﻿using Newtonsoft.Json.Linq;
+using UnityEngine;
 
-public class BuildPart : ScriptablePart, IBuildPart {
+public class BuildPart : ScriptablePart, IBuildPart, IDatabasePart {
     [SerializeField]
     private string _name;
     [SerializeField]
@@ -24,24 +25,29 @@ public class BuildPart : ScriptablePart, IBuildPart {
     [SerializeField]
     private int _mv;
 
-    [SerializeField]
-    private GameObject _model;
-
-    public string Name { get { return _name; } }
-    public string Id { get { return _id; } }
-    public int Hp { get { return _hp; } }
-    public int Ep { get { return _mp; } }
-    public int Atk { get { return _atk; } }
-    public int Def { get { return _def; } }
-    public int Acc { get { return _acc; } }
-    public int Eva { get { return _eva; } }
-    public int Spd { get { return _spd; } }
-    public int Rng { get { return _rng; } }
-    public int Mv { get { return _mv; } }
+    public string Name => _name;
+    public string Id => _id;
+    public int Hp => _hp;
+    public int Ep => _mp;
+    public int Atk => _atk;
+    public int Def => _def;
+    public int Acc => _acc;
+    public int Eva => _eva;
+    public int Spd => _spd;
+    public int Rng => _rng;
+    public int Mv => _mv;
 
     public float ElemRes(Element element) {
         return 0.0f;
     }
 
-    public GameObject Model { get { return _model; } }
+    [SerializeField]
+    private GameObject _model;
+    public GameObject Model => _model;
+
+    public JObject ToSaveJson() {
+        return new() {
+            { "id", Id }
+        };
+    }
 }

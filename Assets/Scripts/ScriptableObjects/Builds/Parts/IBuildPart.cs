@@ -1,6 +1,9 @@
-﻿using UnityEngine;
+﻿using Newtonsoft.Json.Linq;
+using UnityEngine;
 
 public interface IBuildPart {
+    string Name { get; }
+
     int Hp { get; }
     int Ep { get; }
     int Atk { get; }
@@ -9,10 +12,11 @@ public interface IBuildPart {
     int Eva { get; }
     int Spd { get; }
     int Rng { get; }
-
     int Mv { get; }
 
     GameObject Model { get; }
 
     float ElemRes(Element element);
+
+    JObject ToSaveJson();
 }

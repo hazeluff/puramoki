@@ -36,7 +36,7 @@ public class MBLoudoutStatsPanel : MonoBehaviour
             return;
         }
         if (selectedGO == coreUnitButton.gameObject) {
-            UpdateCoreStats(selectedBuild.CoreUnit);
+            UpdateCoreStats(selectedBuild.CoreUnitPart);
             return;
         }
         if (selectedGO == bodyButton.gameObject) {
@@ -72,7 +72,7 @@ public class MBLoudoutStatsPanel : MonoBehaviour
             "MV:" + selectedBuild.Mv + "\n";
     }
 
-    private void UpdateCoreStats(CoreUnit coreUnit) {
+    private void UpdateCoreStats(CoreUnitPart coreUnit) {
         statsLabel.text = coreUnit.Name + "\n" +
             // "Level: " + coreUnit.Lvl + "\n" +
             // "Exp: " + coreUnit.ExpCurrent + "/" + coreUnit.NextLevelExp + "\n" +

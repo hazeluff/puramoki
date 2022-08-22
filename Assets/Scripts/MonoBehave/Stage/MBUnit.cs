@@ -14,20 +14,14 @@ public abstract class MBUnit : MBClickable, IMBUnit {
     protected bool _isPlayer = false;
     public bool IsPlayer { get { return _isPlayer; } }
 
-    public void Init(MBStage stage, IStageUnit unit, MapCoordinate pos) {
-        Init(stage, unit, null, pos);
-    }
-
-    public void Init(MBStage stage, IStageUnit unit, bool? isPlayer, MapCoordinate pos) {
+    public void Init(MBStage stage, IStageUnit unit, bool isPlayer, MapCoordinate pos) {
         _stage = stage;
         if (unit != null)
         {
             _unit = unit;
         }
+        _isPlayer = isPlayer;
         _unit.Init(pos);
-        if(isPlayer != null) {
-            _isPlayer = isPlayer.Value;
-        }
     }
 
     protected virtual void Awake() {

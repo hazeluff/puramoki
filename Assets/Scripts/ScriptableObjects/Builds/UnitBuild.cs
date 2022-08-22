@@ -3,15 +3,11 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "UnitBuild", menuName = "Builds/UnitBuild", order = 1)]
 public class UnitBuild : ScriptableObject {
-
-    public static UnitBuild CreateInstance(string name, int level, int currentExp, CoreUnit coreUnit, BodyPart bodyPart, ArmsPart armsPart, LowerPart lowerPart, WeaponPart weaponPart) {
+    public static UnitBuild CreateInstance(string name, CoreUnitPart coreUnit, BodyPart bodyPart, ArmsPart armsPart, LowerPart lowerPart, WeaponPart weaponPart) {
         UnitBuild build = ScriptableObject.CreateInstance<UnitBuild>();
         build._name = name;
-        build._level = level;
-        build.c_Exp = currentExp;
-        build._coreUnit = coreUnit;
+        build._coreUnitPart = coreUnit;
         build._bodyPart = bodyPart;
         build._armsPart = armsPart;
         build._lowerPart = lowerPart;
@@ -26,8 +22,8 @@ public class UnitBuild : ScriptableObject {
             if (_name != null && !_name.Equals("")) {
                 return _name;
             }
-            if (CoreUnit != null) {
-                return CoreUnit.Name;
+            if (CoreUnitPart != null) {
+                return CoreUnitPart.Name;
             }
 
             return "null";
@@ -37,104 +33,56 @@ public class UnitBuild : ScriptableObject {
         this._name = name;
     }
 
-    public UnitType Type { get { return CoreUnit.Type; } }
-    [SerializeField]
-    private int _level;
-    public int Lvl { get { return _level; } }
+    public UnitType Type { get { return CoreUnitPart.Type; } }
 
-    public void LevelUp() {
-        _level++;
-    }
+    public int Lvl => CoreUnitPart.Lvl;
+    public int ExpCurrent => CoreUnitPart.ExpCurrent;
+    public int ExpTillNext => CoreUnitPart.ExpTillNext;
+    public int NextLevelExp => CoreUnitPart.NextLevelExp;
 
-    [SerializeField]
-    private int c_Exp;
-    public int ExpCurrent => c_Exp;
-    public int ExpTillNext => ExpCurrent >= NextLevelExp ? 0 : NextLevelExp - ExpCurrent;
-    public int NextLevelExp => 100 + (Lvl - 1) * 10;
-
-    public void GainExp(int exp) {
-        c_Exp += exp;
-        while (c_Exp >= NextLevelExp) {
-            c_Exp -= NextLevelExp;
-            LevelUp();
-        }
-    }
-
-    public void GainExp(UnitBuild unitDestroyed) {
-        int levelDiff = unitDestroyed.Lvl - this.Lvl;
-        GainExp(EvalDestroyExp(levelDiff));
-    }
-
-    private int EvalDestroyExp(int levelDiff) {
-        switch (levelDiff) {
-            case 5:
-                return 35;
-            case 4:
-                return 30;
-            case 3:
-                return 25;
-            case 2:
-                return 20;
-            case 1:
-                return 15;
-            case 0:
-            case -1:
-            case -2:
-            case -3:
-                return 10;
-            case -4:
-                return 5;
-            case -5:
-                return 2;
-            default:
-                return levelDiff > 5 ? 35 : 1;
-        }
-}
-
-    public int Hp { get { return HpAt(_level); } }
-    public int Ep { get { return EpAt(_level); } }
-    public int Atk { get { return AtkAt(_level); } }
-    public int Def { get { return DefAt(_level); } }
-    public int Acc { get { return AccAt(_level); } }
-    public int Eva { get { return EvaAt(_level); } }
-    public int Spd { get { return SpdAt(_level); } }
-    public int Rng { get { return RngAt(_level); } }
-    public int Mv { get { return MvAt(_level); } }
+    public int Hp => CoreUnitPart.Hp + PartsStats(pt => pt.Hp) + WeaponStats(wpn => wpn.Hp);
+    public int Ep => CoreUnitPart.Ep + PartsStats(pt => pt.Ep) + WeaponStats(wpn => wpn.Ep);
+    public int Atk => CoreUnitPart.Atk + PartsStats(pt => pt.Atk) + WeaponStats(wpn => wpn.Atk);
+    public int Def => CoreUnitPart.Def + PartsStats(pt => pt.Def) + WeaponStats(wpn => wpn.Def);
+    public int Acc => CoreUnitPart.Acc + PartsStats(pt => pt.Acc) + WeaponStats(wpn => wpn.Acc);
+    public int Eva => CoreUnitPart.Eva + PartsStats(pt => pt.Eva) + WeaponStats(wpn => wpn.Eva);
+    public int Spd => CoreUnitPart.Spd + PartsStats(pt => pt.Spd) + WeaponStats(wpn => wpn.Spd);
+    public int Rng => CoreUnitPart.Rng + PartsStats(pt => pt.Rng) + WeaponStats(wpn => wpn.Rng);
+    public int Mv => CoreUnitPart.Mv + PartsStats(pt => pt.Mv) + WeaponStats(wpn => wpn.Def);
 
     public int HpAt(int lvl) {
-        return CoreStats(core => core.HpAt(lvl)) + WeaponStats(wpn => wpn.Hp) + PartsStats(pt => pt.Hp);
+        return CoreStats(core => core.HpAt(lvl)) + PartsStats(pt => pt.Hp) + WeaponStats(wpn => wpn.Hp);
     }
     public int EpAt(int lvl) {
-        return CoreStats(core => core.EpAt(lvl)) + WeaponStats(wpn => wpn.Ep) + PartsStats(pt => pt.Ep);
+        return CoreStats(core => core.EpAt(lvl)) + PartsStats(pt => pt.Ep) + WeaponStats(wpn => wpn.Ep);
     }
     public int AtkAt(int lvl) {
-        return CoreStats(core => core.AtkAt(lvl)) + WeaponStats(wpn => wpn.Atk) + PartsStats(pt => pt.Atk);
+        return CoreStats(core => core.AtkAt(lvl)) + PartsStats(pt => pt.Atk) + WeaponStats(wpn => wpn.Atk);
     }
     public int DefAt(int lvl) {
-        return CoreStats(core => core.DefAt(lvl)) + WeaponStats(wpn => wpn.Def) + PartsStats(pt => pt.Def);
+        return CoreStats(core => core.DefAt(lvl)) + PartsStats(pt => pt.Def) + WeaponStats(wpn => wpn.Def);
     }
     public int AccAt(int lvl) {
-        return CoreStats(core => core.AccAt(lvl)) + WeaponStats(wpn => wpn.Acc) + PartsStats(pt => pt.Acc);
+        return CoreStats(core => core.AccAt(lvl)) + PartsStats(pt => pt.Acc) + WeaponStats(wpn => wpn.Acc);
     }
     public int EvaAt(int lvl) {
-        return CoreStats(core => core.EvaAt(lvl)) + WeaponStats(wpn => wpn.Eva) + PartsStats(pt => pt.Eva);
+        return CoreStats(core => core.EvaAt(lvl)) + PartsStats(pt => pt.Eva) + WeaponStats(wpn => wpn.Eva);
     }
     public int SpdAt(int lvl) {
-        return CoreStats(core => core.SpdAt(lvl)) + WeaponStats(wpn => wpn.Spd) + PartsStats(pt => pt.Spd);
+        return CoreStats(core => core.SpdAt(lvl)) + PartsStats(pt => pt.Spd) + WeaponStats(wpn => wpn.Spd);
     }
     public int RngAt(int lvl) {
-        return CoreStats(core => core.DefAt(lvl)) + WeaponStats(wpn => wpn.Rng) + PartsStats(pt => pt.Rng);
-    }
-    public int MvAt(int lvl) {
-        return CoreStats(core => core.Mv) + WeaponStats(wpn => wpn.Def) + PartsStats(pt => pt.Mv);
+        return CoreStats(core => core.RngAt(lvl)) + PartsStats(pt => pt.Rng) + WeaponStats(wpn => wpn.Rng);
     }
 
     [SerializeField]
-    private CoreUnit _coreUnit;
-    public CoreUnit CoreUnit { get { return _coreUnit; } set { _coreUnit = value; } }
-    private int CoreStats(Func<CoreUnit, int> statFunc) {
-        return CoreUnit != null ? statFunc.Invoke(CoreUnit) : 0;
-    }
+    private CoreUnitBase _baseCoreUnit;
+    [SerializeField]
+    protected CoreUnitPart _coreUnitPart;
+    public CoreUnitPart CoreUnitPart { get { return _coreUnitPart; } set { _coreUnitPart = value; } }
+    private int CoreStats(Func<CoreUnitPart, int> statFunc) {
+        return CoreUnitPart != null ? statFunc.Invoke(CoreUnitPart) : 0;
+     }
 
     [SerializeField]
     private BodyPart _bodyPart;
@@ -146,9 +94,11 @@ public class UnitBuild : ScriptableObject {
     private LowerPart _lowerPart;
     public LowerPart LowerPart { get { return _lowerPart; } set { _lowerPart = value; } }
 
-    public IBuildPart[] Parts { get { return new IBuildPart[] { BodyPart, ArmsPart, LowerPart }; } }
     private int PartsStats(Func<IBuildPart, int> statFunc) {
-        return new List<IBuildPart>(Parts).Where(part => part != null).Select<IBuildPart, int>(statFunc).Sum();
+        return new List<IBuildPart>(new IBuildPart[] { BodyPart, ArmsPart, LowerPart })
+            .Where(part => part != null)
+            .Select<IBuildPart, int>(statFunc)
+            .Sum();
     }
 
     [SerializeField]
@@ -197,9 +147,9 @@ public class UnitBuild : ScriptableObject {
 
         GameObject Core = new("Core");
         Core.transform.parent = model.transform;
-        if (CoreUnit != null)
+        if (CoreUnitPart != null)
         {
-            GameObject.Instantiate(CoreUnit.Model).transform.parent = Core.transform;
+            GameObject.Instantiate(CoreUnitPart.Model).transform.parent = Core.transform;
             Core.transform.localPosition = Body.transform.position + (BodyPart != null ? BodyPart.CoreJoinPoint : Vector3.zero);
         }
 

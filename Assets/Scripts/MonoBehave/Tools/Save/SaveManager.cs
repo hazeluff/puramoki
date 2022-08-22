@@ -58,39 +58,60 @@ public class SaveManager : MonoBehaviour {
     }
 
     // Json Parsing + Save Creation
-    readonly static string[] JSON_PART_TYPES = new string[] { "core", "arms", "body", "lower", "weapon" };
-
     private SaveData Parse(string strJsonSave) {
         JObject json = JObject.Parse(strJsonSave);
         long lastSave = (long)json["lastSave"];
 
-        Dictionary<string, List<string>> partsCollection = new Dictionary<string, List<string>>();
-        foreach (string partType in JSON_PART_TYPES) {
-            partsCollection.Add(partType, json["partsCollection"][partType].Values<string>().ToList());
-        }
-
-        List<UnitBuild> builds = json["builds"]
-            .Select(jsonBuild => UnitBuild.CreateInstance(
-                (string)jsonBuild["name"],
-                (int)jsonBuild["level"],
-                (int)jsonBuild["currentExp"],
-                _coreUnitDatabase.Get((string)jsonBuild["core"]),
-                _bodyPartDatabase.Get((string)jsonBuild["body"]),
-                _armsPartDatabase.Get((string)jsonBuild["arms"]),
-                _lowerPartDatabase.Get((string)jsonBuild["lower"]),
-                _weaponPartDatabase.Get((string)jsonBuild["weapon"])
-            ))
+        List <CoreUnitPart> coreUnitParts = json["progress"]["collection"]["core"]
+            .ToList()
+            .Select(jsonCore => {
+                string id = (string) jsonCore["id"];
+                int lvl = JsonUtils.GetJsonValue(jsonCore, "lvl", 0);
+                int xp  = JsonUtils.GetJsonValue(jsonCore, "xp", 0);
+                CoreUnitBase coreBase = _coreUnitDatabase.Get(id);
+                return CoreUnitPart.CreateInstance(coreBase, lvl, xp); 
+            })
             .ToList();
-        return new SaveData(lastSave, partsCollection, builds);
+        List<BodyPart> bodyParts = json["progress"]["collection"]["body"]
+            .Select(jsonBody => _bodyPartDatabase.Get((string)jsonBody["id"]))
+            .ToList();
+        List<ArmsPart> armsParts = json["progress"]["collection"]["arms"]
+            .Select(jsonArms => _armsPartDatabase.Get((string)jsonArms["id"]))
+            .ToList();
+        List<LowerPart> lowerParts = json["progress"]["collection"]["lower"]
+            .Select(jsonLower => _lowerPartDatabase.Get((string)jsonLower["id"]))
+            .ToList();
+        List<WeaponPart> weaponParts = json["progress"]["collection"]["weapon"]
+            .Select(jsonWeapon => _weaponPartDatabase.Get((string)jsonWeapon["id"]))
+            .ToList();
+
+        List<UnitBuild> builds = json["builds"].Select(jsonBuild => {
+                CoreUnitBase coreBase = _coreUnitDatabase.Get((string)jsonBuild["core"]);
+                return UnitBuild.CreateInstance(
+                    (string)jsonBuild["name"],
+                    GetCoreUnitPart(coreUnitParts, (string)jsonBuild["core"]),
+                    _bodyPartDatabase.Get((string)jsonBuild["body"]),
+                    _armsPartDatabase.Get((string)jsonBuild["arms"]),
+                    _lowerPartDatabase.Get((string)jsonBuild["lower"]),
+                    _weaponPartDatabase.Get((string)jsonBuild["weapon"])
+                );
+            })
+            .ToList();
+        return new SaveData(lastSave, coreUnitParts, bodyParts, armsParts, lowerParts, weaponParts, builds);
+    }
+
+    private static CoreUnitPart GetCoreUnitPart(List<CoreUnitPart> cores, string id) {
+        return cores.First(core => core.Id.Equals(id));
     }
 
     public static SaveData NewSave() {
         long lastSave = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-        Dictionary<string, List<string>> partsCollection = new();
-        foreach (string partType in JSON_PART_TYPES) {
-            partsCollection.Add(partType, new List<string>());
-        }
-        return new SaveData(lastSave, partsCollection, new List<UnitBuild>());
+
+        return new SaveData(
+            lastSave, 
+            new List<CoreUnitPart>(), new List<BodyPart>(), new List<ArmsPart>(), new List<LowerPart>(), new List<WeaponPart>(), 
+            new List<UnitBuild>()
+        );
     }
 
     public void Save(string saveName) {

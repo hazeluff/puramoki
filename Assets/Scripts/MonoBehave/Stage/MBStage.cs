@@ -580,12 +580,15 @@ public class MBStage : MonoBehaviour {
         }
 
         // Instantiate Units
-        foreach (MBUnit mbUnit in FindObjectsOfType<MBUnit>()) {
-            Vector3 unitPos = mbUnit.transform.position;
+        // - Enemy Units
+        foreach (TestMBStageUnit mbStageUnit in FindObjectsOfType<TestMBStageUnit>()) {
+            Vector3 unitPos = mbStageUnit.transform.position;
             MapCoordinate mapCoordinate = new MapCoordinate(Mathf.RoundToInt(unitPos.x), Mathf.RoundToInt(unitPos.z));
-            mbUnit.Init(this, null, mapCoordinate);
+            IStageUnit stageUnit = new StageUnit(mbStageUnit.Faction, mbStageUnit.Build);
+            mbStageUnit.Init(this, stageUnit, mbStageUnit.IsPlayer, mapCoordinate);
         }
 
+        // - User Units
         for (int i=0; i < stageLoader.UserBuilds.Count && i < userDeployPos.Length; i++) {
             UnitBuild userBuild = stageLoader.UserBuilds[i];
             MapCoordinate unitPos = new MapCoordinate(userDeployPos[i]);

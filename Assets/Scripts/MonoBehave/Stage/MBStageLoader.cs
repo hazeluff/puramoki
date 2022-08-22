@@ -6,20 +6,15 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class MBStageLoader : MonoBehaviour {
-    [SerializeField]
-    private List<UnitBuild> _units;
 
-    public List<UnitBuild> UserBuilds { get { return _units; } }
+    public List<UnitBuild> UserBuilds => SaveManager.Get().Data.Builds;
 
     public void LoadStage() {
+        SaveManager.Get().Load("test");
         SceneManager.LoadScene("Stage");
     }
 
     private void Awake() {
         DontDestroyOnLoad(this);
-    }
-
-    public void InstantiateModel() {
-        _units[0].InstantiateModel();
     }
 }
