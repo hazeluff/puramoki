@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class MBLoudoutStatsPanel : MonoBehaviour
+public class MBLoadoutStatsPanel : MonoBehaviour
 {
     [SerializeField]
     private Button buildNameButton;
@@ -59,8 +59,11 @@ public class MBLoudoutStatsPanel : MonoBehaviour
 
     private void UpdateBuildStats(UnitBuild selectedBuild) {
         statsLabel.text = selectedBuild.Name + "\n" +
+            "\n" +
             "Level: " + selectedBuild.Lvl + "\n" +
             "Exp: " + selectedBuild.ExpCurrent + "/" + selectedBuild.NextLevelExp + "\n" +
+            "\n" +
+            "\n" +
             "HP:" + selectedBuild.Hp + "\n" +
             "EP:" + selectedBuild.Ep + "\n" +
             "ATK:" + selectedBuild.Atk + "\n" +
@@ -74,8 +77,11 @@ public class MBLoudoutStatsPanel : MonoBehaviour
 
     private void UpdateCoreStats(CoreUnitPart coreUnit) {
         statsLabel.text = coreUnit.Name + "\n" +
-            // "Level: " + coreUnit.Lvl + "\n" +
-            // "Exp: " + coreUnit.ExpCurrent + "/" + coreUnit.NextLevelExp + "\n" +
+            "\n" +
+            "Level: " + coreUnit.Lvl + "\n" +
+            "Exp: " + coreUnit.ExpCurrent + "/" + coreUnit.NextLevelExp + "\n" +
+            "\n" +
+            "\n" +
             "HP:" + coreUnit.Hp + "\n" +
             "EP:" + coreUnit.Ep + "\n" +
             "ATK:" + coreUnit.Atk + "\n" +
@@ -89,6 +95,9 @@ public class MBLoudoutStatsPanel : MonoBehaviour
 
     private void UpdatePartStats(BuildPart buildPart) {
         statsLabel.text = buildPart.Name + "\n" +
+            "\n" +
+            "\n" +
+            "\n" +
             "\n" +
             "\n" +
             "HP:" + buildPart.Hp + "\n" +

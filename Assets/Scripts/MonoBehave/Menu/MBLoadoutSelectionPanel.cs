@@ -8,9 +8,6 @@ using UnityEngine.UI;
 
 public class MBLoadoutSelectionPanel : MonoBehaviour {
     [SerializeField]
-    private SaveManager saveManager;
-
-    [SerializeField]
     private GameObject promptGO;
 
     [SerializeField]
@@ -40,21 +37,17 @@ public class MBLoadoutSelectionPanel : MonoBehaviour {
     private Transform unitAnchor;
     private Transform unitModel;
 
-    private MenuState state = MenuState.PART_SELECT;
+    private MenuState state = MenuState.LOADOUT_MENU;
     private MenuState nextState;
 
     private enum MenuState {
-        PART_SELECT,
+        LOADOUT_MENU,
         ENTER_NAME, 
         NEXT_WAIT // only for nextState to denote "null"
     }
 
     private void Start() {
-        saveManager.Load("test");
-        if (saveManager.Data.Builds.Count > 0) {
-            SelectBuild(saveManager.Data.Builds[0]);
-            EventSystem.current.SetSelectedGameObject(buildNameButtonLabel.transform.parent.gameObject);
-        }
+
     }
 
     private void Update() {
@@ -79,7 +72,7 @@ public class MBLoadoutSelectionPanel : MonoBehaviour {
         unitDisplay.localEulerAngles = unitDisplay.localEulerAngles + new Vector3(0, rotateAmt, 0);
     }
 
-    private void SelectBuild(UnitBuild build) {
+    public void SelectBuild(UnitBuild build) {
         this._selectedBuild = build;
 
         // Update UI Labels
@@ -132,7 +125,7 @@ public class MBLoadoutSelectionPanel : MonoBehaviour {
             buildNameButtonLabel.text = newName;
             Selected.SetName(newName);
         }
-        nextState = MenuState.PART_SELECT;
+        nextState = MenuState.LOADOUT_MENU;
         EventSystem.current.SetSelectedGameObject(buildNameButtonLabel.transform.parent.gameObject);
         promptGO.SetActive(false);
     }
