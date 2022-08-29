@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 117b0221a1ec162479204b7d38257089, type: 3}
   m_Name: ArmsPartDatabase
   m_EditorClassIdentifier: 
-  parts:
+  _parts:
   - {fileID: 11400000, guid: ee04030bff637734789e608214baaa0b, type: 2}

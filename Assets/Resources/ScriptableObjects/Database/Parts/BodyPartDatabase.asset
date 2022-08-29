@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 95f46b2d976a8484e95189ea2538d962, type: 3}
   m_Name: BodyPartDatabase
   m_EditorClassIdentifier: 
-  parts:
+  _parts:
   - {fileID: 11400000, guid: bcc918ed0767a274d90f4d4c9dcad717, type: 2}

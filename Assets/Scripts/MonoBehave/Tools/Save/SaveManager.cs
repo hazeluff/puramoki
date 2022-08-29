@@ -9,14 +9,19 @@ using System.Collections.Generic;
 public class SaveManager : MonoBehaviour {
     [SerializeField]
     private CoreUnitDatabase _coreUnitDatabase;
+    public CoreUnitDatabase CoreUnitDatabase => _coreUnitDatabase;
     [SerializeField]
     private BodyPartDatabase _bodyPartDatabase;
+    public BodyPartDatabase BodyPartDatabase => _bodyPartDatabase;
     [SerializeField]
     private ArmsPartDatabase _armsPartDatabase;
+    public ArmsPartDatabase ArmsPartDatabase => _armsPartDatabase;
     [SerializeField]
     private LowerPartDatabase _lowerPartDatabase;
+    public LowerPartDatabase LowerPartDatabase => _lowerPartDatabase;
     [SerializeField]
     private WeaponPartDatabase _weaponPartDatabase;
+    public WeaponPartDatabase WeaponPartDatabase => _weaponPartDatabase;
 
     // Singleton Behaviour
     private static SaveManager _saveManager;

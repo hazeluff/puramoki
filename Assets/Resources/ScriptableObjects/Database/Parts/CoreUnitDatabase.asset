@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 800bdcd841e3f3f4aab1fffaa2689b4c, type: 3}
   m_Name: CoreUnitDatabase
   m_EditorClassIdentifier: 
-  parts:
+  _parts:
   - {fileID: 11400000, guid: a27a66be977b46e4c9c043d32d0c20f6, type: 2}
+  - {fileID: 11400000, guid: a51c000dca11a9243a8806c27c3b9ea7, type: 2}
   - {fileID: 11400000, guid: 40808d16460ad9b458fe11b9dd98315b, type: 2}
   - {fileID: 11400000, guid: 40d3a48bd31723f409a186cc1210607d, type: 2}
